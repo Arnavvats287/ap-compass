@@ -1,0 +1,492 @@
+{
+  "live": true,
+  "observed_at": "2026-11-18T23:21:14.110438+00:00",
+  "transport": "real FastAPI ASGI endpoints and lifespan, in-process HTTP client",
+  "health": {
+    "status": "ok",
+    "service": "ap-compass",
+    "version": "0.1.0",
+    "database": "ok"
+  },
+  "requests": [
+    {
+      "kind": "generation",
+      "model": "gemini-3.5-flash-lite"
+    },
+    {
+      "kind": "generation",
+      "model": "gemini-3.5-flash-lite"
+    },
+    {
+      "kind": "generation",
+      "model": "gemini-3.5-flash-lite"
+    }
+  ],
+  "results": [
+    {
+      "filename": "HAPPY_CLEAN.pdf",
+      "run_id": "7b3a699bea514c7f9eed52b34d90d639",
+      "execution_state": "COMPLETED",
+      "execution_error_code": null,
+      "model_id": "gemini-3.5-flash-lite",
+      "route": "native_text",
+      "critical_header_fields": {
+        "vendor_name_raw": {
+          "expected": "Orion Office Products",
+          "extracted": "Orion Office Products",
+          "match": true
+        },
+        "invoice_number": {
+          "expected": "HAPPY_CLEAN-2026",
+          "extracted": "HAPPY_CLEAN-2026",
+          "match": true
+        },
+        "invoice_date": {
+          "expected": "2026-11-14",
+          "extracted": "2026-11-14",
+          "match": true
+        },
+        "po_reference": {
+          "expected": "PO-6001",
+          "extracted": "PO-6001",
+          "match": true
+        },
+        "currency": {
+          "expected": "INR",
+          "extracted": "INR",
+          "match": true
+        },
+        "net": {
+          "expected": "48000",
+          "extracted": "48000",
+          "match": true
+        },
+        "tax": {
+          "expected": "8640",
+          "extracted": "8640",
+          "match": true
+        },
+        "total": {
+          "expected": "56640",
+          "extracted": "56640",
+          "match": true
+        }
+      },
+      "lines": [
+        {
+          "description": "Office supplies",
+          "item_code": "OR-SUPPLY-01",
+          "qty": "48",
+          "unit_price_net": "1000",
+          "net": "48000"
+        }
+      ],
+      "evidence_states": {
+        "vendor_name_raw": "NATIVE_VERIFIED",
+        "invoice_number": "NATIVE_VERIFIED",
+        "invoice_date": "NATIVE_VERIFIED",
+        "po_reference": "NATIVE_VERIFIED",
+        "currency": "NATIVE_VERIFIED",
+        "net": "NATIVE_VERIFIED",
+        "tax": "NATIVE_VERIFIED",
+        "total": "NATIVE_VERIFIED",
+        "lines[0].description": "NATIVE_VERIFIED",
+        "lines[0].item_code": "NATIVE_VERIFIED",
+        "lines[0].qty": "NATIVE_VERIFIED",
+        "lines[0].unit_price_net": "NATIVE_VERIFIED",
+        "lines[0].net": "NATIVE_VERIFIED"
+      },
+      "expected_outcome": "READY_FOR_AP",
+      "decision": {
+        "outcome": "READY_FOR_AP",
+        "primary_reason_code": "PO_MATCH_CONFIRMED",
+        "owner": null,
+        "next_action": "Continue to AP review; this does not authorize payment or posting.",
+        "reason_codes": [
+          "PO_MATCH_CONFIRMED",
+          "BANK_DETAILS_NOT_PROVIDED"
+        ]
+      },
+      "candidates": [
+        "PO-6001"
+      ],
+      "timings": [
+        {
+          "name": "extraction",
+          "milliseconds": 3213
+        },
+        {
+          "name": "matching",
+          "milliseconds": 2
+        },
+        {
+          "name": "evaluation",
+          "milliseconds": 10
+        },
+        {
+          "name": "total_processing",
+          "milliseconds": 3259
+        }
+      ],
+      "usage": {
+        "model_calls": 1,
+        "input_tokens": 543,
+        "output_tokens": 913
+      },
+      "stages": [
+        {
+          "name": "received",
+          "state": "PASSED",
+          "started_at": "2026-11-18T23:21:04.299011Z",
+          "finished_at": "2026-11-18T23:21:04.299011Z"
+        },
+        {
+          "name": "extracting_invoice",
+          "state": "PASSED",
+          "started_at": "2026-11-18T23:21:04.313010Z",
+          "finished_at": "2026-11-18T23:21:07.537450Z"
+        },
+        {
+          "name": "matching_records",
+          "state": "PASSED",
+          "started_at": "2026-11-18T23:21:07.538450Z",
+          "finished_at": "2026-11-18T23:21:07.547451Z"
+        },
+        {
+          "name": "evaluating_controls",
+          "state": "PASSED",
+          "started_at": "2026-11-18T23:21:07.548451Z",
+          "finished_at": "2026-11-18T23:21:07.565453Z"
+        },
+        {
+          "name": "finalizing",
+          "state": "PASSED",
+          "started_at": "2026-11-18T23:21:07.565453Z",
+          "finished_at": "2026-11-18T23:21:07.571465Z"
+        }
+      ]
+    },
+    {
+      "filename": "OVERBILLED_PARTIAL.pdf",
+      "run_id": "549da4c3d6a94f04a381d9ee1ec04f4a",
+      "execution_state": "COMPLETED",
+      "execution_error_code": null,
+      "model_id": "gemini-3.5-flash-lite",
+      "route": "native_text",
+      "critical_header_fields": {
+        "vendor_name_raw": {
+          "expected": "Aster Systems",
+          "extracted": "Aster Systems",
+          "match": true
+        },
+        "invoice_number": {
+          "expected": "OVERBILLED_PARTIAL-2026",
+          "extracted": "OVERBILLED_PARTIAL-2026",
+          "match": true
+        },
+        "invoice_date": {
+          "expected": "2026-11-14",
+          "extracted": "2026-11-14",
+          "match": true
+        },
+        "po_reference": {
+          "expected": "PO-3015",
+          "extracted": "PO-3015",
+          "match": true
+        },
+        "currency": {
+          "expected": "INR",
+          "extracted": "INR",
+          "match": true
+        },
+        "net": {
+          "expected": "30000",
+          "extracted": "30000",
+          "match": true
+        },
+        "tax": {
+          "expected": "5400",
+          "extracted": "5400",
+          "match": true
+        },
+        "total": {
+          "expected": "35400",
+          "extracted": "35400",
+          "match": true
+        }
+      },
+      "lines": [
+        {
+          "description": "Managed IT services",
+          "item_code": "AS-SERVICE-01",
+          "qty": "6",
+          "unit_price_net": "5000",
+          "net": "30000"
+        }
+      ],
+      "evidence_states": {
+        "vendor_name_raw": "NATIVE_VERIFIED",
+        "invoice_number": "NATIVE_VERIFIED",
+        "invoice_date": "NATIVE_VERIFIED",
+        "po_reference": "NATIVE_VERIFIED",
+        "currency": "NATIVE_VERIFIED",
+        "net": "NATIVE_VERIFIED",
+        "tax": "NATIVE_VERIFIED",
+        "total": "NATIVE_VERIFIED",
+        "lines[0].description": "NATIVE_VERIFIED",
+        "lines[0].item_code": "NATIVE_VERIFIED",
+        "lines[0].qty": "NATIVE_VERIFIED",
+        "lines[0].unit_price_net": "NATIVE_VERIFIED",
+        "lines[0].net": "NATIVE_VERIFIED"
+      },
+      "expected_outcome": "BLOCKED",
+      "decision": {
+        "outcome": "BLOCKED",
+        "primary_reason_code": "PO_BALANCE_EXCEEDED",
+        "owner": "Procurement",
+        "next_action": "Request a corrected invoice or have Procurement approve an authorized PO amendment; re-evaluate afterward.",
+        "reason_codes": [
+          "PO_MATCH_CONFIRMED",
+          "PO_BALANCE_EXCEEDED",
+          "PO_QUANTITY_EXCEEDED",
+          "PO_LINE_BALANCE_EXCEEDED",
+          "BANK_DETAILS_NOT_PROVIDED"
+        ]
+      },
+      "candidates": [
+        "PO-3015"
+      ],
+      "timings": [
+        {
+          "name": "extraction",
+          "milliseconds": 2680
+        },
+        {
+          "name": "matching",
+          "milliseconds": 1
+        },
+        {
+          "name": "evaluation",
+          "milliseconds": 1
+        },
+        {
+          "name": "total_processing",
+          "milliseconds": 2716
+        }
+      ],
+      "usage": {
+        "model_calls": 1,
+        "input_tokens": 542,
+        "output_tokens": 681
+      },
+      "stages": [
+        {
+          "name": "received",
+          "state": "PASSED",
+          "started_at": "2026-11-18T23:21:07.582451Z",
+          "finished_at": "2026-11-18T23:21:07.582451Z"
+        },
+        {
+          "name": "extracting_invoice",
+          "state": "PASSED",
+          "started_at": "2026-11-18T23:21:07.591451Z",
+          "finished_at": "2026-11-18T23:21:10.281352Z"
+        },
+        {
+          "name": "matching_records",
+          "state": "PASSED",
+          "started_at": "2026-11-18T23:21:10.281352Z",
+          "finished_at": "2026-11-18T23:21:10.289352Z"
+        },
+        {
+          "name": "evaluating_controls",
+          "state": "PASSED",
+          "started_at": "2026-11-18T23:21:10.289352Z",
+          "finished_at": "2026-11-18T23:21:10.298351Z"
+        },
+        {
+          "name": "finalizing",
+          "state": "PASSED",
+          "started_at": "2026-11-18T23:21:10.299351Z",
+          "finished_at": "2026-11-18T23:21:10.308352Z"
+        }
+      ]
+    },
+    {
+      "filename": "SCAN_CONFLICT.pdf",
+      "run_id": "e0eb6a058c574f66aa48cb474e28a33f",
+      "execution_state": "COMPLETED",
+      "execution_error_code": null,
+      "model_id": "gemini-3.5-flash-lite",
+      "route": "image_only",
+      "critical_header_fields": {
+        "vendor_name_raw": {
+          "expected": "Kaveri Logistics",
+          "extracted": "Kaveri Logistics",
+          "match": true
+        },
+        "invoice_number": {
+          "expected": "SCAN_CONFLICT-2026",
+          "extracted": "SCAN_CONFLICT-2026",
+          "match": true
+        },
+        "invoice_date": {
+          "expected": "2026-11-14",
+          "extracted": "2026-11-14",
+          "match": true
+        },
+        "po_reference": {
+          "expected": "PO-4002",
+          "extracted": "PO-4002",
+          "match": true
+        },
+        "currency": {
+          "expected": "INR",
+          "extracted": "INR",
+          "match": true
+        },
+        "net": {
+          "expected": "70000",
+          "extracted": "70000",
+          "match": true
+        },
+        "tax": {
+          "expected": "12600",
+          "extracted": "12600",
+          "match": true
+        },
+        "total": {
+          "expected": "86200",
+          "extracted": "86200",
+          "match": true
+        }
+      },
+      "lines": [
+        {
+          "description": "Freight services",
+          "item_code": "KL-FREIGHT-01",
+          "qty": "7",
+          "unit_price_net": "10000",
+          "net": null
+        }
+      ],
+      "evidence_states": {
+        "vendor_name_raw": "SOURCE_LOCATED_UNVERIFIED",
+        "invoice_number": "SOURCE_LOCATED_UNVERIFIED",
+        "invoice_date": "SOURCE_LOCATED_UNVERIFIED",
+        "po_reference": "SOURCE_LOCATED_UNVERIFIED",
+        "currency": "SOURCE_LOCATED_UNVERIFIED",
+        "net": "SOURCE_LOCATED_UNVERIFIED",
+        "tax": "SOURCE_LOCATED_UNVERIFIED",
+        "total": "SOURCE_LOCATED_UNVERIFIED",
+        "lines[0].description": "SOURCE_LOCATED_UNVERIFIED",
+        "lines[0].item_code": "SOURCE_LOCATED_UNVERIFIED",
+        "lines[0].qty": "SOURCE_LOCATED_UNVERIFIED",
+        "lines[0].unit_price_net": "SOURCE_LOCATED_UNVERIFIED",
+        "lines[0].net": "SOURCE_LOCATED_UNVERIFIED"
+      },
+      "expected_outcome": "REVIEW_REQUIRED",
+      "decision": {
+        "outcome": "REVIEW_REQUIRED",
+        "primary_reason_code": "SOURCE_EVIDENCE_MISSING",
+        "owner": "AP",
+        "next_action": "Verify the source invoice and request clarification from the vendor.",
+        "reason_codes": [
+          "PO_MATCH_CONFIRMED",
+          "SOURCE_EVIDENCE_MISSING",
+          "TOTAL_RECONCILIATION_FAILED",
+          "BANK_DETAILS_NOT_PROVIDED"
+        ]
+      },
+      "candidates": [
+        "PO-4002"
+      ],
+      "timings": [
+        {
+          "name": "extraction",
+          "milliseconds": 3696
+        },
+        {
+          "name": "matching",
+          "milliseconds": 1
+        },
+        {
+          "name": "evaluation",
+          "milliseconds": 1
+        },
+        {
+          "name": "total_processing",
+          "milliseconds": 3738
+        }
+      ],
+      "usage": {
+        "model_calls": 1,
+        "input_tokens": 1399,
+        "output_tokens": 914
+      },
+      "stages": [
+        {
+          "name": "received",
+          "state": "PASSED",
+          "started_at": "2026-11-18T23:21:10.320352Z",
+          "finished_at": "2026-11-18T23:21:10.320352Z"
+        },
+        {
+          "name": "extracting_invoice",
+          "state": "PASSED",
+          "started_at": "2026-11-18T23:21:10.329353Z",
+          "finished_at": "2026-11-18T23:21:14.037435Z"
+        },
+        {
+          "name": "matching_records",
+          "state": "PASSED",
+          "started_at": "2026-11-18T23:21:14.038438Z",
+          "finished_at": "2026-11-18T23:21:14.048441Z"
+        },
+        {
+          "name": "evaluating_controls",
+          "state": "PASSED",
+          "started_at": "2026-11-18T23:21:14.049437Z",
+          "finished_at": "2026-11-18T23:21:14.058434Z"
+        },
+        {
+          "name": "finalizing",
+          "state": "PASSED",
+          "started_at": "2026-11-18T23:21:14.059439Z",
+          "finished_at": "2026-11-18T23:21:14.069437Z"
+        }
+      ]
+    }
+  ],
+  "dashboard": {
+    "total_runs": 3,
+    "in_progress": 0,
+    "completed": 3,
+    "ready": 1,
+    "review_required": 1,
+    "blocked": 1,
+    "processing_failed": 0,
+    "interrupted": 0
+  },
+  "authority_before_sha256": "7fb54a84f32bd0bf75a29396bb50c450878503dd70515b33bafcc330e2a54398",
+  "authority_after_sha256": "7fb54a84f32bd0bf75a29396bb50c450878503dd70515b33bafcc330e2a54398",
+  "ledger_unchanged": true,
+  "reloads": [
+    {
+      "run_id": "7b3a699bea514c7f9eed52b34d90d639",
+      "identical_snapshot": true,
+      "identical_document": true
+    },
+    {
+      "run_id": "549da4c3d6a94f04a381d9ee1ec04f4a",
+      "identical_snapshot": true,
+      "identical_document": true
+    },
+    {
+      "run_id": "e0eb6a058c574f66aa48cb474e28a33f",
+      "identical_snapshot": true,
+      "identical_document": true
+    }
+  ],
+  "model_calls_on_reload": 0
+}

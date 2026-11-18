@@ -1,6 +1,6 @@
 # Phase 3 — Document adapter
 
-**Scope:** In-memory extraction only. No upload endpoint, persistent document storage, database writes,
+**Historical Phase 3 scope:** In-memory extraction only. No upload endpoint, persistent document storage, database writes,
 financial-rule changes, UI, worker service or run orchestration. Phase 2 contracts remain unchanged.
 **Gate:** Revised required-provider acceptance PASS after Phase 3.1; architectural review pending. Escalation is optional and disabled (ADR-016).
 
@@ -139,7 +139,7 @@ all 129 foundation/finance regressions and 100 document tests. One extra real pr
 line.net=None, preserved gross 86200, and the unchanged evaluator returned REVIEW_REQUIRED with discrepancy 3600.
 All scan evidence stayed unverified; zero Flash metadata/generation requests occurred in stabilization.
 Earlier genuine native successes and failed stronger calls remain in the historical Phase 3 report/results.
-No general model-accuracy or live stronger-model claim is made. Phase 4 remains unauthorized.
+No general model-accuracy or live stronger-model claim is made. Phase 4 integration is now documented in ORCHESTRATION_API.md.
 
 ## Official references consulted
 
@@ -147,3 +147,11 @@ No general model-accuracy or live stronger-model claim is made. Phase 4 remains 
 - https://ai.google.dev/api/models — metadata and supported-generation-method checks.
 - https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/thinking — Flash MINIMAL thinking support.
 - https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-jobobject_extended_limit_information — process memory cap.
+
+
+## Phase 4 integration note
+
+The standalone helper above still explicitly verifies metadata for diagnostics. Application uploads
+use extract_runtime_pdf: only Flash-Lite, no per-invoice models.get, same bounded extract_pdf pipeline,
+strict schema and evidence grounding. Per-extraction clients close in finally. No finance rules or
+provider prompt changes. See ORCHESTRATION_API.md and PHASE_04_REPORT.md for the accepted scope.

@@ -183,3 +183,21 @@ async def extract_configured_pdf(raw: bytes, *, max_attempts: int = 2):
     finally:
         await client.aio.aclose()
         client.close()
+
+
+async def extract_runtime_pdf(raw: bytes):
+    """Production path: no mandatory metadata lookup; typed generation errors remain.
+
+    Phase 4 uses only the verified primary, even if stale optional environment
+    configuration is enabled. No stronger-model requests in this application.
+    """
+    from app.documents.pipeline import extract_pdf
+    settings = GeminiSettings.from_environment()
+    if settings.escalation_enabled or settings.primary_model != "gemini-3.5-flash-lite":
+        raise ExtractionError("CONFIGURATION", inference_attempted=False)
+    client = make_client(settings)
+    try:
+        return await extract_pdf(raw, GeminiProvider(client, settings.primary_model))
+    finally:
+        await client.aio.aclose()
+        client.close()

@@ -1,0 +1,55 @@
+{
+  "fixture": "HAPPY_CLEAN.pdf",
+  "provider": "TEST_ONLY timeout, no live inference",
+  "run_id": "3af1cf0318c3478994864523fe9f71d7",
+  "execution_state": "PROCESSING_FAILED",
+  "execution_error_code": "PROVIDER_TIMEOUT",
+  "decision": null,
+  "usage": {
+    "model_calls": 1,
+    "input_tokens": null,
+    "output_tokens": null
+  },
+  "timings": [
+    {
+      "name": "extraction",
+      "milliseconds": 1
+    },
+    {
+      "name": "total_processing",
+      "milliseconds": 9
+    }
+  ],
+  "stages": [
+    {
+      "name": "received",
+      "state": "PASSED",
+      "started_at": "2026-11-18T23:23:50.266917Z",
+      "finished_at": "2026-11-18T23:23:50.266917Z"
+    },
+    {
+      "name": "extracting_invoice",
+      "state": "FAILED",
+      "started_at": "2026-11-18T23:23:50.279925Z",
+      "finished_at": "2026-11-18T23:23:50.297909Z"
+    },
+    {
+      "name": "matching_records",
+      "state": "SKIPPED",
+      "started_at": null,
+      "finished_at": "2026-11-18T23:23:50.297909Z"
+    },
+    {
+      "name": "evaluating_controls",
+      "state": "SKIPPED",
+      "started_at": null,
+      "finished_at": "2026-11-18T23:23:50.298908Z"
+    },
+    {
+      "name": "finalizing",
+      "state": "SKIPPED",
+      "started_at": null,
+      "finished_at": "2026-11-18T23:23:50.298908Z"
+    }
+  ]
+}

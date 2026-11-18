@@ -1,30 +1,34 @@
 # AP Compass
 
 AI-assisted Invoice Operations & Exception Resolution for Zamp ASA PS-1.
-**Phase 3 stabilized: revised required-provider gate passes; architectural review pending.** Deadline: November 21, 2026 (IST).
+**Phase 4 vertical slice passes; architectural review pending.** Deadline: November 21, 2026 (IST).
 All supplied vendors, procurement records, billed invoices and fixture PDFs are synthetic.
 
-## Document adapter (Phase 3, stabilized in 3.1)
+## Persistent API workflow (Phase 4)
 
-Read `docs/DOCUMENT_ENGINE.md` and `docs/PHASE_03_1_REPORT.md`. Current full suite: **229 passing tests**.
-Required provider: genuinely tested Flash-Lite for native and image-only documents. Stronger escalation is optional,
-**disabled by default**, and remains live-unverified. No further Flash probes were made during stabilization.
+Read `docs/ORCHESTRATION_API.md` and `docs/PHASE_04_REPORT.md`. Current suite: **268 passing tests**.
+Upload -> persisted real stages -> actual Flash-Lite extraction -> trusted authority/context -> pure evaluation
+-> reloadable decision/document. Three genuine API E2E fixtures matched READY / BLOCKED / REVIEW outcomes;
+authoritative history stayed unchanged and app recreation made no model requests.
 
 ```powershell
-.venv/Scripts/python -m pytest -c backend/pytest.ini backend/tests -q --basetemp tmp/pytest-phase031-acceptance --tb=short
-# Optional explicit primary-only diagnostic; consumes inference quota:
-$env:PYTHONPATH = 'backend'
-.venv/Scripts/python -m app.ai.smoke --case SCAN_CONFLICT --report tmp/scan-smoke.json
+.venv/Scripts/python -m pytest -c backend/pytest.ini backend/tests -q --basetemp tmp/pytest-phase04-final --tb=short
+# Backend with explicitly loaded local secrets; frontend remains the foundation shell:
+.venv/Scripts/python -m uvicorn app.main:app --app-dir backend --env-file .env --host 127.0.0.1 --port 8000
+curl.exe -F "file=@tests/fixtures/HAPPY_CLEAN.pdf;type=application/pdf" http://127.0.0.1:8000/api/runs
 ```
 
-`GEMINI_ESCALATION_ENABLED=false` requires/checks/constructs only primary, also for scans. Keep it disabled until
-genuine stronger inference is verified. The key stays in ignored local `.env`.
-Library: `await app.ai.gemini.extract_configured_pdf(pdf_bytes)` after loading backend environment;
-use `max_attempts=1` for a single-generation smoke call. Offline DI remains in `app.documents.pipeline.extract_pdf`.
+Poll GET /api/runs/{id}; other APIs: /api/runs, /api/runs/{id}/document, /api/policy, /api/dashboard, /api/health.
+Uploads return 202; technical failures have decision=null and sanitized execution_error_code.
+Run **one Uvicorn worker**: one active workflow per process, queued work interrupted on restart, no automatic replay.
+Persist both AP_COMPASS_DB_PATH and AP_COMPASS_DOCUMENT_DIR (default runtime/documents).
+The runtime uses gemini-3.5-flash-lite with GEMINI_ESCALATION_ENABLED=false, no per-invoice metadata lookup.
+Keep the key only in ignored server-side .env; boot and health work without it.
 
-Valid uncertain/incomplete primary facts survive optional outage/timeout/quota with failed attempt metadata and
-retained_primary=true. Unusable primary still fails technically. Unverified scanned line net stays None; gross is
-unchanged. The pure evaluator owns the subsequent decision. No upload, document store, orchestration or Phase 4.
+The Phase 3 independent evidence verifier and conservative scan behavior remain intact. Native verified fields
+may support READY; scan facts remain unverified, unstated line net stays None, printed totals are not repaired.
+See `docs/DOCUMENT_ENGINE.md` and historical `docs/PHASE_03_1_REPORT.md` for provider/evidence details.
+Optional stronger inference remains unverified and disabled. No Phase 5 UI, approval, reevaluation or deployment.
 
 ## Pure financial engine (Phase 2)
 
@@ -41,7 +45,7 @@ Verified: 129 tests (30 foundation + 99 domain), zero failures. See `docs/PHASE_
 
 ## Local setup (PowerShell, repository root)
 
-Requires Python 3.12+ and Node 24 with npm. No API key is needed in Phase 1.
+Requires Python 3.12+ and Node 24 with npm. No API key is needed for health, history or offline tests; actual extraction requires a backend key.
 
 ```powershell
 python -m venv .venv
@@ -50,7 +54,7 @@ npm --prefix frontend ci --no-audit --no-fund
 ```
 
 The environment reads `AP_COMPASS_DB_PATH` from the process environment; `.env` is not automatically loaded.
-`.env.example` documents placeholders for later phases. Never put keys into frontend environment variables.
+`.env.example` documents server-side configuration. Never put keys into frontend environment variables.
 The default DB is `runtime/ap-compass.db`, resolved from repository root regardless of working directory.
 On Windows sandbox temp-directory errors, use a writable temporary directory:
 
@@ -108,7 +112,7 @@ No tests require network, provider keys, or paid services once dependencies are 
 - React/TypeScript/Vite/Tailwind/Lucide shell, working navigation, disabled and honestly labeled processing CTA.
 - Four native-text PDFs and the authorized image-only SCAN_CONFLICT fixture, from the untouched manifest.
 - Pure matching, financial reconciliation, duplicate/bank/evidence controls and severity-based decisions.
-- In-memory document/AI adapters implemented; orchestration remains unimplemented.
+- Persisted asynchronous invoice orchestration, bounded PDF upload/document storage and run/history/policy/dashboard APIs.
 
 PO balances come exclusively from authorized POs minus prior billed history. Remaining net/qty:
 

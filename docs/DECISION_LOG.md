@@ -87,3 +87,28 @@ Do not rewrite past records to pretend a previous design was never chosen. Recor
   expectations. No third model, registry, orchestration, UI or deployment. No new Flash probes in this repair.
 - **Evidence:** PHASE_03_1_REPORT.md and PHASE_03_1_LIVE_RESULTS.json. Earlier Flash failures remain historical
   evidence; revised acceptance does not assert that stronger-model inference ever succeeded.
+
+
+## ADR-017 — Phase 4 execution errors, stage ownership and local workflow
+
+- **Date/status:** 2026-11-19 IST, ACCEPTED by the explicit Phase 4 request.
+- **Approved shared addition:** RunSnapshotV1.execution_error_code: str | None = None.
+  QUEUED/RUNNING/COMPLETED require null; PROCESSING_FAILED/INTERRUPTED accept only sanitized
+  allowlisted categories. Historical snapshots without the field remain readable. No messages,
+  provider bodies, secrets or account values. No other shared fields or database schema changes.
+- **Persistence:** Existing InvoiceRun/RunStage/PolicySnapshot tables. RunStage rows exclusively own
+  stages; run JSON persists an empty stage array and detail reconstructs with one atomic joined read.
+  Policy version collisions fail closed; authoritative procurement/billed rows are read only.
+- **Execution:** Tracked asyncio tasks, one active workflow per process via semaphore, short transactions
+  outside inference. Restart interrupts leftover work without model replay. This requires one Uvicorn
+  process; no durable/distributed queue or multi-process recovery guarantee.
+- **Documents:** AP_COMPASS_DOCUMENT_DIR, opaque generated filenames, bounded PDF upload, atomic local
+  writes, controlled run-based serving. Runtime storage and credentials stay ignored by Git.
+- **Provider runtime:** Only verified Flash-Lite, escalation disabled. No mandatory per-invoice metadata
+  lookup; standalone diagnostics keep explicit verification. Clients close per extraction; typed
+  generation failures remain technical, and missing credentials do not prevent boot/health.
+- **Evidence:** PHASE_04_REPORT.md / PHASE_04_LIVE_RESULTS.json / PHASE_04_FAILURE_EXAMPLE.json.
+  Three real generation requests, expected decisions and reloads, unchanged authoritative-row hash.
+- **Boundaries:** Financial rules, identity, evidence grounding, manifests, fixtures and UI unchanged.
+  The obsolete Phase 1 assertion that uploads do not exist now asserts 415 on missing multipart data.
+  No new financial behavior, contract exception, paid deployment, optional model call or Phase 5 work.

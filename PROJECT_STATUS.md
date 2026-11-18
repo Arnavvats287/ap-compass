@@ -1,54 +1,63 @@
 # AP Compass — Project Status / Gate Register
 
-**Updated:** 2026-11-19 (IST)
-**Current gate:** Phase 3 stabilized — revised required-provider acceptance PASS; architectural review pending.
-**Stabilization base:** f8ce2026fb18b52fbd1d358d92c4b904311174e1.
-**Branch:** codex/phase-03-document-engine.
-**Verified checkpoint reference:** phase-03-document-engine (created after required checks; resolve tag for SHA).
-**Publication:** Final commit/tag/push verification reported in chat after this evidence file is committed.
-**Deadline:** Saturday 2026-11-21 (IST). Stop after stabilization; Phase 4 is not authorized.
+**Updated:** 2026-11-19 IST.
+**Current gate:** Phase 4 vertical slice PASS; architectural review pending. STOP before Phase 5.
+**Authorized base:** phase-03-document-engine / c0d06f07fc3d0d70b26318dc247778402dd1fbab.
+**Branch:** codex/phase-04-orchestration-api.
+**Checkpoint:** phase-04-vertical-slice, published only after required checks; resolve tag for exact SHA.
+**Publication evidence:** Final SHA/branch/tag remote verification and clean-tree status are reported in the
+final chat after this file is committed. No force push/default-branch change or prior-tag alteration.
+**Deadline:** Saturday 2026-11-21 IST.
 
-| Phase | State | Evidence / limits |
+| Phase | State | Evidence |
 |---|---|---|
-| 01 Foundation | ACCEPTED by user review | Checkpoint unchanged |
-| 02 Finance engine | ACCEPTED by user review | Original tests still pass; checkpoint unchanged |
-| 03 + 3.1 Document engine | Revised gate PASS; review pending | 229 tests, real primary-only scan smoke and prior native proof; escalation optional/disabled, live-unverified |
-| 04 Orchestration + API | LOCKED | Not implemented; no authorization |
-| 05 Operations UI | LOCKED | Foundation shell only |
-| 06 Scenarios + evaluation | LOCKED | Manifests unchanged |
-| 07 Release | LOCKED | No deployment work |
+| 01 Foundation | ACCEPTED by user | Original checkpoint preserved |
+| 02 Finance | ACCEPTED by user | All 99 finance tests unchanged/passing |
+| 03/3.1 Extraction | ACCEPTED by user | All 100 document tests unchanged/passing; primary only |
+| 04 Orchestration + API | PASS; review pending | Real upload -> persisted stages -> Gemini -> pure decision -> reload |
+| 05 Operations UI | LOCKED | Foundation shell only; no authorization |
+| 06 Scenarios | LOCKED | Original manifests/fixtures unchanged |
+| 07 Release | LOCKED | No deployment/public release work |
 
-## Verified stabilization evidence
+## Verified evidence
 
-| Check | Actual result |
-|---|---|
-| Final backend suite | 229 passed, zero failures, one existing Starlette/AnyIO warning; 35.85s |
-| Regression preservation | 129 unchanged Phase 1/2 tests plus 100 document tests (76 previous + 24 stabilization) |
-| Frontend production build | PASS, 1682 modules; no source changes |
-| Manifest / hygiene / pip | PASS; original procurement/fixture expectations unchanged; no broken dependencies |
-| Primary-only mode | No optional metadata, provider construction or generation; native/scan both primary |
-| Optional failure retention | Valid incomplete/uncertain primary preserved for outage/timeout/quota; failed attempts visible |
-| Unusable primary | Malformed/empty/unavailable without usable facts remains typed technical failure |
-| Counts | Metadata-only and deadline-cancelled unstarted inference not counted as generation |
-| One real extra generation | Flash-Lite SCAN_CONFLICT, 3241ms adapter / 2686ms model; 1399 input + 914 output = 2313 tokens; thinking unknown |
-| Real grounded scan | 13/13 adapter fields; line.net=None, gross=86200; all evidence unverified |
-| Existing evaluator | REVIEW_REQUIRED; arithmetic discrepancy 3600 retained |
-| Flash traffic in stabilization | Zero metadata and zero inference requests |
-| Protected diff | Finance/contracts/DB/API/UI/manifests/old domain tests/all fixtures/dependencies/Docker unchanged |
+- Final full suite: **268 passed**, zero failures/errors, one existing warning, 46.24s.
+  30 foundation + 99 finance + 100 document + 39 new API/integration tests.
+  One Phase 1 absent-upload assertion now expects 415 for missing multipart; no financial assertion changed.
+- Frontend TypeScript/Vite production build PASS, 1682 modules; source unchanged.
+- Manifest validator PASS: 6 vendors, 7 POs, 3 billed invoices, 10 scenarios.
+- Git hygiene PASS: 11 exclusions, PDFs intact, .env/runtime ignored; pip check no broken requirements.
+- Actual Uvicorn HTTP boot/read/shutdown PASS: health, policy, dashboard, runs=200; no inference needed.
+- Exactly 3 real Flash-Lite API E2E generations: HAPPY_CLEAN READY, OVERBILLED_PARTIAL BLOCKED,
+  SCAN_CONFLICT REVIEW, all COMPLETED. Zero metadata or optional Flash requests. Expected fields match.
+- Genuine source: native refs independently verified; scan refs unverified; optional scan line.net=None,
+  gross 86200 and arithmetic discrepancy 3600 preserved. No source evidence upgrade or finance workaround.
+- Extraction/total ms: clean 3213/3259; overbilled 2680/2716; scan 3696/3738.
+  Reported input/output tokens: 543/913, 542/681, 1399/914. One model call each; no invented cost/usage.
+- All three full snapshots and PDF hashes identical after app recreation; zero additional generation calls.
+- Authoritative table hash before/after: 7fb54a84f32bd0bf75a29396bb50c450878503dd70515b33bafcc330e2a54398.
+- Event-synchronized test proves active extraction progress and second run QUEUED. Restart tests interrupt both
+  QUEUED/RUNNING work with SERVER_RESTART; no active stages or automatic model replay remain.
+- RunStage is the sole stage store. InvoiceRun JSON stages=[]; detail uses one atomic joined query.
+- Policy version collisions fail without overwriting existing PolicySnapshot. Authority rows never mutate.
 
-## Release decision and limits
+## Contract and implementation boundaries
 
-ADR-016 records the explicit user adjustment: one live working provider required; stronger escalation optional.
-GEMINI_ESCALATION_ENABLED=false is the code/sample/local default. Enable only after genuine stronger inference
-is verified. Previous Flash failures remain historical facts, never represented as successes.
-Conservative source verification and scan uncertainty remain; no OCR or general accuracy claim.
-No ledger writes, shared-contract changes, orchestration, UI work, paid service or new model.
-A new short-deadline count regression initially failed; request-local tracking fixed it before the final 229-test pass.
+Only approved shared addition: RunSnapshotV1.execution_error_code: str | None = None (ADR-017), allowlisted
+and null for nontechnical states. Historical JSON remains valid. Existing tables/schema, financial rules,
+matching, evidence grounding, seed/fixture manifests and PDFs, frontend and Docker are unchanged.
+Runtime extractor bypasses per-invoice model metadata dependency; credentials missing -> controlled run
+CONFIGURATION failure, healthy application. Escalation remains disabled; Flash was never called in Phase 4.
 
-## Reports and handoff
+## Limitations / handoff
 
-Current: docs/PHASE_03_1_REPORT.md and docs/PHASE_03_1_LIVE_RESULTS.json.
-Historical Phase 3: docs/PHASE_03_REPORT.md and docs/PHASE_03_LIVE_RESULTS.json; actual failures preserved.
-Phase 1/2 tags remain at 12e4a5229903213017a852507d049133a1a7b871 and 6d9963a6a8883ea87c6a4457e0ce0353c28491a8.
+Single-process in-process scheduling, one active workflow. Persist DB and document directory together; use one
+Uvicorn worker. Restart interrupts rather than replays. Scans remain unverified; no OCR/general accuracy claim.
+No frontend upload/queue/dashboard integration, approval, reevaluation/policy editor, auth/rate-limit suite,
+retention/orphan cleanup, distributed queue, cloud storage or deployment. Dashboard scans run snapshots in one
+query; large-history optimization deferred. DB outage can prevent failure persistence; no fabricated completion.
 
-Stop for architectural review. Do not start Phase 4 automatically.
+Current reports: docs/PHASE_04_REPORT.md, docs/PHASE_04_LIVE_RESULTS.json,
+docs/PHASE_04_FAILURE_EXAMPLE.json, docs/ORCHESTRATION_API.md. Historical reports remain unchanged.
+No failed test remains. Prior development failures and the narrow Phase 1 assertion update are documented.
+Next action: architectural review or bounded repair prompt only. Do not start Phase 5 automatically.

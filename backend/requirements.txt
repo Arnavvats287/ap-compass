@@ -5,3 +5,4 @@ SQLAlchemy==2.0.44
 PyMuPDF==1.26.6
 google-genai==3.5.0
 python-dotenv==1.2.4
+python-multipart==0.0.34

@@ -1,8 +1,8 @@
 # AP Compass — Project Memory (living handoff)
 
 **Last reviewed:** 2026-11-19 (IST)
-**Repository status:** Phase 3 stabilized; revised required-provider gate PASS with 229 tests and real primary-only scan proof. Architectural review pending; optional escalation disabled/unverified.
-**Current authorized segment:** `03.1 DOCUMENT STABILIZATION` only; complete and stop for review.
+**Repository status:** Phase 4 vertical slice PASS: 268 tests, three genuine API E2E outcomes, reload proof, unchanged ledger. Architectural review pending.
+**Current authorized segment:** `04 ORCHESTRATION + API` only; complete and stop for review.
 **Deadline:** Saturday 2026-11-21 (IST); target Friday evening feature freeze.
 **Maintainers:** Builder owns product decisions; Codex implements one authorized phase; architectural review gates further work.
 
@@ -46,8 +46,8 @@ Minimum happy path: `HAPPY_CLEAN`, `HAPPY_PARTIAL` (partial invoice is within re
 
 - `01 FOUNDATION`: accepted by user architectural review; checkpoint `phase-01-foundation` unchanged.
 - `02 FINANCE ENGINE`: accepted by explicit user review; tag phase-02-finance-engine unchanged.
-- `03 DOCUMENT ENGINE`: revised gate PASS after stabilization; 229 tests, genuine primary native/scan proof; optional escalation disabled, architectural review pending.
-- `04 ORCHESTRATION + API`: real persisted execution; requires passing 02 and 03.
+- `03 DOCUMENT ENGINE`: ACCEPTED by explicit user review; primary native/scan evidence; optional escalation disabled.
+- `04 ORCHESTRATION + API`: gate PASS; 268 tests and genuine persisted API E2E; architectural review pending.
 - `05 OPERATIONS UI`: live dashboard/workspace against actual API; shell can start earlier, final integration after 04.
 - `06 SCENARIOS + EVAL`: richer edge cases and frozen evaluation; after connected vertical slice.
 - `07 RELEASE`: security checks, deploy smoke test, real video and submission; after core gates.
@@ -71,20 +71,31 @@ Read `docs/SEGMENTS_AND_PARALLELISM.md` for ownership, scope cuts and acceptance
 
 ## Last handoff
 
-**Current task:** Phase 3.1 stabilization complete; revised Phase 3 required-provider gate PASS. STOP for review.
-**Evidence:** Final 229 tests pass (129 unchanged Phase 1/2 + 100 document), zero failures, one existing warning;
-frontend build, manifest, Git hygiene and dependency checks pass. Financial rules/contracts/DB/API/UI/manifests,
-all fixtures and dependencies unchanged. No agents or later phases.
-**Runtime:** GEMINI_ESCALATION_ENABLED=false by default/local/sample; native and scans primary-only, no optional
-metadata/provider construction/calls. Enabled mode remains bounded, with valid primary retention on optional
-outage/timeout/quota and honest failure metadata. No usable primary means technical failure. No evidence upgrade.
-**Live proof:** Exactly one extra Flash-Lite SCAN_CONFLICT generation plus primary metadata lookup; zero Flash
-requests. Grounded line.net=None, gross=86200, unchanged evaluator REVIEW_REQUIRED with 3600 discrepancy;
-all scan evidence remains unverified. Prior native successes remain valid historical evidence.
-**Metrics:** 3241ms adapter / 2686ms model; 1399 input, 914 output, 2313 total tokens; thinking not reported.
-**Scope decision:** ADR-016 explicitly requires one working provider and makes escalation optional. Stronger
-inference is not verified; keep disabled until separately proven, with no more probes in this pass.
-**Repository:** codex/phase-03-document-engine from f8ce2026fb18b52fbd1d358d92c4b904311174e1; passing checkpoint
-reference phase-03-document-engine. Final SHA/push result in chat after commit. Phase 1/2 tags unchanged.
-**Reports:** docs/PHASE_03_1_REPORT.md and docs/PHASE_03_1_LIVE_RESULTS.json; earlier Phase 3 failures preserved.
-**Next authorized action:** Architectural review or bounded repairs only; no automatic Phase 4.
+**Current task:** Phase 4 orchestration + API complete; gate PASS; STOP for architectural review. Phase 5 not authorized.
+**Base/branch:** c0d06f07fc3d0d70b26318dc247778402dd1fbab / codex/phase-04-orchestration-api.
+**Checkpoint:** phase-04-vertical-slice; resolve annotated tag for SHA. Exact commit/push/clean-tree verification
+in final chat after commit. Preserve all previous tags and default branch.
+**Checks:** 268 passed (30 foundation, 99 finance, 100 document, 39 new integration/API), zero failures/errors,
+one existing warning, 46.24s. Build 1682 modules PASS; manifests/hygiene/pip PASS. Actual Uvicorn HTTP
+health/policy/dashboard/runs PASS and shutdown clean, no inference. Only obsolete Phase 1 upload-absence assertion
+updated to expect 415. Initial oversized test-ID and obsolete assertion failures resolved and documented.
+**Live:** Exactly three actual API E2E Flash-Lite generations, no metadata/Flash requests. HAPPY_CLEAN COMPLETED/
+READY; OVERBILLED_PARTIAL COMPLETED/BLOCKED with PO-3015, value+quantity controls; SCAN_CONFLICT COMPLETED/REVIEW,
+gross86200/discrepancy3600/optional line netNone, all scan refs unverified. Native refs independently verified.
+Actual input/output tokens: 543/913, 542/681, 1399/914. Extraction/total ms: 3213/3259, 2680/2716, 3696/3738.
+**Persistence:** All full live snapshots/documents identical after app recreation, zero model calls on reload.
+Authority row hash unchanged: 7fb54a84f32bd0bf75a29396bb50c450878503dd70515b33bafcc330e2a54398.
+RunStage rows exclusively own stages; payload stages=[]; detail atomic joined query. Policy version drift fails.
+**Execution:** Tracked async tasks, per-app semaphore1, queued runs wait, no transactions during inference.
+Restart reconciles queued/running as INTERRUPTED/SERVER_RESTART with no active stages/replay. Expected failures
+persist sanitized categories, no business decision; actual business REVIEW/BLOCK remain COMPLETED.
+**Documents:** AP_COMPASS_DOCUMENT_DIR default runtime/documents; bounded one-PDF upload, opaque IDs, atomic
+writes, run-scoped safe serving. Credential-less app boots/health works; extraction fails CONFIGURATION.
+**Contract:** Only approved execution_error_code optional field + state/allowlist validation, ADR-017.
+No DB schema, finance/matching/evidence rules, seed/fixture/PDF, frontend or Docker change. Multipart dependency added.
+**Limits:** Single process/worker, no durable queue/restart replay/auth/retention/orphan cleanup/cloud/deployment.
+Dashboard currently projects all snapshots in one query. No generalized accuracy claim, OCR, stronger model,
+UI integration, approval or reevaluation. DB outage can prevent error persistence; do not claim successful completion.
+**Reports:** docs/PHASE_04_REPORT.md, docs/PHASE_04_LIVE_RESULTS.json, docs/PHASE_04_FAILURE_EXAMPLE.json,
+docs/ORCHESTRATION_API.md. Historical Phase 3 failures/scope adjustment remain in their original reports/ADRs.
+**Next authorized action:** Architectural review or explicitly requested repair only. No automatic Phase 5.

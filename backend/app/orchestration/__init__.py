@@ -1,1 +1,1 @@
-"""Phase 4 boundary: real persisted processing stages. Not implemented."""
+"""Coordinate real persisted processing; adapters and pure domain own their logic."""

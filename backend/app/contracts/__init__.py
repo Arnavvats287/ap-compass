@@ -156,9 +156,18 @@ class UsageV1(Contract):
     input_tokens: int | None = Field(default=None, ge=0)
     output_tokens: int | None = Field(default=None, ge=0)
 
+EXECUTION_ERROR_CODES = frozenset({
+    "INVALID_PDF", "EMPTY_PDF", "ENCRYPTED_PDF", "UNSUPPORTED_PDF", "INPUT_TOO_LARGE",
+    "PAGE_LIMIT", "RESOURCE_LIMIT", "PARSER_TIMEOUT", "PARSER_FAILED", "CONFIGURATION",
+    "MODEL_UNAVAILABLE", "AUTHORIZATION", "RATE_LIMIT", "PROVIDER_TIMEOUT",
+    "PROVIDER_UNAVAILABLE", "PROVIDER_REJECTED", "INVALID_RESPONSE", "INTERNAL_ERROR",
+    "SERVER_RESTART",
+})
+
 class RunSnapshotV1(Contract):
     id: str
     execution_state: RunExecutionState
+    execution_error_code: str | None = None
     decision: DecisionV1 | None = None
     stages: tuple[RunStageV1, ...] = ()
     extracted_invoice: ExtractedInvoiceV1 | None = None
@@ -175,6 +184,11 @@ class RunSnapshotV1(Contract):
 
     @model_validator(mode="after")
     def decision_only_after_completion(self):
+        if self.execution_error_code is not None:
+            if self.execution_state not in ("PROCESSING_FAILED", "INTERRUPTED"):
+                raise ValueError("Only technical terminal states may have an execution error")
+            if self.execution_error_code not in EXECUTION_ERROR_CODES:
+                raise ValueError("Execution error must be an allowlisted code")
         if self.execution_state != "COMPLETED" and self.decision is not None:
             raise ValueError("Only a completed analysis may have a business decision")
         if self.execution_state == "COMPLETED" and self.decision is None:

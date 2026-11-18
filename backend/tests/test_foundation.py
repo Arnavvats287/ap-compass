@@ -161,7 +161,8 @@ def test_health_and_repeat_startup(tmp_path):
             response = client.get('/api/health')
             assert response.status_code == 200
             assert response.json() == {'status':'ok','service':'ap-compass','version':'0.1.0','database':'ok'}
-            assert client.post('/api/runs').status_code in (404,405)
+            # Phase 4 adds uploads; a request without multipart content is rejected.
+            assert client.post('/api/runs').status_code == 415
     engine = create_db_engine(path)
     try:
         assert len(snapshot(engine)['prior_billed_invoice']) == 3
