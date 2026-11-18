@@ -1,8 +1,8 @@
-# AP Compass — Project Memory (living handoff)
+# AP Compass â€” Project Memory (living handoff)
 
 **Last reviewed:** 2026-11-19 (IST)
-**Repository status:** Phase 01 local acceptance PASS; 30 tests, frontend build, real health/proxy/browser checks, seed/oracle/hygiene verified. Architectural review pending.
-**Current authorized segment:** `01 FOUNDATION` only.  
+**Repository status:** Phase 01 accepted by user review. Phase 02 local acceptance PASS: 129 tests (30 foundation + 99 domain), frontend regression build and oracle/hygiene pass; architectural review pending.
+**Current authorized segment:** `02 FINANCE ENGINE` only; stop at review gate.
 **Deadline:** Saturday 2026-11-21 (IST); target Friday evening feature freeze.  
 **Maintainers:** Builder owns product decisions; Codex implements a single authorized segment; ChatGPT reviews segment evidence and returns the next prompt.
 
@@ -10,7 +10,7 @@
 
 ## North star
 
-Build **AP Compass — Invoice Operations & Exception Resolution** for Zamp AI Solutions Associate PS-1. The product is a finance operations workstation for an AP analyst: real invoice PDF → real extraction → authoritative vendor/PO checks → deterministic decision → evidence, next action/owner, live stage history and a usable dashboard. The buyer should see what happened, why, how much is affected, and who acts next. **No payment/posting authority.**
+Build **AP Compass â€” Invoice Operations & Exception Resolution** for Zamp AI Solutions Associate PS-1. The product is a finance operations workstation for an AP analyst: real invoice PDF â†’ real extraction â†’ authoritative vendor/PO checks â†’ deterministic decision â†’ evidence, next action/owner, live stage history and a usable dashboard. The buyer should see what happened, why, how much is affected, and who acts next. **No payment/posting authority.**
 
 Zamp's required deliverables: a **live, runnable process** and a **five-minute-or-shorter demo video**. Show actual stages as they execute, past runs/statuses/outputs, a happy path, and meaningful nontrivial edge cases. The official PDF is the submission authority; `docs/REFERENCE_SPEC_V3.md` is background design, not automatic feature authorization.
 
@@ -40,12 +40,12 @@ Zamp's required deliverables: a **live, runnable process** and a **five-minute-o
 
 Seed: **6 vendors, 7 purchase orders, 3 prior billed invoices**. Fixture manifest: **10 expected scenarios**. Generate **4 native-text PDFs in Segment 01** only. Complete edge-case PDFs after core pipeline is working.
 
-Minimum happy path: `HAPPY_CLEAN`, `HAPPY_PARTIAL` (partial invoice is within remaining PO authorization). Critical business regressions: `OVERBILLED_PARTIAL`, `DUPLICATE_REISSUED`, `AMBIGUOUS_PO`; later scanned conflicting total, changed bank instruction, unknown vendor and injection tests. Final 2–4 showcased edge cases are **not fully frozen**: preserve the capabilities now and choose one creative scenario with the builder after MVP. See `docs/EDGE_CASE_BACKLOG.md`.
+Minimum happy path: `HAPPY_CLEAN`, `HAPPY_PARTIAL` (partial invoice is within remaining PO authorization). Critical business regressions: `OVERBILLED_PARTIAL`, `DUPLICATE_REISSUED`, `AMBIGUOUS_PO`; later scanned conflicting total, changed bank instruction, unknown vendor and injection tests. Final 2â€“4 showcased edge cases are **not fully frozen**: preserve the capabilities now and choose one creative scenario with the builder after MVP. See `docs/EDGE_CASE_BACKLOG.md`.
 
 ## Segments and dependency gates
 
-- `01 FOUNDATION`: local acceptance PASS; typed contracts, exact seed, health API, UI shell, four native PDFs and 30 tests verified; awaiting architectural review.
-- `02 FINANCE ENGINE`: pure domain logic, unit/regression tests; requires passing 01.
+- `01 FOUNDATION`: accepted by user architectural review; checkpoint `phase-01-foundation` unchanged.
+- `02 FINANCE ENGINE`: local acceptance PASS; 99 domain tests and 129 full-suite tests verified; awaiting architectural review.
 - `03 DOCUMENT ENGINE`: real PDFs, Gemini, evidence, safe errors; requires passing 01. **Can run parallel with 02 only in isolated ownership/worktrees**.
 - `04 ORCHESTRATION + API`: real persisted execution; requires passing 02 and 03.
 - `05 OPERATIONS UI`: live dashboard/workspace against actual API; shell can start earlier, final integration after 04.
@@ -71,13 +71,15 @@ Read `docs/SEGMENTS_AND_PARALLELISM.md` for ownership, scope cuts and acceptance
 
 ## Last handoff
 
-**Current task:** Phase 01 foundation complete locally; STOP for architectural review.
-**Evidence:** 30 tests pass (1 third-party deprecation warning); production build, both local servers, HTTP health/proxy,
-browser navigation, static oracle and 11 Git exclusions pass. Four PDFs parsed and visually inspected.
-Seed is exactly 6 vendors, 7 POs/7 lines, 3 prior billed records; idempotence, drift rejection and run/ledger isolation tested.
-**Repository:** `codex/phase-01-foundation`; existing `Arnavvats287/ap-compass` remote confirmed; verified implementation
-`ca87833801d646b7c028f858704b49880a9034de`. Final checkpoint reference `phase-01-foundation` includes handoff and Git PDF attributes.
-Push outcome is recorded in final chat after commit. See `docs/PHASE_01_REPORT.md` for commands, limits and contract mappings.
-**Known limits:** Docker/hosting/model entitlement unverified; no extraction, finance engines or orchestration; no end-to-end decisions.
-Official seven-page brief read from Downloads. No financial oracle/accepted decisions changed. No agents used.
-**Next authorized action:** Review or bounded Phase 1 repair only; do not start 02/03 without explicit authorization.
+**Current task:** Phase 02 pure financial engine complete locally; STOP for architectural review.
+**Evidence:** 129 tests pass (30 foundation + 99 domain), zero failures, one pre-existing deprecation warning.
+All ten synthetic manifest scenarios plus price at 5% match expected decisions. No Gemini/PDF extraction claimed.
+Seed validator, Git hygiene, pip check and unchanged frontend build pass. A real seeded SQLite DB and all authority
+rows/snapshots remain identical after 20 evaluations with DB/network blocked. Adaptive Decimal precision regression passes.
+**Repository:** `codex/phase-02-finance-engine`, existing `Arnavvats287/ap-compass` remote; checkpoint reference
+`phase-02-finance-engine` (resolve tag for exact final SHA). Phase 1 remains `12e4a5229903213017a852507d049133a1a7b871`.
+Publication result is reported in final chat after commit. See `docs/PHASE_02_REPORT.md` and `docs/FINANCE_ENGINE.md`.
+**Known limits:** caller must provide complete trusted authority and genuine source verification. Exact item-code
+mapping only; possible-duplicate review heuristic documented in ADR-014. No schema/contract/seed/DB/API/UI changes.
+No model calls, OCR, uploads, orchestration, human approval, deployment work or agents. Nonzero overrun policy is unsupported.
+**Next authorized action:** Architectural review or bounded Phase 2 repair only; Phase 3 is not authorized.

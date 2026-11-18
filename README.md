@@ -1,8 +1,21 @@
 # AP Compass
 
 AI-assisted Invoice Operations & Exception Resolution for Zamp ASA PS-1.
-**Phase 1 foundation only. Awaiting architectural review.** Deadline: November 21, 2026 (IST).
+**Phase 2 pure financial engine implemented; awaiting architectural review.** Deadline: November 21, 2026 (IST).
 All supplied vendors, procurement records, billed invoices and fixture PDFs are synthetic.
+
+## Pure financial engine (Phase 2)
+
+Use `from app.domain import build_context, evaluate` from the backend Python path. Supply immutable typed
+invoice facts, trusted vendor/PO/billed snapshots and PolicyV1; no database or provider call occurs during evaluation.
+See `docs/FINANCE_ENGINE.md` for evidence keys, rule catalog, trust requirements and deterministic matching.
+Synthetic manifest facts are test inputs, not actual extraction results. The UI remains the Phase 1 shell.
+
+```powershell
+.venv/Scripts/python -m pytest -c backend/pytest.ini backend/tests -q --basetemp tmp/pytest-phase02-final
+```
+
+Verified: 129 tests (30 foundation + 99 domain), zero failures. See `docs/PHASE_02_REPORT.md`.
 
 ## Local setup (PowerShell, repository root)
 
@@ -72,7 +85,8 @@ No tests require network, provider keys, or paid services once dependencies are 
 - Idempotent seed: 6 vendors, 7 POs/7 lines, 3 prior billed invoices; drift rejected and rolled back.
 - React/TypeScript/Vite/Tailwind/Lucide shell, working navigation, disabled and honestly labeled processing CTA.
 - Four native-text PDFs in `tests/fixtures`, generated directly from the untouched fixture manifest.
-- Module boundaries only for matching, rules, decisions, documents, AI and orchestration.
+- Pure matching, financial reconciliation, duplicate/bank/evidence controls and severity-based decisions.
+- Document, AI and orchestration boundaries remain unimplemented.
 
 PO balances come exclusively from authorized POs minus prior billed history. Remaining net/qty:
 
@@ -90,8 +104,8 @@ These are synthetic authoritative seed balances, not analysis results or dashboa
 
 ## Boundaries and limitations
 
-No upload, extraction, matching, financial evaluator, run workflow, dashboard aggregates, model calls,
-payment/posting, auth or deployment exists. Expected fixture outcomes remain expectations, not measured decisions.
+No upload, extraction, run workflow, dashboard aggregates, model calls,
+payment/posting, auth or deployment exists. Pure-engine decisions are tested against synthetic oracle facts; end-to-end PDF/extraction decisions remain unverified.
 TanStack Query and shadcn/ui are deferred until server-state views or reusable interactive controls need them;
 the foundation has one health fetch and native accessible controls. No UI framework generator is required.
 `create_all` is the initial schema bootstrap, not a migration system. Future schema evolution requires additive migrations.
@@ -100,4 +114,4 @@ Direct database administration can change records; immutability here means no an
 not a claim that SQLite is tamper-proof.
 
 See `docs/FOUNDATION_ARCHITECTURE.md`, `docs/DEPLOYMENT.md`, and `docs/PHASE_01_REPORT.md`.
-Stop after Phase 1; later work requires explicit authorization.
+Stop after Phase 2; later work requires explicit authorization.

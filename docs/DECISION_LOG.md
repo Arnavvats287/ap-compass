@@ -1,4 +1,4 @@
-# AP Compass — Decision log
+# AP Compass â€” Decision log
 
 Record deliberate **product, business-rule, contract and architecture changes**, not every code edit. This file protects us against unplanned architecture churn. Existing accepted rules are not up for independent Codex reinterpretation.
 
@@ -12,7 +12,7 @@ Record deliberate **product, business-rule, contract and architecture changes**,
 | ADR-006 | ACCEPTED | Business decision independent of execution failure; real persisted stage events | Honest live execution |
 | ADR-007 | ACCEPTED | Isolated pure rule evaluators, policy version snapshots, additive contracts | Tolerance and future policy changes without cascading rewrites |
 | ADR-008 | ACCEPTED | Seven sequential review gates; 02 and 03 may run in parallel after 01 with separate ownership | Speed without integration conflict |
-| ADR-009 | ACCEPTED | Customer-value UI: decision → evidence → responsible party → next action; dashboard + queue/history | Nontechnical finance stakeholder can act |
+| ADR-009 | ACCEPTED | Customer-value UI: decision â†’ evidence â†’ responsible party â†’ next action; dashboard + queue/history | Nontechnical finance stakeholder can act |
 | ADR-010 | DEFERRED | Interactive Confirm PO + re-evaluation | High signal after MVP, not required for core |
 | ADR-011 | REJECTED FOR SUBMISSION | Learned auto-approval hints, broad batch inbox, big agent framework, ERP posting, elaborate analytics | Too risky/large for 2.5-day build |
 | ADR-012 | PROVISIONAL | Exact Gemini model ID and host | Select only from tested account/deployment evidence |
@@ -22,7 +22,7 @@ Record deliberate **product, business-rule, contract and architecture changes**,
 
 When proposing a change, append a short entry with:
 
-- **ID / Date / Requester / Status:** PROPOSED → ACCEPTED or REJECTED.
+- **ID / Date / Requester / Status:** PROPOSED â†’ ACCEPTED or REJECTED.
 - **Business behavior:** What user-visible outcome changes? Why?
 - **Invariant impact:** What hard safety rule still applies?
 - **Contracts/data needed:** Is it a policy-only change, an added finding, new optional extraction field, or a genuine breaking change?
@@ -32,3 +32,18 @@ When proposing a change, append a short entry with:
 - **Approval:** Builder accepts before code or Codex touches shared types.
 
 Do not rewrite past records to pretend a previous design was never chosen. Record a superseding entry.
+
+
+## ADR-014 — Phase 2 possible-duplicate review heuristic
+
+- **Date / authorization / status:** 2026-11-19; Phase 2 explicitly authorizes deterministic possible-duplicate
+  review findings. IMPLEMENTED FOR PHASE 2 REVIEW; not a change to an accepted hard invariant.
+- **Business behavior:** A nonexact invoice-number separator variant for the same canonical vendor, or the same
+  vendor/PO/currency/net within seven calendar days, produces POSSIBLE_DUPLICATE review. It never proves a duplicate.
+- **Rationale:** Transparent, reproducible signals using existing facts, without fuzzy identity, confidence or model judgments.
+- **Invariant impact:** Exact billed duplicates always block; value/quantity ceilings remain independent; no authority writes.
+- **Contracts/data:** No extension or seed change. Implementation: domain/controls.py; tests: test_finance_engine.py.
+- **Acceptance:** Separator variant -> review; equal business facts at seven days -> review, at eight days -> no such signal;
+  known exact duplicate -> block at every tested price tolerance. All other required controls still run.
+- **Review/rollback:** Reviewer may adjust the heuristic through CHANGE_RULE_PROTOCOL with a failing regression first.
+  Removing this review-only heuristic does not remove exact-duplicate or financial controls.
