@@ -1,0 +1,237 @@
+{
+  "spec_version": "seed-v1",
+  "description": "Fictional INR net-of-tax procurement data. Not real suppliers or bank accounts.",
+  "vendors": [
+    {
+      "id": "V-MER",
+      "name": "Meridian Cloud Pvt Ltd",
+      "aliases": [
+        "Meridian Cloud Ltd."
+      ],
+      "approved": true
+    },
+    {
+      "id": "V-NOR",
+      "name": "Northstar Supplies",
+      "aliases": [],
+      "approved": true
+    },
+    {
+      "id": "V-AST",
+      "name": "Aster Systems",
+      "aliases": [],
+      "approved": true
+    },
+    {
+      "id": "V-KAV",
+      "name": "Kaveri Logistics",
+      "aliases": [],
+      "approved": true
+    },
+    {
+      "id": "V-BRI",
+      "name": "Brightpath Consulting",
+      "aliases": [],
+      "approved": true,
+      "verified_bank": {
+        "account": "000000001133",
+        "ifsc": "DEMO0000001"
+      }
+    },
+    {
+      "id": "V-ORI",
+      "name": "Orion Office Products",
+      "aliases": [],
+      "approved": true
+    }
+  ],
+  "purchase_orders": [
+    {
+      "id": "PO-1042",
+      "vendor_id": "V-MER",
+      "status": "OPEN",
+      "currency": "INR",
+      "po_date": "2026-09-15",
+      "lines": [
+        {
+          "item_code": "MC-CLOUD-01",
+          "description": "Cloud hosting service",
+          "ordered_qty": "40",
+          "unit_price_net": "5000",
+          "authorized_net": "200000"
+        }
+      ],
+      "authorized_net": "200000"
+    },
+    {
+      "id": "PO-1057",
+      "vendor_id": "V-MER",
+      "status": "OPEN",
+      "currency": "INR",
+      "po_date": "2026-09-15",
+      "lines": [
+        {
+          "item_code": "MC-SUPPORT-01",
+          "description": "Cloud infrastructure support",
+          "ordered_qty": "30",
+          "unit_price_net": "6000",
+          "authorized_net": "180000"
+        }
+      ],
+      "authorized_net": "180000"
+    },
+    {
+      "id": "PO-2010",
+      "vendor_id": "V-NOR",
+      "status": "OPEN",
+      "currency": "INR",
+      "po_date": "2026-09-15",
+      "lines": [
+        {
+          "item_code": "NS-CHAIR-01",
+          "description": "Office chairs",
+          "ordered_qty": "30",
+          "unit_price_net": "1000",
+          "authorized_net": "30000"
+        }
+      ],
+      "authorized_net": "30000"
+    },
+    {
+      "id": "PO-3015",
+      "vendor_id": "V-AST",
+      "status": "OPEN",
+      "currency": "INR",
+      "po_date": "2026-09-15",
+      "lines": [
+        {
+          "item_code": "AS-SERVICE-01",
+          "description": "Managed IT services",
+          "ordered_qty": "40",
+          "unit_price_net": "5000",
+          "authorized_net": "200000"
+        }
+      ],
+      "authorized_net": "200000"
+    },
+    {
+      "id": "PO-4002",
+      "vendor_id": "V-KAV",
+      "status": "OPEN",
+      "currency": "INR",
+      "po_date": "2026-09-15",
+      "lines": [
+        {
+          "item_code": "KL-FREIGHT-01",
+          "description": "Freight services",
+          "ordered_qty": "10",
+          "unit_price_net": "10000",
+          "authorized_net": "100000"
+        }
+      ],
+      "authorized_net": "100000"
+    },
+    {
+      "id": "PO-5001",
+      "vendor_id": "V-BRI",
+      "status": "OPEN",
+      "currency": "INR",
+      "po_date": "2026-09-15",
+      "lines": [
+        {
+          "item_code": "BP-ADVISORY-01",
+          "description": "Advisory services",
+          "ordered_qty": "8",
+          "unit_price_net": "10000",
+          "authorized_net": "80000"
+        }
+      ],
+      "authorized_net": "80000"
+    },
+    {
+      "id": "PO-6001",
+      "vendor_id": "V-ORI",
+      "status": "OPEN",
+      "currency": "INR",
+      "po_date": "2026-09-15",
+      "lines": [
+        {
+          "item_code": "OR-SUPPLY-01",
+          "description": "Office supplies",
+          "ordered_qty": "50",
+          "unit_price_net": "1000",
+          "authorized_net": "50000"
+        }
+      ],
+      "authorized_net": "50000"
+    }
+  ],
+  "prior_billed_invoices": [
+    {
+      "id": "BILLED-MER-001",
+      "invoice_number": "MER-2026-001",
+      "vendor_id": "V-MER",
+      "po_id": "PO-1042",
+      "status": "BILLED",
+      "invoice_date": "2026-10-10",
+      "currency": "INR",
+      "net": "120000",
+      "tax": "21600.00",
+      "gross": "141600.00",
+      "lines": [
+        {
+          "item_code": "MC-CLOUD-01",
+          "qty": "24",
+          "unit_price_net": "5000",
+          "line_net": "120000"
+        }
+      ]
+    },
+    {
+      "id": "BILLED-AST-001",
+      "invoice_number": "AST-2026-001",
+      "vendor_id": "V-AST",
+      "po_id": "PO-3015",
+      "status": "BILLED",
+      "invoice_date": "2026-10-12",
+      "currency": "INR",
+      "net": "175000",
+      "tax": "31500.00",
+      "gross": "206500.00",
+      "lines": [
+        {
+          "item_code": "AS-SERVICE-01",
+          "qty": "35",
+          "unit_price_net": "5000",
+          "line_net": "175000"
+        }
+      ]
+    },
+    {
+      "id": "BILLED-NOR-001",
+      "invoice_number": "NS-2026-0318",
+      "vendor_id": "V-NOR",
+      "po_id": "PO-2010",
+      "status": "BILLED",
+      "invoice_date": "2026-10-15",
+      "currency": "INR",
+      "net": "5000",
+      "tax": "900.00",
+      "gross": "5900.00",
+      "lines": [
+        {
+          "item_code": "NS-CHAIR-01",
+          "qty": "5",
+          "unit_price_net": "1000",
+          "line_net": "5000"
+        }
+      ]
+    }
+  ],
+  "seed_rules": {
+    "analysis_never_consumes_balance": true,
+    "currency": "INR",
+    "rounding_allowance": "1.00",
+    "po_overrun_allowance": "0.00"
+  }
+}
