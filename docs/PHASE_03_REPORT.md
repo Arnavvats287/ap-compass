@@ -1,5 +1,7 @@
 # Phase 3 — Real document extraction review report
 
+> Historical report. The user revised acceptance in Phase 3.1: one working provider is required and escalation is optional/disabled. See PHASE_03_1_REPORT.md and ADR-016 for the stabilization results; earlier failures below are preserved.
+
 **Date:** 2026-11-19 (IST). **Scope:** Phase 3 only. **Gate:** PARTIAL — offline/regression and primary live checks pass;
 configured stronger-model inference remains unavailable. No passing phase-03-document-engine tag is created.
 

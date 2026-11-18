@@ -314,6 +314,7 @@ def test_sdk_error_mapping_is_sanitized(code, expected, retry):
 
 
 def test_environment_configuration_allows_only_two_models(monkeypatch):
+    monkeypatch.setenv("GEMINI_ESCALATION_ENABLED", "true")
     monkeypatch.setenv("GEMINI_API_KEY", "TEST_ONLY_NEVER_REAL_KEY")
     monkeypatch.setenv("GEMINI_SCAN_MODEL", "third-model")
     with pytest.raises(ExtractionError, match="CONFIGURATION"): GeminiSettings.from_environment()
@@ -452,6 +453,7 @@ def test_private_schema_bounds_still_apply_after_generation_simplification():
 
 
 def test_configured_adapter_wires_only_environment_models(monkeypatch):
+    monkeypatch.setenv("GEMINI_ESCALATION_ENABLED", "true")
     from app.ai import gemini
     seen=[]
     async def get(**kwargs):
@@ -467,7 +469,7 @@ def test_configured_adapter_wires_only_environment_models(monkeypatch):
     monkeypatch.setattr(gemini,'make_client',lambda settings:client)
     result=asyncio.run(gemini.extract_configured_pdf((ROOT/'tests/fixtures/HAPPY_CLEAN.pdf').read_bytes()))
     assert result.metadata.model_calls==1
-    assert seen==['gemini-3.5-flash-lite','gemini-3.6-flash','gemini-3.5-flash-lite']
+    assert seen==['gemini-3.5-flash-lite','gemini-3.5-flash-lite']  # Unused optional metadata is lazy.
 
 
 def test_buyer_heading_cannot_verify_supplier_identity():
@@ -502,3 +504,230 @@ def test_visible_bank_instructions_cannot_be_silently_declared_absent():
     with pytest.raises(ExtractionError,match='INVALID_RESPONSE') as error:
         run(native_case(CASES['BANK_CHANGED']),provider)
     assert error.value.calls==2
+
+
+@pytest.mark.parametrize('case_id', ['HAPPY_CLEAN', 'SCAN_CONFLICT'])
+def test_primary_only_never_constructs_or_checks_optional_model(monkeypatch, case_id):
+    from app.ai import gemini
+    seen, constructed = [], []
+    async def get(**kwargs):
+        seen.append(('metadata',kwargs['model']))
+        assert kwargs['model']=='gemini-3.5-flash-lite'
+        return SimpleNamespace(name='models/'+kwargs['model'],version='TEST_ONLY',supported_actions=['generateContent'])
+    async def generate(**kwargs):
+        seen.append(('generation',kwargs['model']))
+        return SimpleNamespace(usage_metadata=None,candidates=[],text=json.dumps(wire(case_id)),model_version='TEST_ONLY-primary')
+    async def close():pass
+    client=SimpleNamespace(aio=SimpleNamespace(models=SimpleNamespace(get=get,generate_content=generate),aclose=close),close=lambda:None)
+    real_provider=gemini.GeminiProvider
+    def provider(*args,**kwargs):
+        constructed.append(args[1])
+        return real_provider(*args,**kwargs)
+    monkeypatch.setenv('GEMINI_API_KEY','TEST_ONLY-key')
+    monkeypatch.setenv('GEMINI_ESCALATION_ENABLED','false')
+    monkeypatch.setenv('GEMINI_ESCALATION_MODEL','invalid-unused-optional-model')
+    monkeypatch.setenv('GEMINI_ESCALATION_THINKING_LEVEL','invalid-unused-setting')
+    monkeypatch.setenv('GEMINI_SCAN_MODEL','invalid-unused-scan-override')
+    monkeypatch.setattr(gemini,'make_client',lambda settings:client)
+    monkeypatch.setattr(gemini,'GeminiProvider',provider)
+    result=asyncio.run(gemini.extract_configured_pdf((ROOT/'tests/fixtures'/(case_id+'.pdf')).read_bytes()))
+    assert constructed==['gemini-3.5-flash-lite']
+    assert seen==[('metadata','gemini-3.5-flash-lite'),('generation','gemini-3.5-flash-lite')]
+    assert result.metadata.model_calls==1
+    if case_id=='SCAN_CONFLICT': assert result.invoice.lines[0].net is None
+
+
+@pytest.mark.parametrize('condition',['incomplete','uncertain'])
+@pytest.mark.parametrize('error_code',['PROVIDER_UNAVAILABLE','PROVIDER_TIMEOUT','RATE_LIMIT'])
+def test_valid_primary_survives_optional_outage_without_evidence_upgrade(native_documents,condition,error_code):
+    output=wire()
+    if condition=='incomplete': output['tax']=None
+    else: output['evidence']=[]
+    invoice,claims=parse_response(json.dumps(output))
+    expected=ground_evidence(invoice,claims,native_documents['HAPPY_CLEAN'])
+    primary=FakeProvider([json.dumps(output)])
+    stronger=FakeProvider([ExtractionError(error_code,provider_status=429 if error_code=='RATE_LIMIT' else 503 if error_code=='PROVIDER_UNAVAILABLE' else None)],model='TEST_ONLY-strong')
+    result=run((ROOT/'tests/fixtures/HAPPY_CLEAN.pdf').read_bytes(),primary,escalation_provider=stronger)
+    assert result.invoice==expected
+    assert result.metadata.retained_primary is True
+    assert result.metadata.selected_model_id==primary.model_id
+    assert result.metadata.model_calls==2 and len(result.metadata.attempts)==2
+    assert result.metadata.attempts[0].error_code is None
+    assert result.metadata.attempts[1].error_code==error_code
+    assert result.metadata.attempts[1].actual_model_id is None
+    assert result.metadata.attempts[1].usage==TokenUsage()
+    assert result.metadata.elapsed_ms>=sum(a.elapsed_ms for a in result.metadata.attempts)
+    assert evaluate(build_context(result.invoice,VENDORS,POS,HISTORY),PolicyV1()).outcome=='REVIEW_REQUIRED'
+
+
+def test_retained_uncertain_primary_can_still_be_business_blocked():
+    output=wire('OVERBILLED_PARTIAL')
+    output['evidence']=[]
+    primary=FakeProvider([json.dumps(output)])
+    stronger=FakeProvider([ExtractionError('RATE_LIMIT')],model='TEST_ONLY-strong')
+    result=run((ROOT/'tests/fixtures/OVERBILLED_PARTIAL.pdf').read_bytes(),primary,escalation_provider=stronger)
+    assert result.metadata.retained_primary
+    assert evaluate(build_context(result.invoice,VENDORS,POS,HISTORY),PolicyV1()).outcome=='BLOCKED'
+
+
+@pytest.mark.parametrize('code',['PROVIDER_UNAVAILABLE','PROVIDER_TIMEOUT','RATE_LIMIT'])
+def test_unusable_primary_does_not_become_successful_fallback(code):
+    primary=FakeProvider(['invalid JSON'])
+    stronger=FakeProvider([ExtractionError(code)],model='TEST_ONLY-strong')
+    with pytest.raises(ExtractionError) as error:
+        run((ROOT/'tests/fixtures/HAPPY_CLEAN.pdf').read_bytes(),primary,escalation_provider=stronger)
+    assert error.value.code==code and error.value.calls==2
+
+
+def test_scan_unstated_line_net_cleared_without_fixing_stated_gross():
+    fake=FakeProvider([json.dumps(wire('SCAN_CONFLICT',line_net=True))])
+    result=run((ROOT/'tests/fixtures/SCAN_CONFLICT.pdf').read_bytes(),fake)
+    assert result.invoice.lines[0].net is None
+    assert result.invoice.total==Decimal('86200')
+    assert result.invoice.net+result.invoice.tax==Decimal('82600')
+    assert result.invoice.total-(result.invoice.net+result.invoice.tax)==Decimal('3600')
+    ref=next(r for r in result.invoice.evidence if r.field=='lines[0].net')
+    assert ref.normalized_value is None and ref.evidence_state!='NATIVE_VERIFIED'
+    assert ref.raw_value=='70000'  # Keep the untrusted claim for audit; not an invoice-stated fact.
+    assert all(r.evidence_state!='NATIVE_VERIFIED' for r in result.invoice.evidence)
+    decision=evaluate(build_context(result.invoice,VENDORS,POS,HISTORY),PolicyV1())
+    assert decision.outcome=='REVIEW_REQUIRED'
+    arithmetic=next(f for f in decision.findings if f.code=='TOTAL_RECONCILIATION_FAILED')
+    assert {v.name:v.value for v in arithmetic.values}['difference']=='3600'
+
+
+def test_primary_only_is_default_even_with_stale_optional_configuration(monkeypatch):
+    monkeypatch.setenv('GEMINI_API_KEY','TEST_ONLY-key')
+    monkeypatch.delenv('GEMINI_ESCALATION_ENABLED',raising=False)
+    monkeypatch.setenv('GEMINI_ESCALATION_MODEL','unused-invalid-value')
+    settings=GeminiSettings.from_environment()
+    assert settings.escalation_enabled is False
+    assert settings.active_models==('gemini-3.5-flash-lite',)
+
+
+@pytest.mark.parametrize('status',[503,429,'timeout'])
+def test_optional_metadata_failure_retains_primary_without_counting_generation(monkeypatch,status):
+    from app.ai import gemini
+    from google.genai import errors
+    seen=[]
+    output=wire()
+    output['evidence']=[]
+    async def get(**kwargs):
+        seen.append(('metadata',kwargs['model']))
+        if kwargs['model']=='gemini-3.6-flash':
+            if status=='timeout': raise TimeoutError()
+            raise errors.APIError(status,{'error':{'code':status,'message':'TEST_ONLY_sensitive_error'}})
+        return SimpleNamespace(name='models/'+kwargs['model'],version='TEST_ONLY',supported_actions=['generateContent'])
+    async def generate(**kwargs):
+        seen.append(('generation',kwargs['model']))
+        assert kwargs['model']=='gemini-3.5-flash-lite'
+        return SimpleNamespace(usage_metadata=None,candidates=[],text=json.dumps(output),model_version='TEST_ONLY-primary')
+    async def close():pass
+    client=SimpleNamespace(aio=SimpleNamespace(models=SimpleNamespace(get=get,generate_content=generate),aclose=close),close=lambda:None)
+    monkeypatch.setenv('GEMINI_API_KEY','TEST_ONLY-key')
+    monkeypatch.setenv('GEMINI_ESCALATION_ENABLED','true')
+    monkeypatch.setenv('GEMINI_ESCALATION_MODEL','gemini-3.6-flash')
+    monkeypatch.setenv('GEMINI_SCAN_MODEL','gemini-3.5-flash-lite')
+    monkeypatch.setattr(gemini,'make_client',lambda settings:client)
+    result=asyncio.run(gemini.extract_configured_pdf((ROOT/'tests/fixtures/HAPPY_CLEAN.pdf').read_bytes()))
+    assert result.metadata.retained_primary
+    assert result.metadata.model_calls==1  # Optional metadata request never reached generation.
+    assert len(result.metadata.attempts)==2
+    assert result.metadata.attempts[-1].inference_called is False
+    assert result.metadata.attempts[-1].actual_model_id is None
+    assert result.metadata.attempts[-1].error_code=={503:'PROVIDER_UNAVAILABLE',429:'RATE_LIMIT','timeout':'PROVIDER_TIMEOUT'}[status]
+    assert seen==[('metadata','gemini-3.5-flash-lite'),('generation','gemini-3.5-flash-lite'),('metadata','gemini-3.6-flash')]
+
+
+def test_empty_structured_primary_is_unusable_not_a_review_result():
+    output=wire()
+    for key in output:
+        output[key]=[] if key in ('lines','evidence') else None
+    provider=FakeProvider([json.dumps(output),json.dumps(output)])
+    with pytest.raises(ExtractionError,match='INVALID_RESPONSE') as error:
+        run((ROOT/'tests/fixtures/HAPPY_CLEAN.pdf').read_bytes(),provider)
+    assert error.value.calls==2
+
+
+def test_primary_outage_without_any_facts_remains_technical_failure():
+    provider=FakeProvider([ExtractionError('PROVIDER_UNAVAILABLE',retryable=True),ExtractionError('PROVIDER_UNAVAILABLE',retryable=True)])
+    stronger=FakeProvider(model='TEST_ONLY-strong')
+    with pytest.raises(ExtractionError,match='PROVIDER_UNAVAILABLE') as error:
+        run((ROOT/'tests/fixtures/HAPPY_CLEAN.pdf').read_bytes(),provider,escalation_provider=stronger)
+    assert error.value.calls==2 and not stronger.calls
+
+
+def test_retained_primary_does_not_log_optional_provider_payload(caplog,capsys):
+    secret,bank='TEST_ONLY_SECRET_DO_NOT_LOG','000000009999'
+    output=wire()
+    output['evidence']=[]
+    error=ExtractionError('RATE_LIMIT')
+    error.args=(secret+bank,)
+    result=run((ROOT/'tests/fixtures/HAPPY_CLEAN.pdf').read_bytes(),FakeProvider([json.dumps(output)]),
+               escalation_provider=FakeProvider([error],model='TEST_ONLY-strong'))
+    captured=caplog.text+str(capsys.readouterr())+repr(result)
+    assert secret not in captured and bank not in captured
+    assert result.metadata.attempts[-1].error_code=='RATE_LIMIT'
+
+
+def test_mixed_document_keeps_independently_verified_native_line_net():
+    with pymupdf.open(stream=(ROOT/'tests/fixtures/HAPPY_CLEAN.pdf').read_bytes(),filetype='pdf') as native, pymupdf.open(stream=(ROOT/'tests/fixtures/SCAN_CONFLICT.pdf').read_bytes(),filetype='pdf') as scan:
+        native.insert_pdf(scan)
+        document=inspect_pdf(native.tobytes())
+    invoice,claims=parse_response(json.dumps(wire()))
+    grounded=ground_evidence(invoice,claims,document)
+    assert grounded.lines[0].net==Decimal('48000')
+    assert next(ref for ref in grounded.evidence if ref.field=='lines[0].net').evidence_state=='NATIVE_VERIFIED'
+
+
+def test_invalid_escalation_flag_cannot_accidentally_enable_calls(monkeypatch):
+    monkeypatch.setenv('GEMINI_API_KEY','TEST_ONLY-key')
+    monkeypatch.setenv('GEMINI_ESCALATION_ENABLED','tru')
+    with pytest.raises(ExtractionError,match='CONFIGURATION'):GeminiSettings.from_environment()
+
+
+
+def test_enabled_configured_escalation_still_uses_same_schema(monkeypatch):
+    from app.ai import gemini
+    seen,schemas=[],[]
+    partial=wire()
+    partial['net']=None
+    async def get(**kwargs):
+        seen.append(('metadata',kwargs['model']))
+        return SimpleNamespace(name='models/'+kwargs['model'],version='TEST_ONLY',supported_actions=['generateContent'])
+    async def generate(**kwargs):
+        seen.append(('generation',kwargs['model']))
+        schemas.append(kwargs['config'].response_json_schema)
+        payload=partial if kwargs['model']=='gemini-3.5-flash-lite' else wire()
+        return SimpleNamespace(usage_metadata=None,candidates=[],text=json.dumps(payload),model_version='TEST_ONLY-'+kwargs['model'])
+    async def close():pass
+    client=SimpleNamespace(aio=SimpleNamespace(models=SimpleNamespace(get=get,generate_content=generate),aclose=close),close=lambda:None)
+    monkeypatch.setenv('GEMINI_API_KEY','TEST_ONLY-key')
+    monkeypatch.setenv('GEMINI_ESCALATION_ENABLED','true')
+    monkeypatch.setenv('GEMINI_SCAN_MODEL','gemini-3.5-flash-lite')
+    monkeypatch.setattr(gemini,'make_client',lambda settings:client)
+    result=asyncio.run(gemini.extract_configured_pdf((ROOT/'tests/fixtures/HAPPY_CLEAN.pdf').read_bytes()))
+    assert seen==[('metadata','gemini-3.5-flash-lite'),('generation','gemini-3.5-flash-lite'),('metadata','gemini-3.6-flash'),('generation','gemini-3.6-flash')]
+    assert result.metadata.model_calls==2
+    assert result.metadata.selected_model_id=='gemini-3.6-flash'
+    assert not result.metadata.retained_primary
+    assert schemas[0]==schemas[1]
+    assert all(ref.evidence_state=='NATIVE_VERIFIED' for ref in result.invoice.evidence)
+
+
+def test_metadata_deadline_does_not_count_an_unstarted_inference():
+    async def get(**kwargs):
+        await asyncio.sleep(5)
+    async def generate(**kwargs):
+        raise AssertionError('Generation must not start after metadata timeout')
+    client=SimpleNamespace(aio=SimpleNamespace(models=SimpleNamespace(get=get,generate_content=generate)))
+    output=wire()
+    output['tax']=None
+    primary=FakeProvider([json.dumps(output)])
+    optional=GeminiProvider(client,'TEST_ONLY-strong',verify_access=True)
+    result=run((ROOT/'tests/fixtures/HAPPY_CLEAN.pdf').read_bytes(),primary,
+               escalation_provider=optional,model_timeout_seconds=.02)
+    assert result.metadata.retained_primary
+    assert result.metadata.model_calls==1
+    assert result.metadata.attempts[-1].inference_called is False
+    assert result.metadata.attempts[-1].error_code=='PROVIDER_TIMEOUT'

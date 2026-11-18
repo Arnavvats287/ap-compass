@@ -11,7 +11,7 @@ import httpx2
 
 from app.documents.schema import provider_schema
 from app.documents.types import DocumentInspection, ExtractionError, ProviderReply, TokenUsage
-from .provider import SYSTEM_INSTRUCTION
+from .provider import SYSTEM_INSTRUCTION, mark_inference_called
 
 
 @dataclass(frozen=True)
@@ -21,22 +21,34 @@ class GeminiSettings:
     escalation_model: str = "gemini-3.6-flash"
     scan_model: str | None = None
     escalation_thinking_level: str = "MINIMAL"
+    escalation_enabled: bool = False
+
+    @property
+    def active_models(self):
+        models = (self.primary_model, self.escalation_model) if self.escalation_enabled else (self.primary_model,)
+        return tuple(dict.fromkeys(models))
 
     @classmethod
     def from_environment(cls):
         key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
         if not key or key.startswith("replace_"):
             raise ExtractionError("CONFIGURATION")
-        settings = cls(key, os.getenv("GEMINI_PRIMARY_MODEL", "gemini-3.5-flash-lite"),
-                       os.getenv("GEMINI_ESCALATION_MODEL", "gemini-3.6-flash"),
-                       os.getenv("GEMINI_SCAN_MODEL") or None,
-                       os.getenv("GEMINI_ESCALATION_THINKING_LEVEL", "MINIMAL").upper())
-        models = (settings.primary_model, settings.escalation_model)
-        if any(not re.fullmatch(r"gemini-[a-z0-9.\-]{1,80}", model) for model in models):
+        enabled = os.getenv("GEMINI_ESCALATION_ENABLED", "false").strip().casefold()
+        if enabled not in ("true", "false"):
             raise ExtractionError("CONFIGURATION")
-        if settings.scan_model and settings.scan_model not in models:
+        primary = os.getenv("GEMINI_PRIMARY_MODEL", "gemini-3.5-flash-lite")
+        settings = cls(
+            api_key=key, primary_model=primary,
+            escalation_model=os.getenv("GEMINI_ESCALATION_MODEL", "gemini-3.6-flash"),
+            scan_model=(os.getenv("GEMINI_SCAN_MODEL") or None) if enabled == "true" else primary,
+            escalation_thinking_level=os.getenv("GEMINI_ESCALATION_THINKING_LEVEL", "MINIMAL").upper(),
+            escalation_enabled=enabled == "true",
+        )
+        if any(not re.fullmatch(r"gemini-[a-z0-9.\-]{1,80}", model) for model in settings.active_models):
+            raise ExtractionError("CONFIGURATION")
+        if settings.escalation_enabled and settings.scan_model and settings.scan_model not in settings.active_models:
             raise ExtractionError("CONFIGURATION")  # Exactly two configured models, never a third.
-        if settings.escalation_thinking_level not in ("MINIMAL", "LOW", "MEDIUM", "HIGH"):
+        if settings.escalation_enabled and settings.escalation_thinking_level not in ("MINIMAL", "LOW", "MEDIUM", "HIGH"):
             raise ExtractionError("CONFIGURATION")
         return settings
 
@@ -82,12 +94,26 @@ async def verify_model(client, model_id):
 
 
 class GeminiProvider:
-    def __init__(self, client, model_id, *, thinking_level=None):
+    def __init__(self, client, model_id, *, thinking_level=None, verify_access=False):
         self._client = client
         self.model_id = model_id
         self.thinking_level = thinking_level
+        self._verify_access = verify_access
 
     async def generate(self, document: DocumentInspection, timeout_seconds: float) -> ProviderReply:
+        mark_inference_called(False)
+        if self._verify_access:
+            try:
+                # Reserve time for generation and classify metadata-only timeout
+                # before the pipeline's whole-attempt deadline can expire.
+                await asyncio.wait_for(verify_model(self._client, self.model_id),
+                                       min(15, timeout_seconds / 2))
+            except TimeoutError:
+                raise ExtractionError("PROVIDER_TIMEOUT", inference_attempted=False) from None
+            except ExtractionError as error:
+                raise ExtractionError(error.code, retryable=error.retryable, provider_status=error.provider_status,
+                                      inference_attempted=False) from None
+            self._verify_access = False
         parts = []
         for page in document.pages:
             parts.append(types.Part.from_text(text=json.dumps({
@@ -97,6 +123,7 @@ class GeminiProvider:
             if page.image_png is not None:
                 parts.append(types.Part.from_bytes(data=page.image_png, mime_type="image/png"))
         try:
+            mark_inference_called(True)
             response = await self._client.aio.models.generate_content(
                 model=self.model_id, contents=[types.Content(role="user", parts=parts)],
                 config=types.GenerateContentConfig(
@@ -131,8 +158,8 @@ class GeminiProvider:
         return ProviderReply(response.text or "", getattr(response, "model_version", None), tokens)
 
 
-async def extract_configured_pdf(raw: bytes):
-    """Standalone in-memory adapter using the two environment-configured models.
+async def extract_configured_pdf(raw: bytes, *, max_attempts: int = 2):
+    """Standalone primary adapter with explicitly enabled, optional escalation.
 
     Environment loading is explicit at the development command/caller boundary.
     Model metadata checks establish availability of the requested API action;
@@ -142,12 +169,17 @@ async def extract_configured_pdf(raw: bytes):
     settings = GeminiSettings.from_environment()
     client = make_client(settings)
     try:
-        for model in dict.fromkeys((settings.primary_model, settings.escalation_model)):
-            await verify_model(client, model)
+        await verify_model(client, settings.primary_model)
         primary = GeminiProvider(client, settings.primary_model)
-        stronger = GeminiProvider(client, settings.escalation_model, thinking_level=settings.escalation_thinking_level)
-        scan = stronger if settings.scan_model == stronger.model_id else primary
-        return await extract_pdf(raw, primary, escalation_provider=stronger, scan_provider=scan)
+        stronger = None
+        if settings.escalation_enabled:
+            # Check optional metadata only if this provider is actually needed.
+            # Failure then preserves an already usable primary via the pipeline.
+            stronger = GeminiProvider(client, settings.escalation_model,
+                                      thinking_level=settings.escalation_thinking_level, verify_access=True)
+        scan = stronger if stronger and settings.scan_model == stronger.model_id else primary
+        return await extract_pdf(raw, primary, escalation_provider=stronger, scan_provider=scan,
+                                 max_attempts=max_attempts)
     finally:
         await client.aio.aclose()
         client.close()

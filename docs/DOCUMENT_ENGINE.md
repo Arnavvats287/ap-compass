@@ -2,7 +2,7 @@
 
 **Scope:** In-memory extraction only. No upload endpoint, persistent document storage, database writes,
 financial-rule changes, UI, worker service or run orchestration. Phase 2 contracts remain unchanged.
-**Gate:** Offline + Flash-Lite live verified; full two-model acceptance pending Flash inference availability.
+**Gate:** Revised required-provider acceptance PASS after Phase 3.1; architectural review pending. Escalation is optional and disabled (ADR-016).
 
 ## Entry points
 
@@ -56,7 +56,7 @@ A compact JSON generation schema describes one invoice and source claims. Detail
 removed from the generation grammar after a real provider rejection; they remain enforced by strict local Pydantic
 validation. No floats for money, extra fields, invalid dates, model-supplied evidence states or malformed JSON are accepted.
 Private limits: 256 KiB response, 50 lines, 260 claims, 600 characters/text, decimal strings with <=18 integer/6 fractional digits.
-Unknown source facts remain None. Optional missing line net stays None; extraction never computes it.
+Unknown source facts remain None. Optional missing line net stays None; extraction never computes it. For image/mixed input, optional line net without independently verified explicit source support is also cleared to None; its raw claim remains unverified for audit. Header totals are never repaired.
 The frozen BankInstructionsV1 cannot represent partial nullable bank subfields: incomplete bank instructions fail
 technically rather than invent digits. Clearly printed/claimed bank instructions cannot silently become bank=None.
 
@@ -82,38 +82,51 @@ Native verification establishes fidelity to the stated invoice, not approved ven
 Source verification is conservative for known labelled block layouts; arbitrary tables, locales and multi-invoice bundles
 are not claimed to have general verified coverage. The existing financial engine requires review for unverified critical scan facts.
 
-## User-authorized two-model strategy
+## Revised required primary / optional escalation (ADR-016)
 
-Configuration lives in the backend environment; `.env` is loaded explicitly by the development smoke command:
+Phase 3.1 deliberately revises acceptance: one genuinely working provider with native/image support and honest
+independent evidence handling is required. Stronger inference is optional. Earlier Flash gateway failures remain
+historical evidence; this revision does not claim Flash ever worked.
+
+Backend configuration (.env loading remains explicit):
 
 ```dotenv
 GEMINI_PRIMARY_MODEL=gemini-3.5-flash-lite
+GEMINI_ESCALATION_ENABLED=false
 GEMINI_ESCALATION_MODEL=gemini-3.6-flash
 GEMINI_SCAN_MODEL=gemini-3.5-flash-lite
 GEMINI_ESCALATION_THINKING_LEVEL=MINIMAL
 ```
 
-The key is backend-only. Before setup, models.get checks both named resources and generateContent support.
-Metadata visibility is not claimed as successful inference. No third simultaneous model is allowed; scan selection
-must be one of the two configured IDs. The scan default is provisional Flash-Lite because it alone returned usable
-results in the actual small benchmark; there is no comparative Flash accuracy claim.
+Primary-only is the default. Only primary metadata is checked and only its provider is constructed. Native and
+scanned documents use primary; stale optional model/thinking/scan overrides are ignored. The development smoke
+utility respects the same active-model set. Invalid boolean spellings fail configuration instead of enabling requests.
 
-Normal invoice: one inference. Maximum: two explicit attempts total; at most one stronger attempt, including a
-scan initially configured for the stronger model. SDK automatic retries are disabled. One 250ms-delayed retry is
-allowed for a transient primary timeout/server/transport failure. 429 quota/rate failures fail technically without
-silently borrowing the other model's quota. There is no project-wide distributed RPM/RPD scheduler in this phase;
-callers must respect the supplied project limits, and provider rate failures remain visible.
+Enabled mode retains two attempts total and one stronger attempt, the same schema and grounding, and no
+financial-outcome triggers. Optional metadata is checked lazily on use. Keep escalation disabled until genuine
+stronger inference is verified; fake-enabled tests are not live proof. No third model or provider registry.
 
-One quality escalation may follow malformed/invalid structured output, missing critical/line facts or unsupported
-native critical evidence. Both models use the identical schema and grounding code. No remaining commitment,
-duplicate, bank-master comparison, arithmetic discrepancy or financial outcome is consulted for model selection.
-An unsuccessful escalation is a technical error, not a business decision. If valid but partial/uncertain extraction
-remains after the bounded quality attempt, facts/evidence remain incomplete for the financial engine to review.
+### Usable facts and safe optional failure
 
-Per-call default timeout is 30 seconds, configurable at the adapter call site up to 45 seconds; two calls maximum.
-Parser adds at most 12 seconds. Setup metadata checks add at most 15 seconds per distinct model. Record requested/
-selected model, escalation reason, each actual reported model ID, per-attempt elapsed milliseconds/error/status,
-actual available token counters and total elapsed time. Missing token usage stays None; no costs are invented.
+A strict-schema-valid grounded extraction with meaningful facts can be incomplete or source-uncertain. If optional
+escalation then has outage, timeout or quota failure, return that exact primary snapshot with retained_primary=true,
+primary selected_model_id, and failed optional error/status/timing/usage metadata. No evidence is upgraded.
+The existing evaluator subsequently determines review/block; retaining facts is not model approval.
+
+Malformed, invalid, entirely empty or unavailable primary with no usable facts still raises a technical error.
+Optional failures outside the requested outage/timeout/quota categories remain fail-closed. No business decision
+is generated by the adapter; no facts are fabricated to hide primary failure.
+
+### Counts and bounds
+
+Normal invoice: one inference; maximum two attempts and one stronger attempt. SDK automatic retries remain off.
+Optional metadata failures have inference_called=false and do not count as generation. Request-local tracking also
+handles a whole-attempt deadline cancelling metadata before generation starts. Failed usage stays unknown, not zero.
+
+Record requested/selected model, escalation reason, retained_primary, per-attempt error/status/timing/inference_called,
+reported model ID and available tokens. The 30s default / 45s maximum per-call limit and 12s parser limit remain.
+Optional metadata gets at most 15s and half its attempt budget. No arithmetic, commitment, duplicate, bank-master
+comparison or financial REVIEW/BLOCK outcome triggers escalation. There is no distributed quota scheduler.
 
 ## Errors, secrets and verification
 
@@ -121,11 +134,12 @@ Typed errors expose allowlisted codes, attempt metadata and HTTP status only. No
 accounts, API keys, model responses or PDF content are logged. Internal result/page/reply dataclasses hide source
 payloads in repr. Parser environment excludes keys. There is no model tool or database authority.
 
-See PHASE_03_REPORT.md and PHASE_03_LIVE_RESULTS.json for exact commands, measured outputs and failures.
-205 tests pass: original 129 + 76 new offline tests. Real Flash-Lite success on HAPPY_CLEAN,
-OVERBILLED_PARTIAL and SCAN_CONFLICT; real Flash native/scan requests failed with gateway/timeouts.
-Do not claim live escalation success or general accuracy. No passing phase-03-document-engine tag is created
-while this full two-model gate remains unresolved. Phase 4 is not authorized.
+See PHASE_03_1_REPORT.md and PHASE_03_1_LIVE_RESULTS.json for current evidence: 229 tests pass, including
+all 129 foundation/finance regressions and 100 document tests. One extra real primary-only scan call returned
+line.net=None, preserved gross 86200, and the unchanged evaluator returned REVIEW_REQUIRED with discrepancy 3600.
+All scan evidence stayed unverified; zero Flash metadata/generation requests occurred in stabilization.
+Earlier genuine native successes and failed stronger calls remain in the historical Phase 3 report/results.
+No general model-accuracy or live stronger-model claim is made. Phase 4 remains unauthorized.
 
 ## Official references consulted
 

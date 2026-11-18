@@ -62,3 +62,28 @@ Do not rewrite past records to pretend a previous design was never chosen. Recor
   but tested inference returned gateway errors/timeouts, so live escalation and the full Phase 3 gate remain unresolved.
 - **Contracts/data:** No public contract, database, finance engine or manifest changes. Review evidence is in
   PHASE_03_REPORT.md and PHASE_03_LIVE_RESULTS.json; no deployment or paid service added.
+
+
+## ADR-016 — Phase 3.1 required primary provider; optional escalation
+
+- **Date / status:** 2026-11-19; ACCEPTED by the explicit Phase 3.1 stabilization request.
+- **Revised release gate:** One genuinely working extraction provider supporting native and image-only PDFs,
+  independent native evidence verification, conservative scan evidence and safe failures is required.
+  Stronger-model escalation is optional and must stay disabled until genuine stronger inference is verified.
+  This supersedes ADR-015's required two-model acceptance assumption, not its extraction-only authority boundary.
+- **Configuration:** GEMINI_ESCALATION_ENABLED=false by default. Disabled mode requires/checks/constructs only
+  the primary provider and uses it for native/scanned inputs; unused optional overrides are ignored.
+  Enabled mode keeps the two-attempt/one-stronger limit, with optional metadata checked only when needed.
+- **Usable facts versus no extraction:** A schema-valid, grounded primary with meaningful but incomplete or
+  source-uncertain facts is retained if optional escalation hits outage, timeout or quota failure. Metadata exposes
+  every failed attempt and retained_primary=true. Malformed, empty or unavailable primary without usable facts
+  still fails technically. This is fact retention, never model approval or an evidence upgrade.
+- **Honest counts:** Adapter-local inference_called distinguishes metadata-only failures from generation attempts;
+  request-local tracking handles deadline cancellation without inventing an unstarted stronger inference.
+- **Unstated scanned line net:** Without independent verification of an explicit statement, image/mixed-source
+  optional line.net remains None; its unverified raw claim may remain for audit. Header totals are untouched.
+  Independently verified native line net in a mixed document is retained. No OCR, corrected totals or zero filling.
+- **Preserved boundaries:** Same public Pydantic contracts, financial rules, procurement/billed records and fixture
+  expectations. No third model, registry, orchestration, UI or deployment. No new Flash probes in this repair.
+- **Evidence:** PHASE_03_1_REPORT.md and PHASE_03_1_LIVE_RESULTS.json. Earlier Flash failures remain historical
+  evidence; revised acceptance does not assert that stronger-model inference ever succeeded.

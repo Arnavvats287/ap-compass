@@ -1,0 +1,136 @@
+{
+  "live": true,
+  "fixture": "SCAN_CONFLICT",
+  "escalation_enabled": false,
+  "requests": [
+    {
+      "kind": "metadata",
+      "model": "gemini-3.5-flash-lite"
+    },
+    {
+      "kind": "generation",
+      "model": "gemini-3.5-flash-lite"
+    }
+  ],
+  "metadata": {
+    "requested_model_id": "gemini-3.5-flash-lite",
+    "selected_model_id": "gemini-3.5-flash-lite",
+    "escalation_reason": null,
+    "route": "image_only",
+    "page_count": 1,
+    "model_calls": 1,
+    "elapsed_ms": 3241,
+    "attempts": [
+      {
+        "number": 1,
+        "requested_model_id": "gemini-3.5-flash-lite",
+        "elapsed_ms": 2686,
+        "error_code": null,
+        "actual_model_id": "gemini-3.5-flash-lite",
+        "usage": {
+          "input_tokens": 1399,
+          "output_tokens": 914,
+          "thinking_tokens": null,
+          "total_tokens": 2313
+        },
+        "provider_http_status": null,
+        "inference_called": true
+      }
+    ],
+    "schema_version": "invoice-extraction-wire-v1",
+    "prompt_version": "invoice-facts-v1",
+    "retained_primary": false
+  },
+  "fields": {
+    "vendor_name_raw": {
+      "expected": "Kaveri Logistics",
+      "extracted": "Kaveri Logistics",
+      "match": true,
+      "evidence": "SOURCE_LOCATED_UNVERIFIED"
+    },
+    "invoice_number": {
+      "expected": "SCAN_CONFLICT-2026",
+      "extracted": "SCAN_CONFLICT-2026",
+      "match": true,
+      "evidence": "SOURCE_LOCATED_UNVERIFIED"
+    },
+    "invoice_date": {
+      "expected": "2026-11-14",
+      "extracted": "2026-11-14",
+      "match": true,
+      "evidence": "SOURCE_LOCATED_UNVERIFIED"
+    },
+    "po_reference": {
+      "expected": "PO-4002",
+      "extracted": "PO-4002",
+      "match": true,
+      "evidence": "SOURCE_LOCATED_UNVERIFIED"
+    },
+    "currency": {
+      "expected": "INR",
+      "extracted": "INR",
+      "match": true,
+      "evidence": "SOURCE_LOCATED_UNVERIFIED"
+    },
+    "net": {
+      "expected": "70000",
+      "extracted": "70000",
+      "match": true,
+      "evidence": "SOURCE_LOCATED_UNVERIFIED"
+    },
+    "tax": {
+      "expected": "12600",
+      "extracted": "12600",
+      "match": true,
+      "evidence": "SOURCE_LOCATED_UNVERIFIED"
+    },
+    "total": {
+      "expected": "86200",
+      "extracted": "86200",
+      "match": true,
+      "evidence": "SOURCE_LOCATED_UNVERIFIED"
+    },
+    "lines[0].description": {
+      "expected": "Freight services",
+      "extracted": "Freight services",
+      "match": true,
+      "evidence": "SOURCE_LOCATED_UNVERIFIED"
+    },
+    "lines[0].item_code": {
+      "expected": "KL-FREIGHT-01",
+      "extracted": "KL-FREIGHT-01",
+      "match": true,
+      "evidence": "SOURCE_LOCATED_UNVERIFIED"
+    },
+    "lines[0].qty": {
+      "expected": "7",
+      "extracted": "7",
+      "match": true,
+      "evidence": "SOURCE_LOCATED_UNVERIFIED"
+    },
+    "lines[0].unit_price_net": {
+      "expected": "10000",
+      "extracted": "10000",
+      "match": true,
+      "evidence": "SOURCE_LOCATED_UNVERIFIED"
+    },
+    "lines[0].net": {
+      "expected": null,
+      "extracted": null,
+      "match": true,
+      "evidence": "SOURCE_LOCATED_UNVERIFIED"
+    }
+  },
+  "exact_matches": 13,
+  "business_outcome": "REVIEW_REQUIRED",
+  "reason_codes": [
+    "PO_MATCH_CONFIRMED",
+    "SOURCE_EVIDENCE_MISSING",
+    "TOTAL_RECONCILIATION_FAILED",
+    "BANK_DETAILS_NOT_PROVIDED"
+  ],
+  "arithmetic_difference": "3600",
+  "line_net": null,
+  "stated_gross": "86200",
+  "all_scan_evidence_unverified": true
+}

@@ -167,4 +167,16 @@ def ground_evidence(invoice: ExtractedInvoiceV1, claims: tuple[SourceClaim, ...]
             page=claim.page if claim else None, quote=claim.quote if claim else None,
             route=page.route if page else None, evidence_state=state,
         ))
-    return invoice.model_copy(update={"evidence": tuple(grounded)})
+    lines = list(invoice.lines)
+    if inspection.route != "native_text":
+        for index, line in enumerate(lines):
+            key = f"lines[{index}].net"
+            ref_index = next(i for i, ref in enumerate(grounded) if ref.field == key)
+            ref = grounded[ref_index]
+            if line.net is not None and ref.evidence_state != "NATIVE_VERIFIED":
+                # A vision-model calculation/claim is not an independently
+                # verified document-stated line amount. Keep the raw claim for
+                # audit, but leave both the fact and its normalized value unknown.
+                lines[index] = line.model_copy(update={"net": None})
+                grounded[ref_index] = ref.model_copy(update={"normalized_value": None})
+    return invoice.model_copy(update={"lines": tuple(lines), "evidence": tuple(grounded)})

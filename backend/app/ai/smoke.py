@@ -44,19 +44,19 @@ def comparison(case, invoice):
 async def run(benchmark=False, only_model=None, only_case=None):
     load_dotenv(ROOT / ".env", override=False)
     settings = GeminiSettings.from_environment()
+    if only_model and only_model not in settings.active_models:
+        raise ExtractionError("CONFIGURATION")
     client = make_client(settings)
     results = {"live": True, "models": [], "documents": []}
     try:
-        for model in dict.fromkeys((settings.primary_model, settings.escalation_model)):
+        for model in settings.active_models:
             results["models"].append(await verify_model(client, model))
         cases = {case["id"]: case for case in json.loads((ROOT / "data/fixture_manifest.json").read_text())["fixture_cases"]}
-        jobs = [(case_id, model) for model in (settings.primary_model, settings.escalation_model)
+        jobs = [(case_id, model) for model in settings.active_models
                 for case_id in ("HAPPY_CLEAN", "SCAN_CONFLICT")] if benchmark else [
                     ("HAPPY_CLEAN", settings.primary_model), ("OVERBILLED_PARTIAL", settings.primary_model),
                     ("SCAN_CONFLICT", settings.scan_model or settings.primary_model)]
         if only_model:
-            if only_model not in (settings.primary_model, settings.escalation_model):
-                raise ExtractionError("CONFIGURATION")
             jobs = [job for job in jobs if job[1] == only_model]
         if only_case:
             jobs = [job for job in jobs if job[0] == only_case]

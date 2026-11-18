@@ -1,12 +1,12 @@
 # AP Compass — Project Memory (living handoff)
 
 **Last reviewed:** 2026-11-19 (IST)
-**Repository status:** Phase 2 accepted by user review. Phase 3 PARTIAL: 205 tests pass and Flash-Lite real inference verified; Flash escalation inference unavailable.
-**Current authorized segment:** `03 DOCUMENT ENGINE` only; stop at review gate.
+**Repository status:** Phase 3 stabilized; revised required-provider gate PASS with 229 tests and real primary-only scan proof. Architectural review pending; optional escalation disabled/unverified.
+**Current authorized segment:** `03.1 DOCUMENT STABILIZATION` only; complete and stop for review.
 **Deadline:** Saturday 2026-11-21 (IST); target Friday evening feature freeze.
 **Maintainers:** Builder owns product decisions; Codex implements one authorized phase; architectural review gates further work.
 
-> Repo-local continuity. Status is evidence, not completion by assertion. Latest user model-routing authorization is recorded in ADR-015 and the handoff below.
+> Repo-local continuity. Status is evidence, not completion by assertion. Latest user acceptance/routing adjustment is recorded in ADR-016 and the handoff below.
 
 ## North star
 
@@ -46,7 +46,7 @@ Minimum happy path: `HAPPY_CLEAN`, `HAPPY_PARTIAL` (partial invoice is within re
 
 - `01 FOUNDATION`: accepted by user architectural review; checkpoint `phase-01-foundation` unchanged.
 - `02 FINANCE ENGINE`: accepted by explicit user review; tag phase-02-finance-engine unchanged.
-- `03 DOCUMENT ENGINE`: PARTIAL; 205 tests pass, real Flash-Lite native/scan extraction verified; full two-model gate pending Flash availability.
+- `03 DOCUMENT ENGINE`: revised gate PASS after stabilization; 229 tests, genuine primary native/scan proof; optional escalation disabled, architectural review pending.
 - `04 ORCHESTRATION + API`: real persisted execution; requires passing 02 and 03.
 - `05 OPERATIONS UI`: live dashboard/workspace against actual API; shell can start earlier, final integration after 04.
 - `06 SCENARIOS + EVAL`: richer edge cases and frozen evaluation; after connected vertical slice.
@@ -71,19 +71,20 @@ Read `docs/SEGMENTS_AND_PARALLELISM.md` for ownership, scope cuts and acceptance
 
 ## Last handoff
 
-**Current task:** Phase 3 adapter implemented for review; full gate PARTIAL. STOP before Phase 4.
-**Evidence:** 205 tests pass (129 existing + 76 new), zero failures, one existing warning; frontend build, oracle,
-dependency and hygiene checks pass. Original finance/contracts/DB/API/UI/manifests/fixtures are unchanged.
-**Live inference:** Flash-Lite extracted HAPPY_CLEAN and OVERBILLED_PARTIAL with 13/13 matches and all native
-claims independently verified. SCAN_CONFLICT matched 12/13; optional unstated line net was supplied incorrectly;
-all scan claims remain unverified. No general accuracy or live business-decision claim.
-**Routing update:** User explicitly authorized Flash-Lite primary and one Flash extraction-quality escalation,
-superseding the earlier single-model assumption (ADR-015). Both IDs are metadata-accessible; Flash has not returned
-successful native/scan inference (gateway 504/timeouts). Scan defaults provisionally to Flash-Lite. No third model.
-**Repository:** codex/phase-03-document-engine from 6d9963a6a8883ea87c6a4457e0ce0353c28491a8. Review commit/push
-reported in final chat; no passing phase-03-document-engine tag while the full two-model gate is unresolved.
-**Secret:** User's .env.txt renamed to ignored .env; key never exposed/committed. Models pinned through environment.
-**Known limits:** conservative labelled source verification, no scan OCR, no general table/multi-invoice coverage,
-partial bank subfields fail safely under existing contract. Current SDK uses tested Pydantic 2.14.3; no shared shape changes.
-**Reports:** docs/DOCUMENT_ENGINE.md, docs/PHASE_03_REPORT.md, docs/PHASE_03_LIVE_RESULTS.json.
-**Next authorized action:** Phase 3 review/repair only; no orchestration, upload API, UI, paid hosting or Phase 4.
+**Current task:** Phase 3.1 stabilization complete; revised Phase 3 required-provider gate PASS. STOP for review.
+**Evidence:** Final 229 tests pass (129 unchanged Phase 1/2 + 100 document), zero failures, one existing warning;
+frontend build, manifest, Git hygiene and dependency checks pass. Financial rules/contracts/DB/API/UI/manifests,
+all fixtures and dependencies unchanged. No agents or later phases.
+**Runtime:** GEMINI_ESCALATION_ENABLED=false by default/local/sample; native and scans primary-only, no optional
+metadata/provider construction/calls. Enabled mode remains bounded, with valid primary retention on optional
+outage/timeout/quota and honest failure metadata. No usable primary means technical failure. No evidence upgrade.
+**Live proof:** Exactly one extra Flash-Lite SCAN_CONFLICT generation plus primary metadata lookup; zero Flash
+requests. Grounded line.net=None, gross=86200, unchanged evaluator REVIEW_REQUIRED with 3600 discrepancy;
+all scan evidence remains unverified. Prior native successes remain valid historical evidence.
+**Metrics:** 3241ms adapter / 2686ms model; 1399 input, 914 output, 2313 total tokens; thinking not reported.
+**Scope decision:** ADR-016 explicitly requires one working provider and makes escalation optional. Stronger
+inference is not verified; keep disabled until separately proven, with no more probes in this pass.
+**Repository:** codex/phase-03-document-engine from f8ce2026fb18b52fbd1d358d92c4b904311174e1; passing checkpoint
+reference phase-03-document-engine. Final SHA/push result in chat after commit. Phase 1/2 tags unchanged.
+**Reports:** docs/PHASE_03_1_REPORT.md and docs/PHASE_03_1_LIVE_RESULTS.json; earlier Phase 3 failures preserved.
+**Next authorized action:** Architectural review or bounded repairs only; no automatic Phase 4.

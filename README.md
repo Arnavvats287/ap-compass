@@ -1,28 +1,30 @@
 # AP Compass
 
 AI-assisted Invoice Operations & Exception Resolution for Zamp ASA PS-1.
-**Phase 3 document adapter: offline and Flash-Lite live verified; full two-model gate pending.** Deadline: November 21, 2026 (IST).
+**Phase 3 stabilized: revised required-provider gate passes; architectural review pending.** Deadline: November 21, 2026 (IST).
 All supplied vendors, procurement records, billed invoices and fixture PDFs are synthetic.
 
-## Document adapter (Phase 3)
+## Document adapter (Phase 3, stabilized in 3.1)
 
-Read `docs/DOCUMENT_ENGINE.md` and `docs/PHASE_03_REPORT.md`. Current full suite: **205 passing tests**.
-Flash-Lite genuinely extracted the native happy/overbilled PDFs and an image-only scan. Flash escalation inference
-remains unavailable in the tested account, so Phase 3 is PARTIAL and no passing Phase 3 checkpoint tag is claimed.
+Read `docs/DOCUMENT_ENGINE.md` and `docs/PHASE_03_1_REPORT.md`. Current full suite: **229 passing tests**.
+Required provider: genuinely tested Flash-Lite for native and image-only documents. Stronger escalation is optional,
+**disabled by default**, and remains live-unverified. No further Flash probes were made during stabilization.
 
 ```powershell
+.venv/Scripts/python -m pytest -c backend/pytest.ini backend/tests -q --basetemp tmp/pytest-phase031-acceptance --tb=short
+# Optional explicit primary-only diagnostic; consumes inference quota:
 $env:PYTHONPATH = 'backend'
-.venv/Scripts/python -m app.documents.fixtures
-.venv/Scripts/python -m pytest -c backend/pytest.ini backend/tests -q --basetemp tmp/pytest-phase03-final
-# Explicit live calls using the ignored local .env; consumes the account's inference quota:
-.venv/Scripts/python -m app.ai.smoke --benchmark --report tmp/phase03-benchmark.json
-.venv/Scripts/python -m app.ai.smoke --case OVERBILLED_PARTIAL --report tmp/phase03-overbilled-live.json
+.venv/Scripts/python -m app.ai.smoke --case SCAN_CONFLICT --report tmp/scan-smoke.json
 ```
 
-Library API: `await app.ai.gemini.extract_configured_pdf(pdf_bytes)` after the caller loads its backend environment.
-For offline DI use `app.documents.pipeline.extract_pdf`. Source facts return as the unchanged ExtractedInvoiceV1
-alongside technical metadata; no HTTP upload, document persistence or run orchestration exists.
-Environment variables are documented in `.env.example`; do not put the key in frontend variables or Git.
+`GEMINI_ESCALATION_ENABLED=false` requires/checks/constructs only primary, also for scans. Keep it disabled until
+genuine stronger inference is verified. The key stays in ignored local `.env`.
+Library: `await app.ai.gemini.extract_configured_pdf(pdf_bytes)` after loading backend environment;
+use `max_attempts=1` for a single-generation smoke call. Offline DI remains in `app.documents.pipeline.extract_pdf`.
+
+Valid uncertain/incomplete primary facts survive optional outage/timeout/quota with failed attempt metadata and
+retained_primary=true. Unusable primary still fails technically. Unverified scanned line net stays None; gross is
+unchanged. The pure evaluator owns the subsequent decision. No upload, document store, orchestration or Phase 4.
 
 ## Pure financial engine (Phase 2)
 

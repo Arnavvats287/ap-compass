@@ -14,7 +14,8 @@ ErrorCode = Literal[
 
 class ExtractionError(Exception):
     """Only allowlisted codes, counts and timings; never retain provider messages."""
-    def __init__(self, code: ErrorCode, *, calls=0, retryable=False, attempts=(), elapsed_ms=None, provider_status=None):
+    def __init__(self, code: ErrorCode, *, calls=0, retryable=False, attempts=(), elapsed_ms=None, provider_status=None,
+                 inference_attempted=True):
         super().__init__(code)
         self.code = code
         self.calls = calls
@@ -22,6 +23,7 @@ class ExtractionError(Exception):
         self.attempts = attempts
         self.elapsed_ms = elapsed_ms
         self.provider_status = provider_status
+        self.inference_attempted = inference_attempted
 
 
 @dataclass(frozen=True)
@@ -67,6 +69,7 @@ class ModelAttempt:
     actual_model_id: str | None
     usage: TokenUsage
     provider_http_status: int | None = None
+    inference_called: bool = True
 
 
 @dataclass(frozen=True)
@@ -81,6 +84,7 @@ class ExtractionMetadata:
     attempts: tuple[ModelAttempt, ...]
     schema_version: str = "invoice-extraction-wire-v1"
     prompt_version: str = "invoice-facts-v1"
+    retained_primary: bool = False
 
 
 @dataclass(frozen=True)
