@@ -1,5 +1,6 @@
 """Check exclusions using synthetic paths; never read or create credentials."""
 import subprocess
+from pathlib import Path
 
 PROBES = [".env", ".env.local", "runtime/ap-compass.db", "uploads/example.pdf",
           "backend/__pycache__/a.pyc", "frontend/node_modules/a", "frontend/dist/index.html",
@@ -11,3 +12,8 @@ assert subprocess.run(["git", "check-ignore", "--no-index", "--quiet", "--", ".e
 tracked_ignored = subprocess.check_output(["git", "ls-files", "-ci", "--exclude-standard"], text=True).strip()
 assert not tracked_ignored, f"Ignored files in index: {tracked_ignored}"
 print(f"GIT HYGIENE PASS: {len(PROBES)} exclusions; placeholder allowed; no ignored files tracked")
+
+for path in Path("tests/fixtures").glob("*.pdf"):
+    tracked = subprocess.check_output(["git", "show", ":" + path.as_posix()])
+    assert tracked == path.read_bytes(), f"PDF changed by Git normalization: {path}"
+print("PDF GIT BYTES PASS: 4 native-text PDFs stored without line-ending conversion")

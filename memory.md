@@ -1,7 +1,7 @@
 # AP Compass — Project Memory (living handoff)
 
-**Last reviewed:** 2026-11-19, 00:51 IST  
-**Repository status:** Starter pack prepared; **no application code or passing implementation tests verified**.  
+**Last reviewed:** 2026-11-19 (IST)
+**Repository status:** Phase 01 local acceptance PASS; 30 tests, frontend build, real health/proxy/browser checks, seed/oracle/hygiene verified. Architectural review pending.
 **Current authorized segment:** `01 FOUNDATION` only.  
 **Deadline:** Saturday 2026-11-21 (IST); target Friday evening feature freeze.  
 **Maintainers:** Builder owns product decisions; Codex implements a single authorized segment; ChatGPT reviews segment evidence and returns the next prompt.
@@ -44,7 +44,7 @@ Minimum happy path: `HAPPY_CLEAN`, `HAPPY_PARTIAL` (partial invoice is within re
 
 ## Segments and dependency gates
 
-- `01 FOUNDATION`: repo, contracts, seed, health API, UI shell, four native PDFs, verified tests; **not started/verified**.
+- `01 FOUNDATION`: local acceptance PASS; typed contracts, exact seed, health API, UI shell, four native PDFs and 30 tests verified; awaiting architectural review.
 - `02 FINANCE ENGINE`: pure domain logic, unit/regression tests; requires passing 01.
 - `03 DOCUMENT ENGINE`: real PDFs, Gemini, evidence, safe errors; requires passing 01. **Can run parallel with 02 only in isolated ownership/worktrees**.
 - `04 ORCHESTRATION + API`: real persisted execution; requires passing 02 and 03.
@@ -71,7 +71,13 @@ Read `docs/SEGMENTS_AND_PARALLELISM.md` for ownership, scope cuts and acceptance
 
 ## Last handoff
 
-**Current task:** Start Segment 01 with `prompts/SEGMENT_01_FOUNDATION.md`.  
-**Evidence received:** Starter pack, official brief and design references only; no Codex output yet.  
-**Next authorized action:** Run the Segment 01 prompt, return full acceptance results; do not start 02/03 until reviewed.  
-**Last verified checkpoint:** None.
+**Current task:** Phase 01 foundation complete locally; STOP for architectural review.
+**Evidence:** 30 tests pass (1 third-party deprecation warning); production build, both local servers, HTTP health/proxy,
+browser navigation, static oracle and 11 Git exclusions pass. Four PDFs parsed and visually inspected.
+Seed is exactly 6 vendors, 7 POs/7 lines, 3 prior billed records; idempotence, drift rejection and run/ledger isolation tested.
+**Repository:** `codex/phase-01-foundation`; existing `Arnavvats287/ap-compass` remote confirmed; verified implementation
+`ca87833801d646b7c028f858704b49880a9034de`. Final checkpoint reference `phase-01-foundation` includes handoff and Git PDF attributes.
+Push outcome is recorded in final chat after commit. See `docs/PHASE_01_REPORT.md` for commands, limits and contract mappings.
+**Known limits:** Docker/hosting/model entitlement unverified; no extraction, finance engines or orchestration; no end-to-end decisions.
+Official seven-page brief read from Downloads. No financial oracle/accepted decisions changed. No agents used.
+**Next authorized action:** Review or bounded Phase 1 repair only; do not start 02/03 without explicit authorization.
