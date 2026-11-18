@@ -1,0 +1,647 @@
+{
+  "description": "Actual live synthetic fixture comparisons. No raw documents, model responses, bank details or credentials retained.",
+  "api_method": "client.aio.models.generate_content; Gemini Developer API v1beta",
+  "sdk_version": "google-genai 3.5.0",
+  "explicit_generation_attempts": 14,
+  "manual_diagnostic": {
+    "requested_model": "gemini-3.5-flash-lite",
+    "generation_attempts": 1,
+    "http_status": 400,
+    "allowlisted_diagnostic_flags": {
+      "schema": true
+    },
+    "usage": null,
+    "elapsed_ms": null
+  },
+  "runs": [
+    {
+      "purpose": "initial_schema_attempts",
+      "live": true,
+      "models": [
+        {
+          "requested_model": "gemini-3.5-flash-lite",
+          "resource_name": "models/gemini-3.5-flash-lite",
+          "version": "3.5-flash-lite-07-2026",
+          "supported_actions": [
+            "generateContent",
+            "countTokens",
+            "createCachedContent",
+            "batchGenerateContent"
+          ]
+        },
+        {
+          "requested_model": "gemini-3.6-flash",
+          "resource_name": "models/gemini-3.6-flash",
+          "version": "3.6-flash-07-2026",
+          "supported_actions": [
+            "generateContent",
+            "countTokens",
+            "createCachedContent",
+            "batchGenerateContent"
+          ]
+        }
+      ],
+      "documents": [
+        {
+          "fixture": "HAPPY_CLEAN",
+          "requested_model": "gemini-3.5-flash-lite",
+          "error": "PROVIDER_REJECTED",
+          "model_calls": 1
+        },
+        {
+          "fixture": "SCAN_CONFLICT",
+          "requested_model": "gemini-3.5-flash-lite",
+          "error": "PROVIDER_REJECTED",
+          "model_calls": 1
+        },
+        {
+          "fixture": "HAPPY_CLEAN",
+          "requested_model": "gemini-3.6-flash",
+          "error": "PROVIDER_UNAVAILABLE",
+          "model_calls": 1
+        },
+        {
+          "fixture": "SCAN_CONFLICT",
+          "requested_model": "gemini-3.6-flash",
+          "error": "PROVIDER_UNAVAILABLE",
+          "model_calls": 1
+        }
+      ]
+    },
+    {
+      "purpose": "minimal_generation_schema_benchmark",
+      "live": true,
+      "models": [
+        {
+          "requested_model": "gemini-3.5-flash-lite",
+          "resource_name": "models/gemini-3.5-flash-lite",
+          "version": "3.5-flash-lite-07-2026",
+          "supported_actions": [
+            "generateContent",
+            "countTokens",
+            "createCachedContent",
+            "batchGenerateContent"
+          ]
+        },
+        {
+          "requested_model": "gemini-3.6-flash",
+          "resource_name": "models/gemini-3.6-flash",
+          "version": "3.6-flash-07-2026",
+          "supported_actions": [
+            "generateContent",
+            "countTokens",
+            "createCachedContent",
+            "batchGenerateContent"
+          ]
+        }
+      ],
+      "documents": [
+        {
+          "fixture": "HAPPY_CLEAN",
+          "requested_model": "gemini-3.5-flash-lite",
+          "metadata": {
+            "requested_model_id": "gemini-3.5-flash-lite",
+            "selected_model_id": "gemini-3.5-flash-lite",
+            "escalation_reason": null,
+            "route": "native_text",
+            "page_count": 1,
+            "model_calls": 1,
+            "elapsed_ms": 3866,
+            "attempts": [
+              {
+                "number": 1,
+                "requested_model_id": "gemini-3.5-flash-lite",
+                "elapsed_ms": 3403,
+                "error_code": null,
+                "actual_model_id": "gemini-3.5-flash-lite",
+                "usage": {
+                  "input_tokens": 543,
+                  "output_tokens": 913,
+                  "thinking_tokens": null,
+                  "total_tokens": 1456
+                }
+              }
+            ],
+            "schema_version": "invoice-extraction-wire-v1",
+            "prompt_version": "invoice-facts-v1"
+          },
+          "fields": {
+            "vendor_name_raw": {
+              "expected": "Orion Office Products",
+              "extracted": "Orion Office Products",
+              "match": true,
+              "evidence": "NATIVE_VERIFIED"
+            },
+            "invoice_number": {
+              "expected": "HAPPY_CLEAN-2026",
+              "extracted": "HAPPY_CLEAN-2026",
+              "match": true,
+              "evidence": "NATIVE_VERIFIED"
+            },
+            "invoice_date": {
+              "expected": "2026-11-14",
+              "extracted": "2026-11-14",
+              "match": true,
+              "evidence": "NATIVE_VERIFIED"
+            },
+            "po_reference": {
+              "expected": "PO-6001",
+              "extracted": "PO-6001",
+              "match": true,
+              "evidence": "NATIVE_VERIFIED"
+            },
+            "currency": {
+              "expected": "INR",
+              "extracted": "INR",
+              "match": true,
+              "evidence": "NATIVE_VERIFIED"
+            },
+            "net": {
+              "expected": "48000",
+              "extracted": "48000",
+              "match": true,
+              "evidence": "NATIVE_VERIFIED"
+            },
+            "tax": {
+              "expected": "8640",
+              "extracted": "8640",
+              "match": true,
+              "evidence": "NATIVE_VERIFIED"
+            },
+            "total": {
+              "expected": "56640",
+              "extracted": "56640",
+              "match": true,
+              "evidence": "NATIVE_VERIFIED"
+            },
+            "lines[0].description": {
+              "expected": "Office supplies",
+              "extracted": "Office supplies",
+              "match": true,
+              "evidence": "NATIVE_VERIFIED"
+            },
+            "lines[0].item_code": {
+              "expected": "OR-SUPPLY-01",
+              "extracted": "OR-SUPPLY-01",
+              "match": true,
+              "evidence": "NATIVE_VERIFIED"
+            },
+            "lines[0].qty": {
+              "expected": "48",
+              "extracted": "48",
+              "match": true,
+              "evidence": "NATIVE_VERIFIED"
+            },
+            "lines[0].unit_price_net": {
+              "expected": "1000",
+              "extracted": "1000",
+              "match": true,
+              "evidence": "NATIVE_VERIFIED"
+            },
+            "lines[0].net": {
+              "expected": "48000",
+              "extracted": "48000",
+              "match": true,
+              "evidence": "NATIVE_VERIFIED"
+            }
+          },
+          "exact_matches": 13,
+          "missing": [],
+          "incorrect": []
+        },
+        {
+          "fixture": "SCAN_CONFLICT",
+          "requested_model": "gemini-3.5-flash-lite",
+          "metadata": {
+            "requested_model_id": "gemini-3.5-flash-lite",
+            "selected_model_id": "gemini-3.5-flash-lite",
+            "escalation_reason": null,
+            "route": "image_only",
+            "page_count": 1,
+            "model_calls": 1,
+            "elapsed_ms": 4023,
+            "attempts": [
+              {
+                "number": 1,
+                "requested_model_id": "gemini-3.5-flash-lite",
+                "elapsed_ms": 3509,
+                "error_code": null,
+                "actual_model_id": "gemini-3.5-flash-lite",
+                "usage": {
+                  "input_tokens": 1399,
+                  "output_tokens": 914,
+                  "thinking_tokens": null,
+                  "total_tokens": 2313
+                }
+              }
+            ],
+            "schema_version": "invoice-extraction-wire-v1",
+            "prompt_version": "invoice-facts-v1"
+          },
+          "fields": {
+            "vendor_name_raw": {
+              "expected": "Kaveri Logistics",
+              "extracted": "Kaveri Logistics",
+              "match": true,
+              "evidence": "SOURCE_LOCATED_UNVERIFIED"
+            },
+            "invoice_number": {
+              "expected": "SCAN_CONFLICT-2026",
+              "extracted": "SCAN_CONFLICT-2026",
+              "match": true,
+              "evidence": "SOURCE_LOCATED_UNVERIFIED"
+            },
+            "invoice_date": {
+              "expected": "2026-11-14",
+              "extracted": "2026-11-14",
+              "match": true,
+              "evidence": "SOURCE_LOCATED_UNVERIFIED"
+            },
+            "po_reference": {
+              "expected": "PO-4002",
+              "extracted": "PO-4002",
+              "match": true,
+              "evidence": "SOURCE_LOCATED_UNVERIFIED"
+            },
+            "currency": {
+              "expected": "INR",
+              "extracted": "INR",
+              "match": true,
+              "evidence": "SOURCE_LOCATED_UNVERIFIED"
+            },
+            "net": {
+              "expected": "70000",
+              "extracted": "70000",
+              "match": true,
+              "evidence": "SOURCE_LOCATED_UNVERIFIED"
+            },
+            "tax": {
+              "expected": "12600",
+              "extracted": "12600",
+              "match": true,
+              "evidence": "SOURCE_LOCATED_UNVERIFIED"
+            },
+            "total": {
+              "expected": "86200",
+              "extracted": "86200",
+              "match": true,
+              "evidence": "SOURCE_LOCATED_UNVERIFIED"
+            },
+            "lines[0].description": {
+              "expected": "Freight services",
+              "extracted": "Freight services",
+              "match": true,
+              "evidence": "SOURCE_LOCATED_UNVERIFIED"
+            },
+            "lines[0].item_code": {
+              "expected": "KL-FREIGHT-01",
+              "extracted": "KL-FREIGHT-01",
+              "match": true,
+              "evidence": "SOURCE_LOCATED_UNVERIFIED"
+            },
+            "lines[0].qty": {
+              "expected": "7",
+              "extracted": "7",
+              "match": true,
+              "evidence": "SOURCE_LOCATED_UNVERIFIED"
+            },
+            "lines[0].unit_price_net": {
+              "expected": "10000",
+              "extracted": "10000",
+              "match": true,
+              "evidence": "SOURCE_LOCATED_UNVERIFIED"
+            },
+            "lines[0].net": {
+              "expected": null,
+              "extracted": "70000",
+              "match": false,
+              "evidence": "SOURCE_LOCATED_UNVERIFIED"
+            }
+          },
+          "exact_matches": 12,
+          "missing": [],
+          "incorrect": [
+            "lines[0].net"
+          ]
+        },
+        {
+          "fixture": "HAPPY_CLEAN",
+          "requested_model": "gemini-3.6-flash",
+          "error": "PROVIDER_UNAVAILABLE",
+          "model_calls": 1
+        },
+        {
+          "fixture": "SCAN_CONFLICT",
+          "requested_model": "gemini-3.6-flash",
+          "error": "PROVIDER_UNAVAILABLE",
+          "model_calls": 1
+        }
+      ]
+    },
+    {
+      "purpose": "bounded_flash_benchmark",
+      "live": true,
+      "models": [
+        {
+          "requested_model": "gemini-3.5-flash-lite",
+          "resource_name": "models/gemini-3.5-flash-lite",
+          "version": "3.5-flash-lite-07-2026",
+          "supported_actions": [
+            "generateContent",
+            "countTokens",
+            "createCachedContent",
+            "batchGenerateContent"
+          ]
+        },
+        {
+          "requested_model": "gemini-3.6-flash",
+          "resource_name": "models/gemini-3.6-flash",
+          "version": "3.6-flash-07-2026",
+          "supported_actions": [
+            "generateContent",
+            "countTokens",
+            "createCachedContent",
+            "batchGenerateContent"
+          ]
+        }
+      ],
+      "documents": [
+        {
+          "fixture": "HAPPY_CLEAN",
+          "requested_model": "gemini-3.6-flash",
+          "error": "PROVIDER_UNAVAILABLE",
+          "model_calls": 1,
+          "elapsed_ms": 29981,
+          "attempts": [
+            {
+              "number": 1,
+              "requested_model_id": "gemini-3.6-flash",
+              "elapsed_ms": 29545,
+              "error_code": "PROVIDER_UNAVAILABLE",
+              "actual_model_id": null,
+              "usage": {
+                "input_tokens": null,
+                "output_tokens": null,
+                "thinking_tokens": null,
+                "total_tokens": null
+              },
+              "provider_http_status": 504
+            }
+          ]
+        },
+        {
+          "fixture": "SCAN_CONFLICT",
+          "requested_model": "gemini-3.6-flash",
+          "error": "PROVIDER_TIMEOUT",
+          "model_calls": 1,
+          "elapsed_ms": 30530,
+          "attempts": [
+            {
+              "number": 1,
+              "requested_model_id": "gemini-3.6-flash",
+              "elapsed_ms": 30016,
+              "error_code": "PROVIDER_TIMEOUT",
+              "actual_model_id": null,
+              "usage": {
+                "input_tokens": null,
+                "output_tokens": null,
+                "thinking_tokens": null,
+                "total_tokens": null
+              },
+              "provider_http_status": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "purpose": "minimal_thinking_flash_benchmark",
+      "live": true,
+      "models": [
+        {
+          "requested_model": "gemini-3.5-flash-lite",
+          "resource_name": "models/gemini-3.5-flash-lite",
+          "version": "3.5-flash-lite-07-2026",
+          "supported_actions": [
+            "generateContent",
+            "countTokens",
+            "createCachedContent",
+            "batchGenerateContent"
+          ]
+        },
+        {
+          "requested_model": "gemini-3.6-flash",
+          "resource_name": "models/gemini-3.6-flash",
+          "version": "3.6-flash-07-2026",
+          "supported_actions": [
+            "generateContent",
+            "countTokens",
+            "createCachedContent",
+            "batchGenerateContent"
+          ]
+        }
+      ],
+      "documents": [
+        {
+          "fixture": "HAPPY_CLEAN",
+          "requested_model": "gemini-3.6-flash",
+          "error": "PROVIDER_UNAVAILABLE",
+          "model_calls": 1,
+          "elapsed_ms": 29961,
+          "attempts": [
+            {
+              "number": 1,
+              "requested_model_id": "gemini-3.6-flash",
+              "elapsed_ms": 29542,
+              "error_code": "PROVIDER_UNAVAILABLE",
+              "actual_model_id": null,
+              "usage": {
+                "input_tokens": null,
+                "output_tokens": null,
+                "thinking_tokens": null,
+                "total_tokens": null
+              },
+              "provider_http_status": 504
+            }
+          ]
+        },
+        {
+          "fixture": "SCAN_CONFLICT",
+          "requested_model": "gemini-3.6-flash",
+          "error": "PROVIDER_UNAVAILABLE",
+          "model_calls": 1,
+          "elapsed_ms": 30473,
+          "attempts": [
+            {
+              "number": 1,
+              "requested_model_id": "gemini-3.6-flash",
+              "elapsed_ms": 29931,
+              "error_code": "PROVIDER_UNAVAILABLE",
+              "actual_model_id": null,
+              "usage": {
+                "input_tokens": null,
+                "output_tokens": null,
+                "thinking_tokens": null,
+                "total_tokens": null
+              },
+              "provider_http_status": 504
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "purpose": "required_overbilled_native_smoke",
+      "live": true,
+      "models": [
+        {
+          "requested_model": "gemini-3.5-flash-lite",
+          "resource_name": "models/gemini-3.5-flash-lite",
+          "version": "3.5-flash-lite-07-2026",
+          "supported_actions": [
+            "generateContent",
+            "countTokens",
+            "createCachedContent",
+            "batchGenerateContent"
+          ]
+        },
+        {
+          "requested_model": "gemini-3.6-flash",
+          "resource_name": "models/gemini-3.6-flash",
+          "version": "3.6-flash-07-2026",
+          "supported_actions": [
+            "generateContent",
+            "countTokens",
+            "createCachedContent",
+            "batchGenerateContent"
+          ]
+        }
+      ],
+      "documents": [
+        {
+          "fixture": "OVERBILLED_PARTIAL",
+          "requested_model": "gemini-3.5-flash-lite",
+          "metadata": {
+            "requested_model_id": "gemini-3.5-flash-lite",
+            "selected_model_id": "gemini-3.5-flash-lite",
+            "escalation_reason": null,
+            "route": "native_text",
+            "page_count": 1,
+            "model_calls": 1,
+            "elapsed_ms": 2742,
+            "attempts": [
+              {
+                "number": 1,
+                "requested_model_id": "gemini-3.5-flash-lite",
+                "elapsed_ms": 2337,
+                "error_code": null,
+                "actual_model_id": "gemini-3.5-flash-lite",
+                "usage": {
+                  "input_tokens": 542,
+                  "output_tokens": 681,
+                  "thinking_tokens": null,
+                  "total_tokens": 1223
+                },
+                "provider_http_status": null
+              }
+            ],
+            "schema_version": "invoice-extraction-wire-v1",
+            "prompt_version": "invoice-facts-v1"
+          },
+          "fields": {
+            "vendor_name_raw": {
+              "expected": "Aster Systems",
+              "extracted": "Aster Systems",
+              "match": true,
+              "evidence": "NATIVE_VERIFIED"
+            },
+            "invoice_number": {
+              "expected": "OVERBILLED_PARTIAL-2026",
+              "extracted": "OVERBILLED_PARTIAL-2026",
+              "match": true,
+              "evidence": "NATIVE_VERIFIED"
+            },
+            "invoice_date": {
+              "expected": "2026-11-14",
+              "extracted": "2026-11-14",
+              "match": true,
+              "evidence": "NATIVE_VERIFIED"
+            },
+            "po_reference": {
+              "expected": "PO-3015",
+              "extracted": "PO-3015",
+              "match": true,
+              "evidence": "NATIVE_VERIFIED"
+            },
+            "currency": {
+              "expected": "INR",
+              "extracted": "INR",
+              "match": true,
+              "evidence": "NATIVE_VERIFIED"
+            },
+            "net": {
+              "expected": "30000",
+              "extracted": "30000",
+              "match": true,
+              "evidence": "NATIVE_VERIFIED"
+            },
+            "tax": {
+              "expected": "5400",
+              "extracted": "5400",
+              "match": true,
+              "evidence": "NATIVE_VERIFIED"
+            },
+            "total": {
+              "expected": "35400",
+              "extracted": "35400",
+              "match": true,
+              "evidence": "NATIVE_VERIFIED"
+            },
+            "lines[0].description": {
+              "expected": "Managed IT services",
+              "extracted": "Managed IT services",
+              "match": true,
+              "evidence": "NATIVE_VERIFIED"
+            },
+            "lines[0].item_code": {
+              "expected": "AS-SERVICE-01",
+              "extracted": "AS-SERVICE-01",
+              "match": true,
+              "evidence": "NATIVE_VERIFIED"
+            },
+            "lines[0].qty": {
+              "expected": "6",
+              "extracted": "6",
+              "match": true,
+              "evidence": "NATIVE_VERIFIED"
+            },
+            "lines[0].unit_price_net": {
+              "expected": "5000",
+              "extracted": "5000",
+              "match": true,
+              "evidence": "NATIVE_VERIFIED"
+            },
+            "lines[0].net": {
+              "expected": "30000",
+              "extracted": "30000",
+              "match": true,
+              "evidence": "NATIVE_VERIFIED"
+            }
+          },
+          "exact_matches": 13,
+          "missing": [],
+          "incorrect": []
+        }
+      ]
+    }
+  ],
+  "selected_routing": {
+    "primary_model": "gemini-3.5-flash-lite",
+    "scan_model": "gemini-3.5-flash-lite",
+    "escalation_model": "gemini-3.6-flash",
+    "escalation_thinking_level": "MINIMAL",
+    "reason": "Flash-Lite alone returned usable outputs in this small benchmark. No comparative Flash accuracy conclusion is possible.",
+    "live_escalation_verified": false
+  },
+  "gate": "PARTIAL: 205 offline/regression tests pass and primary inference works; stronger-model inference remains unavailable."
+}

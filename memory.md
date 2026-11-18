@@ -1,12 +1,12 @@
-# AP Compass â€” Project Memory (living handoff)
+# AP Compass — Project Memory (living handoff)
 
 **Last reviewed:** 2026-11-19 (IST)
-**Repository status:** Phase 01 accepted by user review. Phase 02 local acceptance PASS: 129 tests (30 foundation + 99 domain), frontend regression build and oracle/hygiene pass; architectural review pending.
-**Current authorized segment:** `02 FINANCE ENGINE` only; stop at review gate.
-**Deadline:** Saturday 2026-11-21 (IST); target Friday evening feature freeze.  
-**Maintainers:** Builder owns product decisions; Codex implements a single authorized segment; ChatGPT reviews segment evidence and returns the next prompt.
+**Repository status:** Phase 2 accepted by user review. Phase 3 PARTIAL: 205 tests pass and Flash-Lite real inference verified; Flash escalation inference unavailable.
+**Current authorized segment:** `03 DOCUMENT ENGINE` only; stop at review gate.
+**Deadline:** Saturday 2026-11-21 (IST); target Friday evening feature freeze.
+**Maintainers:** Builder owns product decisions; Codex implements one authorized phase; architectural review gates further work.
 
-> This file is *repo-local project continuity*, not ChatGPT account Memory. Keep it short and factual. Codex should read it at session start and update only status/evidence it actually observed. Do not overwrite decisions or invent completed work.
+> Repo-local continuity. Status is evidence, not completion by assertion. Latest user model-routing authorization is recorded in ADR-015 and the handoff below.
 
 ## North star
 
@@ -45,8 +45,8 @@ Minimum happy path: `HAPPY_CLEAN`, `HAPPY_PARTIAL` (partial invoice is within re
 ## Segments and dependency gates
 
 - `01 FOUNDATION`: accepted by user architectural review; checkpoint `phase-01-foundation` unchanged.
-- `02 FINANCE ENGINE`: local acceptance PASS; 99 domain tests and 129 full-suite tests verified; awaiting architectural review.
-- `03 DOCUMENT ENGINE`: real PDFs, Gemini, evidence, safe errors; requires passing 01. **Can run parallel with 02 only in isolated ownership/worktrees**.
+- `02 FINANCE ENGINE`: accepted by explicit user review; tag phase-02-finance-engine unchanged.
+- `03 DOCUMENT ENGINE`: PARTIAL; 205 tests pass, real Flash-Lite native/scan extraction verified; full two-model gate pending Flash availability.
 - `04 ORCHESTRATION + API`: real persisted execution; requires passing 02 and 03.
 - `05 OPERATIONS UI`: live dashboard/workspace against actual API; shell can start earlier, final integration after 04.
 - `06 SCENARIOS + EVAL`: richer edge cases and frozen evaluation; after connected vertical slice.
@@ -71,15 +71,19 @@ Read `docs/SEGMENTS_AND_PARALLELISM.md` for ownership, scope cuts and acceptance
 
 ## Last handoff
 
-**Current task:** Phase 02 pure financial engine complete locally; STOP for architectural review.
-**Evidence:** 129 tests pass (30 foundation + 99 domain), zero failures, one pre-existing deprecation warning.
-All ten synthetic manifest scenarios plus price at 5% match expected decisions. No Gemini/PDF extraction claimed.
-Seed validator, Git hygiene, pip check and unchanged frontend build pass. A real seeded SQLite DB and all authority
-rows/snapshots remain identical after 20 evaluations with DB/network blocked. Adaptive Decimal precision regression passes.
-**Repository:** `codex/phase-02-finance-engine`, existing `Arnavvats287/ap-compass` remote; checkpoint reference
-`phase-02-finance-engine` (resolve tag for exact final SHA). Phase 1 remains `12e4a5229903213017a852507d049133a1a7b871`.
-Publication result is reported in final chat after commit. See `docs/PHASE_02_REPORT.md` and `docs/FINANCE_ENGINE.md`.
-**Known limits:** caller must provide complete trusted authority and genuine source verification. Exact item-code
-mapping only; possible-duplicate review heuristic documented in ADR-014. No schema/contract/seed/DB/API/UI changes.
-No model calls, OCR, uploads, orchestration, human approval, deployment work or agents. Nonzero overrun policy is unsupported.
-**Next authorized action:** Architectural review or bounded Phase 2 repair only; Phase 3 is not authorized.
+**Current task:** Phase 3 adapter implemented for review; full gate PARTIAL. STOP before Phase 4.
+**Evidence:** 205 tests pass (129 existing + 76 new), zero failures, one existing warning; frontend build, oracle,
+dependency and hygiene checks pass. Original finance/contracts/DB/API/UI/manifests/fixtures are unchanged.
+**Live inference:** Flash-Lite extracted HAPPY_CLEAN and OVERBILLED_PARTIAL with 13/13 matches and all native
+claims independently verified. SCAN_CONFLICT matched 12/13; optional unstated line net was supplied incorrectly;
+all scan claims remain unverified. No general accuracy or live business-decision claim.
+**Routing update:** User explicitly authorized Flash-Lite primary and one Flash extraction-quality escalation,
+superseding the earlier single-model assumption (ADR-015). Both IDs are metadata-accessible; Flash has not returned
+successful native/scan inference (gateway 504/timeouts). Scan defaults provisionally to Flash-Lite. No third model.
+**Repository:** codex/phase-03-document-engine from 6d9963a6a8883ea87c6a4457e0ce0353c28491a8. Review commit/push
+reported in final chat; no passing phase-03-document-engine tag while the full two-model gate is unresolved.
+**Secret:** User's .env.txt renamed to ignored .env; key never exposed/committed. Models pinned through environment.
+**Known limits:** conservative labelled source verification, no scan OCR, no general table/multi-invoice coverage,
+partial bank subfields fail safely under existing contract. Current SDK uses tested Pydantic 2.14.3; no shared shape changes.
+**Reports:** docs/DOCUMENT_ENGINE.md, docs/PHASE_03_REPORT.md, docs/PHASE_03_LIVE_RESULTS.json.
+**Next authorized action:** Phase 3 review/repair only; no orchestration, upload API, UI, paid hosting or Phase 4.

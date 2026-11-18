@@ -1,8 +1,28 @@
 # AP Compass
 
 AI-assisted Invoice Operations & Exception Resolution for Zamp ASA PS-1.
-**Phase 2 pure financial engine implemented; awaiting architectural review.** Deadline: November 21, 2026 (IST).
+**Phase 3 document adapter: offline and Flash-Lite live verified; full two-model gate pending.** Deadline: November 21, 2026 (IST).
 All supplied vendors, procurement records, billed invoices and fixture PDFs are synthetic.
+
+## Document adapter (Phase 3)
+
+Read `docs/DOCUMENT_ENGINE.md` and `docs/PHASE_03_REPORT.md`. Current full suite: **205 passing tests**.
+Flash-Lite genuinely extracted the native happy/overbilled PDFs and an image-only scan. Flash escalation inference
+remains unavailable in the tested account, so Phase 3 is PARTIAL and no passing Phase 3 checkpoint tag is claimed.
+
+```powershell
+$env:PYTHONPATH = 'backend'
+.venv/Scripts/python -m app.documents.fixtures
+.venv/Scripts/python -m pytest -c backend/pytest.ini backend/tests -q --basetemp tmp/pytest-phase03-final
+# Explicit live calls using the ignored local .env; consumes the account's inference quota:
+.venv/Scripts/python -m app.ai.smoke --benchmark --report tmp/phase03-benchmark.json
+.venv/Scripts/python -m app.ai.smoke --case OVERBILLED_PARTIAL --report tmp/phase03-overbilled-live.json
+```
+
+Library API: `await app.ai.gemini.extract_configured_pdf(pdf_bytes)` after the caller loads its backend environment.
+For offline DI use `app.documents.pipeline.extract_pdf`. Source facts return as the unchanged ExtractedInvoiceV1
+alongside technical metadata; no HTTP upload, document persistence or run orchestration exists.
+Environment variables are documented in `.env.example`; do not put the key in frontend variables or Git.
 
 ## Pure financial engine (Phase 2)
 
@@ -84,9 +104,9 @@ No tests require network, provider keys, or paid services once dependencies are 
 - SQLAlchemy SQLite initial schema. Exact Decimal values stored as TEXT/JSON decimal strings.
 - Idempotent seed: 6 vendors, 7 POs/7 lines, 3 prior billed invoices; drift rejected and rolled back.
 - React/TypeScript/Vite/Tailwind/Lucide shell, working navigation, disabled and honestly labeled processing CTA.
-- Four native-text PDFs in `tests/fixtures`, generated directly from the untouched fixture manifest.
+- Four native-text PDFs and the authorized image-only SCAN_CONFLICT fixture, from the untouched manifest.
 - Pure matching, financial reconciliation, duplicate/bank/evidence controls and severity-based decisions.
-- Document, AI and orchestration boundaries remain unimplemented.
+- In-memory document/AI adapters implemented; orchestration remains unimplemented.
 
 PO balances come exclusively from authorized POs minus prior billed history. Remaining net/qty:
 
@@ -104,7 +124,7 @@ These are synthetic authoritative seed balances, not analysis results or dashboa
 
 ## Boundaries and limitations
 
-No upload, extraction, run workflow, dashboard aggregates, model calls,
+No upload endpoints, run workflow, dashboard aggregates,
 payment/posting, auth or deployment exists. Pure-engine decisions are tested against synthetic oracle facts; end-to-end PDF/extraction decisions remain unverified.
 TanStack Query and shadcn/ui are deferred until server-state views or reusable interactive controls need them;
 the foundation has one health fetch and native accessible controls. No UI framework generator is required.
@@ -114,4 +134,4 @@ Direct database administration can change records; immutability here means no an
 not a claim that SQLite is tamper-proof.
 
 See `docs/FOUNDATION_ARCHITECTURE.md`, `docs/DEPLOYMENT.md`, and `docs/PHASE_01_REPORT.md`.
-Stop after Phase 2; later work requires explicit authorization.
+Stop after Phase 3 review; no later work is authorized.

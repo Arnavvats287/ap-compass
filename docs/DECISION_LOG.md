@@ -47,3 +47,18 @@ Do not rewrite past records to pretend a previous design was never chosen. Recor
   known exact duplicate -> block at every tested price tolerance. All other required controls still run.
 - **Review/rollback:** Reviewer may adjust the heuristic through CHANGE_RULE_PROTOCOL with a failing regression first.
   Removing this review-only heuristic does not remove exact-duplicate or financial controls.
+
+
+## ADR-015 — User-authorized Phase 3 two-model extraction routing
+
+- **Date / status:** 2026-11-19; ACCEPTED scope by explicit user routing update.
+- **Decision:** Flash-Lite is primary; Flash is a bounded extraction-quality escalation. Native/scan model choice
+  is environment-configured, using only these two models. This supersedes the earlier one-model stack assumption.
+- **Boundaries:** Identical extraction contract and independent evidence verification. No model-owned verification,
+  financial decisions, PO selection, ledger writes, security-judgment model or third fallback model.
+- **Limits:** At most two explicit attempts per invoice and one stronger attempt. No escalation caused by business
+  overbilling, duplicates, bank mismatch, inconsistent stated totals or REVIEW/BLOCK outcomes. Quota/outage is technical failure.
+- **Observed selection:** Flash-Lite provisional for scans; it returned real results. Flash metadata is accessible,
+  but tested inference returned gateway errors/timeouts, so live escalation and the full Phase 3 gate remain unresolved.
+- **Contracts/data:** No public contract, database, finance engine or manifest changes. Review evidence is in
+  PHASE_03_REPORT.md and PHASE_03_LIVE_RESULTS.json; no deployment or paid service added.
