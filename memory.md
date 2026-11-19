@@ -1,8 +1,8 @@
 # AP Compass — Project Memory (living handoff)
 
 **Last reviewed:** 2026-11-19 (IST)
-**Repository status:** Phase 6A.1 accepted; Phase 6B.1 audited PO resolution locally verified; architectural review pending.
-**Current authorized segment:** `06B.1 AUDITED HUMAN PO RESOLUTION` only; stop for review.
+**Repository status:** Phase 6B.2B defensive document hardening submitted for review.
+**Current authorized segment:** `06B.2B DEFENSIVE DOCUMENT TRUST HARDENING` only.
 **Deadline:** Saturday 2026-11-21 (IST); target Friday evening feature freeze.
 **Maintainers:** Builder owns product decisions; Codex implements one authorized phase; architectural review gates further work.
 
@@ -174,3 +174,7 @@ Original6PDF/frozen manifests unchanged;one separate new regression scenario and
 ## Phase 6B.2A partial review
 
 REPRODUCTION INCOMPLETE — INVESTIGATION REQUIRED. Static review of F1–F3 and safe target criteria are recorded. Three benign offline API controls passed. No bypass probes were run and all three runtime findings remain inconclusive. Baseline 328 backend and 58 frontend tests passed. Zero Gemini requests. Production and frozen business oracles unchanged. See docs/ADVERSARIAL_REPRODUCTION_REPORT.md and docs/ADVERSARIAL_EVALUATION_PLAN.md.
+
+## Phase 6B.2B defensive document hardening
+
+Branch `codex/phase-06b2b-document-hardening` from `f7f669821464183bcad6d8802177d2e170187285`. Supported native headers are compared across the document. Mixed raster uncertainty uses a sanitized technical gate when bank details are unresolved. Native pages with extractable text and a uniform render fail before inference. Existing benign controls pass. Exact historical audit scenarios remain inconclusive. See `docs/PHASE_06B2B_REPORT.md` for test evidence and measured latency. Zero Gemini requests.

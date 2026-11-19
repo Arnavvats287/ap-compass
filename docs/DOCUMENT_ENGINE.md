@@ -32,11 +32,11 @@ Page sides above 14,400 points are rejected before rendering. Native text extrac
 
 Per-page classification:
 
-- native_text: >=40 printable native characters, no replacement characters, no dominant raster layer.
+- native_text: >=40 printable native characters, no replacement characters, no unresolved embedded raster, and a nonuniform bounded native render.
 - image_only: unusable/sparse native text; render actual page pixels.
-- mixed: a dominant raster layer plus usable text, or a document with different per-page routes.
+- mixed: potentially material embedded raster plus usable text, or a document with different per-page routes.
 
-Preserve original 1-based page numbers and all bounded per-page native text. Render only unusable/mixed pages,
+Preserve original 1-based page numbers and all bounded per-page native text. Render a small grayscale readability sample for readable native text. Render provider images for unusable/mixed pages,
 RGB PNG at <=120 DPI, <=1600 pixels/edge and <=2M pixels/page. The base64 aggregate is capped at 12 MiB.
 Mixed pages with a raster layer remain unverified; native pages in a mixed document can independently verify.
 Rendered bytes and text stay in memory. Development fixture/report commands are explicit exceptions for synthetic test artifacts.
@@ -155,3 +155,5 @@ The standalone helper above still explicitly verifies metadata for diagnostics. 
 use extract_runtime_pdf: only Flash-Lite, no per-invoice models.get, same bounded extract_pdf pipeline,
 strict schema and evidence grounding. Per-extraction clients close in finally. No finance rules or
 provider prompt changes. See ORCHESTRATION_API.md and PHASE_04_REPORT.md for the accepted scope.
+
+See DOCUMENT_TRUST_HARDENING.md for the later document-wide consistency and mixed-raster gates.

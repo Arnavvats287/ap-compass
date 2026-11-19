@@ -1,9 +1,9 @@
 # AP Compass — Project Status / Gate Register
 
 **Updated:** 2026-11-19 IST.
-**Current gate:** Phase 6B.1 local acceptance PASS; stop for architectural review. No further6B/release authorization.
-**Base:** phase-06a1-signature-ui / b8e5ced6e7dcb3774364cfef44f1a0be0f06a5d0.
-**Branch:** codex/phase-06b1-human-resolution. **Checkpoint:** phase-06b1-human-resolution.
+**Current gate:** Phase 6B.2B defensive hardening review.
+**Base:** f7f669821464183bcad6d8802177d2e170187285.
+**Branch:** codex/phase-06b2b-document-hardening. **Checkpoint:** phase-06b2b-document-hardening.
 Final exact SHA and remote publication/clean-tree verification accompany the checkpoint handoff.
 No prior-tag/default-branch alteration. Deadline remains Saturday 2026-11-21 IST.
 
@@ -165,3 +165,7 @@ older8006 untouched. No corrections/undo/multiple confirmations or new creative 
 ## Phase 6B.2A partial review
 
 REPRODUCTION INCOMPLETE — INVESTIGATION REQUIRED. Static review of F1–F3 and safe target criteria are recorded. Three benign offline API controls passed. No bypass probes were run and all three runtime findings remain inconclusive. Baseline 328 backend and 58 frontend tests passed. Zero Gemini requests. Production and frozen business oracles unchanged. See docs/ADVERSARIAL_REPRODUCTION_REPORT.md and docs/ADVERSARIAL_EVALUATION_PLAN.md.
+
+## Phase 6B.2B defensive document hardening
+
+Branch `codex/phase-06b2b-document-hardening` from `f7f669821464183bcad6d8802177d2e170187285`. Supported native headers are compared across the document. Mixed raster uncertainty uses a sanitized technical gate when bank details are unresolved. Native pages with extractable text and a uniform render fail before inference. Existing benign controls pass. Exact historical audit scenarios remain inconclusive. See `docs/PHASE_06B2B_REPORT.md` for test evidence and measured latency. Zero Gemini requests.

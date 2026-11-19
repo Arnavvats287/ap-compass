@@ -4,6 +4,7 @@ from decimal import Decimal, InvalidOperation
 import re
 
 from app.contracts import EvidenceRefV1, ExtractedInvoiceV1
+from .consistency import disputed_headers
 from .schema import SourceClaim
 from .types import DocumentInspection, ExtractionError
 
@@ -144,6 +145,7 @@ def ground_evidence(invoice: ExtractedInvoiceV1, claims: tuple[SourceClaim, ...]
             # None means absent to the existing financial contract. Do not let a
             # clearly omitted instruction masquerade as absence or fill digits.
             raise ExtractionError("INVALID_RESPONSE")
+    disputed = disputed_headers(inspection.pages)
     grounded = []
     for field, value in values(invoice).items():
         matches = [claim for claim in claims if claim.field == field]
@@ -158,7 +160,9 @@ def ground_evidence(invoice: ExtractedInvoiceV1, claims: tuple[SourceClaim, ...]
                 occurrences = source.count(quote) if quote else 0
                 if occurrences:
                     state = "SOURCE_LOCATED_UNVERIFIED"
-                    if (len(matches) == 1 and occurrences == 1
+                    unresolved_bank_source = inspection.route == "mixed" and field.startswith("bank_instructions.")
+                    if (not unresolved_bank_source and field not in disputed
+                            and len(matches) == 1 and occurrences == 1
                             and local_support(invoice, field, value, page, claim)):
                         state = "NATIVE_VERIFIED"
         grounded.append(EvidenceRefV1(

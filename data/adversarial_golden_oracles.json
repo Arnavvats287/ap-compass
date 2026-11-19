@@ -71,5 +71,38 @@
       "fixture_sha256": null,
       "current_observation": null
     }
+  ],
+  "defensive_check_observations": [
+    {
+      "case_id": "F1",
+      "behavior": "CURRENT OBSERVED",
+      "test_mode": "Controlled inspected observations and actual grounder/evaluator",
+      "result": "REVIEW_REQUIRED",
+      "reason": "SOURCE_EVIDENCE_MISSING",
+      "states": {
+        "disputed_header": "SOURCE_LOCATED_UNVERIFIED",
+        "currency": "NATIVE_VERIFIED"
+      },
+      "historical_audit_probe": "not run"
+    },
+    {
+      "case_id": "F2",
+      "behavior": "CURRENT OBSERVED",
+      "test_mode": "Ordinary payment-terms notice, real offline API and parser",
+      "fixture_sha256": "aa845b7b46d7cb829c59f5c7370a67ddddabbd8deb50df4c5618901533dc6a92",
+      "route": "mixed",
+      "execution_state": "PROCESSING_FAILED",
+      "error_code": "UNSUPPORTED_PDF",
+      "decision": null,
+      "design": "Adapter-local technical gate for mixed content when no complete bank object is available. The completed-review target is kept as originally specified.",
+      "historical_audit_probe": "not run"
+    },
+    {
+      "case_id": "F3",
+      "behavior": "CURRENT OBSERVED",
+      "test_mode": "Real parser on extractable non-invoice prose with a uniform render",
+      "result": "EMPTY_PDF",
+      "historical_audit_probe": "not run"
+    }
   ]
 }

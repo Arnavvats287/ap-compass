@@ -11,6 +11,40 @@ from .limits import (
 from .types import ExtractionError
 
 
+def require_visible_native(render):
+    if render.is_unicolor:
+        raise ExtractionError("EMPTY_PDF")
+
+
+def has_unresolved_raster(page, images):
+    if not images:
+        return False
+    # Only source pixels from one bounded, opaque swatch qualify as trivial.
+    # A small footprint limits scope but cannot establish semantic harmlessness.
+    if len(images) != 1:
+        return True
+    image = images[0]
+    if (image["width"] * image["height"] > 4096 or image.get("has-mask")
+            or image["colorspace"] not in (1, 3)):
+        return True
+    x0, y0, x1, y1 = image["bbox"]
+    if not (0 < x1 - x0 <= page.rect.width * .1 and 0 < y1 - y0 <= page.rect.height * .1):
+        return True
+    import pymupdf
+    resources = page.get_images(full=True)
+    if len(resources) != 1:
+        return True
+    xref, mask, *_ = resources[0]
+    if (mask or any(page.parent.xref_get_key(xref, key)[0] != "null"
+                    for key in ("Mask", "SMask", "ImageMask"))):
+        return True
+    blocks = [block for block in page.get_text("dict")["blocks"] if block["type"] == 1]
+    if len(blocks) != 1 or blocks[0].get("mask"):
+        return True
+    pix = pymupdf.Pixmap(blocks[0]["image"])
+    return bool(pix.alpha or pix.colorspace is None or not pix.is_unicolor)
+
+
 def inspect(raw):
     import pymupdf
     pymupdf.TOOLS.mupdf_display_errors(False)
@@ -46,10 +80,14 @@ def inspect(raw):
             if len(lines) > 4000:
                 raise ExtractionError("RESOURCE_LIMIT")
             readable = len(text.strip()) >= 40 and sum(c.isprintable() or c.isspace() for c in text) >= len(text) * .95 and "\ufffd" not in text
-            large_image = any(item["bbox"][2] - item["bbox"][0] > width * .7
-                              and item["bbox"][3] - item["bbox"][1] > height * .7
-                              for item in page.get_image_info())
-            route = "mixed" if readable and large_image else "native_text" if readable else "image_only"
+            raster_uncertain = readable and has_unresolved_raster(page, page.get_image_info())
+            route = "mixed" if raster_uncertain else "native_text" if readable else "image_only"
+            if readable:
+                # One small grayscale render, independently bounded even on oversized pages.
+                scale = min(0.75, 640 / max(width, height))
+                visibility = page.get_pixmap(matrix=pymupdf.Matrix(scale, scale),
+                                             colorspace=pymupdf.csGRAY, alpha=False)
+                require_visible_native(visibility)
             image, iw, ih = None, None, None
             if route != "native_text":
                 scale = min(120 / 72, (MAX_IMAGE_EDGE - 2) / max(width, height), math.sqrt(MAX_IMAGE_PIXELS / (width * height)) * .999)

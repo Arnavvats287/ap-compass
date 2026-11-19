@@ -183,3 +183,11 @@ Do not rewrite past records to pretend a previous design was never chosen. Recor
 - Only new test scenario: separate MISSING_PO_VALID using existing Meridian authority. Existing AMBIGUOUS_PO
   remains a negative review case with missing line data. No creative showcase selection or new seed values.
 - No correction/supersession/undo,arbitrary manual approval,new model authority,hosting or further6B scope.
+
+## ADR-021 — Bounded document trust hardening
+
+- Phase 6B.2B authorizes defensive changes at the parser and evidence boundaries. Historical audit outcomes remain inconclusive on this baseline.
+- Compare labelled repeated native headers before verification. Keep extracted values, cited provenance and financial evaluation separate.
+- Mixed content with unresolved bank presence uses Option A and existing UNSUPPORTED_PDF. Complete bank claims remain unverified in mixed documents. A future explicitly typed presence state is available for proposal if completed review is required for that case.
+- The native parser applies one bounded grayscale render and refuses exactly uniform output. Ordinary visible PDFs, repeated summaries, the uniform swatch and existing scans were checked.
+- Existing evidence, financial and persistence contracts apply. No migration. See DOCUMENT_TRUST_HARDENING.md and PHASE_06B2B_REPORT.md for tradeoffs, observed results and runtime cost.
