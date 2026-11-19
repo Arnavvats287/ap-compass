@@ -192,7 +192,6 @@ def test_scope_finding_identifies_only_the_unmapped_line():
     assert finding.next_action
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError, reason="Known routing gap: mapping defaults to AP and omits the PO amendment or correction step")
 def test_scope_routing_matches_frozen_business_oracle():
     case = SUBMISSIONS["SCOPE_UNAUTHORIZED_LINE"]
     decision = evaluate(context_from_oracle(case), POLICY)
@@ -200,10 +199,10 @@ def test_scope_routing_matches_frozen_business_oracle():
     assert finding.owner == case["expected_owner"]
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError, reason="Known remediation gap: action requests generic item clarification instead of an amendment or corrected invoice")
 def test_scope_action_matches_frozen_business_oracle():
     case = SUBMISSIONS["SCOPE_UNAUTHORIZED_LINE"]
     decision = evaluate(context_from_oracle(case), POLICY)
     finding = next(item for item in decision.findings if item.code == "LINE_MAPPING_UNRESOLVED")
     action = finding.next_action.casefold()
-    assert "verif" in action and ("amend" in action or "correct" in action)
+    assert "verify authorization" in action
+    assert "authorized po amendment" in action and "corrected supplier invoice" in action

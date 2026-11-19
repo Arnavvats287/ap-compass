@@ -6,8 +6,9 @@ import re
 # Full-line labels exclude previous/customer balances and line-level subtotals.
 HEADER_LABELS = {
     "invoice_number": r"invoice\s*(?:number|no\.?|#)",
+    "po_reference": r"(?:purchase\s*order|p\.?o\.?\s*(?:number|no\.?|#|reference)?)",
     "net": r"(?:net\s*subtotal|subtotal|invoice\s*net|net\s*(?:amount|total)|taxable\s*(?:amount|value))",
-    "tax": r"(?:tax(?:\s*\([^)]{1,40}\))?|gst|vat)",
+    "tax": r"(?:tax(?:\s*\([^)]{1,40}\))?|(?:gst|vat)(?:\s*\(?\d{1,2}(?:\.\d+)?%\)?)?)",
     "total": r"(?:invoice\s*total|grand\s*total|amount\s*due|gross(?:\s*total)?|total\s*(?:payable|amount)?)",
 }
 QUALIFIER = r"(?:(?:revised|final|corrected)\s+){0,2}"
@@ -23,10 +24,27 @@ AMOUNT = re.compile(
 CURRENCIES = {"₹": "INR", "RS": "INR", "RS.": "INR", "$": "USD", "€": "EUR", "£": "GBP"}
 
 
-def disputed_headers(pages):
+def disputed_headers(pages, split_observations=()):
     """Identify disagreement; never pick a replacement value or evaluate eligibility."""
     values = {field: set() for field in PATTERNS}
     currencies = {field: set() for field in PATTERNS}
+    def record(field, raw):
+        if field in {"invoice_number", "po_reference"}:
+            values[field].add(" ".join(raw.split()).casefold())
+        elif amount := AMOUNT.fullmatch(raw):
+            currency, number = amount.groups()
+            values[field].add(Decimal(number.replace(",", "")))
+            if currency:
+                currencies[field].add(CURRENCIES.get(currency.upper(), currency.upper()))
+
+    ambiguous = set()
+    for observations in split_observations:
+        for field in PATTERNS.keys() & observations.keys():
+            pairs = observations[field]
+            if len(pairs) != 1 or not pairs[0].value:
+                ambiguous.add(field)
+            for pair in pairs:
+                record(field, pair.value)
     for page in pages:
         if page.route != "native_text":
             continue
@@ -35,13 +53,6 @@ def disputed_headers(pages):
                 match = pattern.fullmatch(line)
                 if not match:
                     continue
-                raw = match[1]
-                if field == "invoice_number":
-                    values[field].add(" ".join(raw.split()).casefold())
-                elif amount := AMOUNT.fullmatch(raw):
-                    currency, number = amount.groups()
-                    values[field].add(Decimal(number.replace(",", "")))
-                    if currency:
-                        currencies[field].add(CURRENCIES.get(currency.upper(), currency.upper()))
+                record(field, match[1])
                 break
-    return {field for field in PATTERNS if len(values[field]) > 1 or len(currencies[field]) > 1}
+    return ambiguous | {field for field in PATTERNS if len(values[field]) > 1 or len(currencies[field]) > 1}

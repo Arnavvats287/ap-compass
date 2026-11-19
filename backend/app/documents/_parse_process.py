@@ -6,7 +6,7 @@ import sys
 
 from .limits import (
     MAX_IMAGE_EDGE, MAX_IMAGE_PIXELS, MAX_IMAGES_BYTES, MAX_INPUT_BYTES,
-    MAX_PAGE_CHARS, MAX_PAGES, MAX_TOTAL_CHARS, constrain_process_memory,
+    MAX_LAYOUT_LINES, MAX_PAGE_CHARS, MAX_PAGES, MAX_TOTAL_CHARS, constrain_process_memory,
 )
 from .types import ExtractionError
 
@@ -14,6 +14,14 @@ from .types import ExtractionError
 def require_visible_native(render):
     if render.is_unicolor:
         raise ExtractionError("EMPTY_PDF")
+
+
+def bounded_rect(line, width, height):
+    x0, y0, x1, y1 = line["bbox"]
+    if (line["dir"] == (1.0, 0.0) and all(math.isfinite(n) for n in (x0, y0, x1, y1))
+            and 0 <= x0 < x1 <= width and 0 <= y0 < y1 <= height):
+        return [round(n, 2) for n in (x0, y0, x1, y1)]
+    return None
 
 
 def has_unresolved_raster(page, images):
@@ -75,8 +83,9 @@ def inspect(raw):
                 raise ExtractionError("RESOURCE_LIMIT")
             # Text-only flags avoid decompressing embedded raster images into the text dict.
             blocks = page.get_text("dict", flags=pymupdf.TEXTFLAGS_TEXT, sort=True)["blocks"]
+            source_lines = [line for block in blocks if block["type"] == 0 for line in block["lines"]]
             lines = [["".join(s["text"] for s in line["spans"]), max((s["size"] for s in line["spans"]), default=0)]
-                     for block in blocks if block["type"] == 0 for line in block["lines"]]
+                     for line in source_lines]
             if len(lines) > 4000:
                 raise ExtractionError("RESOURCE_LIMIT")
             readable = len(text.strip()) >= 40 and sum(c.isprintable() or c.isspace() for c in text) >= len(text) * .95 and "\ufffd" not in text
@@ -102,8 +111,10 @@ def inspect(raw):
                     raise ExtractionError("RESOURCE_LIMIT")
             else:
                 has_content = True
+            rects = ([bounded_rect(line, width, height) for line in source_lines]
+                     if route == "native_text" and page.rotation == 0 and len(lines) <= MAX_LAYOUT_LINES else [])
             pages.append(dict(number=index + 1, route=route, native_text=text, lines=lines,
-                              image_png=image, image_width=iw, image_height=ih))
+                              image_png=image, image_width=iw, image_height=ih, line_rects=rects))
         if not has_content:
             raise ExtractionError("EMPTY_PDF")
         routes = {p["route"] for p in pages}

@@ -34,7 +34,11 @@ def source_evidence(context: EvaluationContextV1, policy: PolicyV1):
     unresolved = [name for name in fields if not verified(invoice, name)]
     if not unresolved:
         return ()
+    guidance = {}
+    if any(ref.route == "image_only" and ref.field in unresolved for ref in invoice.evidence):
+        guidance["action"] = ("Compare the scan with the purchase order and billed history. Verify uncertain amounts "
+                              "and request a clearer copy or a supplier-issued native PDF if needed.")
     return (finding("SOURCE_EVIDENCE_MISSING", "REVIEW", "Critical source evidence needs verification",
                     "Missing, unverified or inconsistent evidence for: " + ", ".join(unresolved),
                     evidence=tuple(ref for ref in invoice.evidence if ref.field in unresolved),
-                    fields=", ".join(unresolved)),)
+                    fields=", ".join(unresolved), **guidance),)

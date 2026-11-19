@@ -36,6 +36,8 @@ class PageInspection:
     image_png: bytes | None = field(default=None, repr=False)
     image_width: int | None = None
     image_height: int | None = None
+    # Same indices as lines; absent on unsupported pages. Never persisted or sent to a provider.
+    line_rects: tuple[tuple[float, float, float, float] | None, ...] = field(default=(), repr=False)
 
 
 @dataclass(frozen=True)

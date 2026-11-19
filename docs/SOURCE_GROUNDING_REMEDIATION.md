@@ -1,0 +1,29 @@
+# Native invoice source grounding
+
+## Evidence boundary
+
+PyMuPDF's isolated parser keeps a rectangle alongside each existing native line on eligible pages. The line index is the source identity. No text is duplicated in this metadata and no model geometry is consumed. Only finite, in-page, horizontal rectangles are accepted. The geometry is disabled for rotated, image-only, or mixed pages and for pages above 600 lines. The existing limits remain 8 MiB, 10 pages, 512 MiB parser memory, a 12-second parser timeout, 4,000 lines per page, bounded native text, and bounded rendered images. Geometry adds at most 600 rectangles per page within the existing subprocess output cap.
+
+The adapter constructs bounded baselines from those rectangles. Its new paths require one claim, the specified independently inspected native page, an exact printed value, and a uniquely supported semantic association. Coordinates, row records, and supporting associations are internal process data. The public evidence snapshot retains the existing stated page, untrusted quote and raw value, normalized value, route, and assigned evidence state. Provider prompts, wire schema, API schema, and database schema remain unchanged.
+
+## Headers and seller identity
+
+- Existing inline `Label: value` evidence remains supported. The adapter checks a complete source line independently from substrings in longer lines. Duplicate complete labels still withhold verification.
+- Recognized standalone labels can bind to the immediately adjacent right cell, or to an aligned cell in the first nearby row below. The verifier requires supported types, a limited geometric gap, a non-overlapping row, no competing association, and the exact label/value quote from those source cells. A cell already attached to a recognized left-hand role, such as a buyer label, cannot support an overhead association. A value cell shared by two labels cannot verify either association. Table column labels do not provide invoice header amounts.
+- Supported split fields include invoice number/date, purchase order, currency, supplier and invoice net/tax/gross. Exact decimal parsing accepts standard and Indian grouping. Dates use ISO or supported English month names and leave ambiguous numeric formats unverified. A split currency prefix must agree with the extracted invoice currency where one is supplied.
+- Independently recognized competing PO references across native pages withhold reference verification. The adapter keeps the extracted reference and does not select a PO.
+- Labelled seller identity is separate from buyer and remittance context. The legacy isolated seller-heading path remains. Recognized explicit split payment labels are subject to the same conservative omission and evidence checks, without inferring payee details from an account-summary number.
+
+## Tables and repeated totals
+
+A recognized table needs one explicit header band with independently labelled item-code, quantity and unit-price columns. Description, service period, and line net can provide additional context. The first release accepts a single supported table whose row count and ordered item identities agree with the extraction. Each full row quote must localize exactly one row. Each value must match its own cell and column. Service periods remain in supporting quotes, while the domain keeps the existing line contract. Repeated codes or prices are supported when their row associations are independently distinguishable. An unprinted optional net cannot be verified from arithmetic.
+
+A recognized account-summary heading separates the current-charge area from ordinary account references. A total quote that is a complete invoice line can verify even when it is a substring of a longer repeated current-amount label. Prior or combined account balances do not provide invoice-gross support. Document-wide consistency still checks independently recognized amounts and explicitly labelled revisions across native pages. It preserves the actual extracted value and withholds verification on substantive disagreements.
+
+Unsupported layouts include multiline table cells, card-style or multipage tables without reconstructable row boundaries, inadequate labels, overlapping rows, ambiguous text associations, and incompatible quote order. Conservative Review remains appropriate in those cases. The parser's readability guard is not PDF authenticity or glyph-by-glyph visibility verification. No OCR or learned validation is involved.
+
+## Review guidance and historical boundary
+
+The existing `LINE_MAPPING_UNRESOLVED` finding remains Review. A verified explicit item code outside an approved matched vendor's selected PO routes to Procurement with an authorization, amendment-or-correction, and re-evaluation action. Missing/unverified item facts and unresolved PO identity continue to require AP clarification. A finding containing both groups identifies their separate one-based line indices. No PO selection, price, quantity, commitment, rounding, duplicate, approval, or ledger rule changed. The existing `SOURCE_EVIDENCE_MISSING` finding adds scan-specific guidance when a required field references an image-only page. Its evidence stays unverified.
+
+Historical decision snapshots and review actions remain readable and unchanged. Policy preview and eligible PO confirmation still use stored extraction and cannot manufacture source support. Per-generation metadata already exists in the extraction adapter, but retaining it in historical run/API data would require a separate storage and contract decision. This phase leaves that work deferred. No independent held-out PDF was reopened or rerun. No Gemini requests were made, and no benchmark results or scoring implementation changed.

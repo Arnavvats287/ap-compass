@@ -2,7 +2,7 @@
 from decimal import Decimal
 
 from app.contracts import EvaluationContextV1, PolicyV1
-from .common import finding, normalized
+from .common import finding, normalized, verified
 
 ZERO = Decimal(0)
 
@@ -103,13 +103,29 @@ def remaining_commitment(context: EvaluationContextV1, policy: PolicyV1):
 def item_mapping(context: EvaluationContextV1, policy: PolicyV1):
     po = context.selected_po
     known = {normalized(line.item_code) for line in po.lines} if po else set()
-    unresolved = [str(i + 1) for i, line in enumerate(context.invoice.lines)
-                  if not normalized(line.item_code) or normalized(line.item_code) not in known]
-    if unresolved:
-        return (finding("LINE_MAPPING_UNRESOLVED", "REVIEW", "Invoice items are not mapped to authorized PO scope",
-                        "Invoice lines requiring item-code/PO clarification: " + ", ".join(unresolved),
-                        source="procurement", action="Obtain item codes or itemized scope and verify each line against the intended PO."),)
-    return ()
+    vendor = context.canonical_vendor
+    matched_vendor = bool(po and vendor and vendor.approved and po.vendor_id == vendor.id)
+    outside_scope, unclear = [], []
+    for index, line in enumerate(context.invoice.lines):
+        code = normalized(line.item_code)
+        if code in known:
+            continue
+        target = (outside_scope if matched_vendor and code and verified(context.invoice, f"lines[{index}].item_code")
+                  else unclear)
+        target.append(str(index + 1))
+    if not (outside_scope or unclear):
+        return ()
+    notes = []
+    if outside_scope:
+        notes.append("Invoice lines with verified item codes outside the selected PO scope: " + ", ".join(outside_scope))
+    if unclear:
+        notes.append("Invoice lines requiring item-code/PO clarification: " + ", ".join(unclear))
+    clarification = "Obtain missing item codes or itemized source information and verify against the intended PO."
+    authorization = ("Verify authorization of the additional item or service. Obtain an authorized PO amendment "
+                     "or corrected supplier invoice as appropriate, then re-evaluate.")
+    action = " ".join(text for text, needed in ((authorization, outside_scope), (clarification, unclear)) if needed)
+    return (finding("LINE_MAPPING_UNRESOLVED", "REVIEW", "Invoice items are not mapped to authorized PO scope",
+                    ". ".join(notes), source="procurement", owner="Procurement" if outside_scope else "AP", action=action),)
 
 
 def remaining_quantities(context: EvaluationContextV1, policy: PolicyV1):

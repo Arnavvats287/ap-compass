@@ -1,12 +1,16 @@
 # AP Compass — Project Memory (living handoff)
 
 **Last reviewed:** 2026-11-19 (IST)
-**Repository status:** Frozen development and held-out benchmark submitted for remediation review.
-**Current authorized segment:** `06B.2C.2 FROZEN BASELINE AND INDEPENDENT PDF BENCHMARK` only.
+**Repository status:** Source grounding and scope review remediation passed local verification, pending post-fix validation review.
+**Current authorized segment:** `06B.2C.3 SOURCE GROUNDING AND BUSINESS WORKFLOW REMEDIATION` only.
 **Deadline:** Saturday 2026-11-21 (IST); target Friday evening feature freeze.
 **Maintainers:** Builder owns product decisions; Codex implements one authorized phase; architectural review gates further work.
 
 > Repo-local continuity. Status is evidence, not completion by assertion. Latest user acceptance/routing adjustment is recorded in ADR-016 and the handoff below.
+
+## Phase 6B.2C.3 handoff
+
+From `fb2a4535cc3e32a15c139fdfc59250b85e84a936`, added bounded parser-owned rectangles for narrow adjacent header-cell and table-row localization. All 26 original synthetic test cases pass, covering repeated distinct rows, mistaken buyer/amount associations, and conflicting totals or PO references. Verified explicit items outside an approved matched PO route to Procurement with an authorization and amendment-or-correction action. Missing or unverified identifiers remain AP clarification. Image-only source Review now gives scan-specific guidance. No Gemini, held-out rerun, policy, ledger, API or UI changes. The four frozen result hashes are unchanged. Exact tests, performance and snapshot evidence are in `docs/PHASE_06B2C3_REPORT.md`. Stop before independent post-fix validation.
 
 ## Phase 6B.2C.2 handoff
 

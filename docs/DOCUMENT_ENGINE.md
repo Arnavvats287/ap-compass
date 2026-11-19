@@ -66,11 +66,14 @@ The provider supplies only field/raw value/page/quote claims. `documents.evidenc
 Stable keys exactly match Phase 2: vendor_name_raw, invoice_number, invoice_date, po_reference, currency,
 net/tax/total; lines[i].item_code/qty/unit_price_net/net; bank_instructions.account/ifsc. Description evidence is additive.
 
-For NATIVE_VERIFIED require one claim, the stated native page, a unique independently located quote,
+For NATIVE_VERIFIED require one claim, the stated native page, an independently localized quote,
 coherent raw/normalized value and one field-specific local source location:
 
 - Header amounts must occur under the appropriate net/tax/gross label; incidental repeated numbers never suffice.
-- Native labelled item blocks must bind quantity/price/net to the same exact item code, never another line.
+- Native labelled item blocks and supported labelled tables bind quantity, price and net to the intended source row.
+- Bounded parser-owned rectangles support immediate adjacent and directly aligned header cells. Tables require
+  explicit column labels, unique row support and consistent ordered item identities. Neither path accepts a bare
+  matching number as proof. See [Native invoice source grounding](SOURCE_GROUNDING_REMEDIATION.md) for the precise boundary.
 - Supplier identity requires an explicit vendor label or a unique isolated top supplier heading; buyer/bill-to context
   and ambiguous headings cannot verify supplier identity.
 - Duplicate field labels/claims, wrong values, wrong page, unsupported layouts or ambiguous quotes remain unverified/missing.
@@ -79,7 +82,7 @@ coherent raw/normalized value and one field-specific local source location:
 There are no fabricated OCR confidence values or bounding boxes. Image/mixed-page quotes retain page and claim
 metadata but are SOURCE_LOCATED_UNVERIFIED; nonexistent page/quote or missing facts are MISSING.
 Native verification establishes fidelity to the stated invoice, not approved vendor identity or financial eligibility.
-Source verification is conservative for known labelled block layouts; arbitrary tables, locales and multi-invoice bundles
+Source verification is conservative for labelled blocks and supported single tables. Arbitrary tables, locales and multi-invoice bundles
 are not claimed to have general verified coverage. The existing financial engine requires review for unverified critical scan facts.
 
 ## Revised required primary / optional escalation (ADR-016)

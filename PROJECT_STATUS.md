@@ -1,9 +1,9 @@
 # AP Compass — Project Status / Gate Register
 
 **Updated:** 2026-11-19 IST.
-**Current gate:** Phase 6B.2C.2 benchmark completed for remediation review.
-**Base:** 0e7c421573023ce0c3da2433aed0409d5bedfa7a.
-**Branch:** codex/phase-06b2c2-benchmark. **Checkpoint:** phase-06b2c2-benchmark.
+**Current gate:** Phase 6B.2C.3 source grounding and scope review remediation.
+**Base:** fb2a4535cc3e32a15c139fdfc59250b85e84a936.
+**Branch:** codex/phase-06b2c3-grounding-remediation. **Checkpoint:** phase-06b2c3-grounding-remediation.
 Final exact SHA and remote publication/clean-tree verification accompany the checkpoint handoff.
 No prior-tag/default-branch alteration. Deadline remains Saturday 2026-11-21 IST.
 
@@ -21,7 +21,8 @@ No prior-tag/default-branch alteration. Deadline remains Saturday 2026-11-21 IST
 | 06B.2B.1 Mixed-document review | ACCEPTED | Verified base for golden dataset preparation |
 | 06B.2C.1 Golden dataset preparation | ACCEPTED | Frozen as the base for the independent benchmark |
 | 06B.2C.2 Frozen baseline and independent benchmark | Complete for review | Development B 9/10 exact decisions, independent B 3/6. Live used four generations across two completed submissions. Both had exact supported field values and unnecessary source Review. See the benchmark report for coverage and exclusions. |
-| Remediation and further scenarios | LOCKED | Await explicit authorization |
+| 06B.2C.3 Source grounding and scope remediation | PASS, review pending | 422 backend, including 26 development layout tests, and 58 frontend passed. Existing scope owner/action assertions pass without XFAIL. Offline API, restart and browser QA passed. No independent rerun or Gemini requests. |
+| Post-fix independent validation and further scenarios | LOCKED | Await explicit authorization |
 | 07 Release | LOCKED | No public/paid/Docker deployment |
 
 ## Verified Phase 6A evidence

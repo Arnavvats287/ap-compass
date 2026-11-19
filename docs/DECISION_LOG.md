@@ -199,3 +199,11 @@ Do not rewrite past records to pretend a previous design was never chosen. Recor
 - An isolated document-content finding requires review for flagged invoices. Existing hard-block precedence, policy preview and confirmation use the same rules. The integrity signal is not a bank fact.
 - Mixed-page evidence cannot independently establish bank facts. A truly supported separate native page retains normal mismatch checks.
 - Keep conservative raster routing. Unresolved decorative content can require review. See MIXED_DOCUMENT_REVIEW.md and PHASE_06B2B1_REPORT.md.
+
+## ADR-023 — Parser-owned native source layout and verified scope routing
+
+- Use bounded optional rectangles indexed by existing native lines within the isolated parser output. No provider, public evidence, API, or storage schema addition.
+- Verify supported header cell adjacency and single-table row associations against exact parser-owned values and quotes. Keep repeated rows distinguishable through printed context. Account-summary references cannot substitute current totals. Preserve document-wide contradiction handling, including competing supported PO references.
+- Keep `LINE_MAPPING_UNRESOLVED` at Review. Route only verified out-of-scope item codes against an approved matched PO to Procurement. Retain AP clarification for uncertain identity. Preserve hard-control precedence, existing invoice facts, and historical decisions.
+- Keep image-only and mixed evidence conservative. The existing source-review finding can give scan-specific guidance. Defer persisted per-generation telemetry pending a separate storage decision.
+- Keep all first benchmark results and original oracles frozen. Independent validation and all live generation remain outside this remediation phase.

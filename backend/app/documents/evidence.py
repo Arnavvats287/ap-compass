@@ -1,21 +1,19 @@
 """Independent, conservative source support checks; no financial decision rules."""
+from collections import Counter, defaultdict
 from datetime import date, datetime
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal
 import re
 
 from app.contracts import EvidenceRefV1, ExtractedInvoiceV1
-from .consistency import disputed_headers
+from .consistency import AMOUNT, CURRENCIES, HEADER_LABELS, disputed_headers
 from .schema import SourceClaim
+from .source_layout import SUMMARY, flat, rows_for, split_headers, table_rows, unique_quotes
 from .types import DocumentInspection, ExtractionError
 
 LABELS = {
-    "invoice_number": r"invoice\s*(?:number|no\.?|#)",
+    **HEADER_LABELS,
     "invoice_date": r"invoice\s*date",
-    "po_reference": r"(?:purchase\s*order|p\.?o\.?\s*(?:number|no\.?|#|reference)?)",
     "currency": r"currency",
-    "net": r"(?:net\s*subtotal|subtotal|invoice\s*net|net\s*(?:amount|total)|taxable\s*(?:amount|value))",
-    "tax": r"(?:tax(?:\s*\([^)]{1,40}\))?|gst|vat)",
-    "total": r"(?:invoice\s*total|grand\s*total|amount\s*due|gross(?:\s*total)?|total\s*(?:payable|amount)?)",
     "item_code": r"(?:item\s*code|sku)",
     "qty": r"(?:quantity|qty\.?)",
     "unit_price_net": r"(?:unit\s*price(?:\s*\(net\))?|net\s*unit\s*price)",
@@ -23,10 +21,6 @@ LABELS = {
     "account": r"(?:bank\s*)?account(?:\s*(?:number|no\.?|#))?",
     "ifsc": r"ifsc(?:\s*code)?",
 }
-
-
-def flat(value):
-    return " ".join(value.split()).casefold()
 
 
 def values(invoice):
@@ -44,13 +38,8 @@ def values(invoice):
 def printed_value(text, expected):
     text = text.strip()
     if isinstance(expected, Decimal):
-        text = re.sub(r"^(?:INR|USD|EUR|GBP|Rs\.?|₹|\$)\s*", "", text, flags=re.I)
-        if not re.fullmatch(r"-?(?:\d+|\d{1,3}(?:,\d{3})+)(?:\.\d+)?", text):
-            return False
-        try:
-            return Decimal(text.replace(",", "")) == expected
-        except InvalidOperation:
-            return False
+        amount = AMOUNT.fullmatch(text)
+        return bool(amount and Decimal(amount[2].replace(",", "")) == expected)
     if isinstance(expected, date):
         for form in ("%Y-%m-%d", "%d %b %Y", "%d %B %Y", "%B %d, %Y"):
             try:
@@ -63,11 +52,7 @@ def printed_value(text, expected):
 
 
 def local_support(invoice, field, value, page, claim):
-    """Return true only for one field-specific source location and coherent value.
-
-    Label/value block layouts are supported. Unsupported table layouts remain
-    unverified; this is preferable to validating an incidental number occurrence.
-    """
+    """Preserve field-specific grounding for existing labelled blocks."""
     quote = flat(claim.quote)
     raw = flat(claim.raw_value)
     if not raw or not printed_value(claim.raw_value, value):
@@ -123,6 +108,9 @@ def local_support(invoice, field, value, page, claim):
                     if (match := re.fullmatch(rf"\s*{LABELS[leaf]}\s*:\s*(.+)", text, re.I))]
         if len(labelled) != 1:
             return False
+        if field in {"net", "tax", "total"} and any(SUMMARY.fullmatch(text.strip())
+                                                    for text in scope[:scope.index(labelled[0][0])]):
+            return False
         candidates = [text for text, printed in labelled if printed_value(printed, value)]
     if len(candidates) != 1:
         return False
@@ -135,35 +123,103 @@ def local_support(invoice, field, value, page, claim):
     return True
 
 
+LINE_FIELD = re.compile(r"lines\[(\d+)\]\.(description|item_code|qty|unit_price_net|net)")
+
+
+def supported_cell(printed, value, claim, currency=None):
+    if not printed_value(printed, value) or not printed_value(claim.raw_value, value):
+        return False
+    raw, text = flat(claim.raw_value), flat(printed)
+    if isinstance(value, Decimal):
+        prefix = AMOUNT.fullmatch(printed)[1]
+        if prefix and currency and CURRENCIES.get(prefix.upper(), prefix.upper()) != currency.upper():
+            return False
+        return bool(re.search(r"(?<![\d.,])" + re.escape(raw) + r"(?![\d.,])", text))
+    return raw == text
+
+
+def layout_support(invoice, field, value, claim, headers, table, unique_rows):
+    if field in headers:
+        pairs = headers[field]
+        return (len(pairs) == 1 and pairs[0].quote == flat(claim.quote)
+                and supported_cell(pairs[0].value, value, claim, invoice.currency))
+    line = LINE_FIELD.fullmatch(field)
+    if line and table:
+        index, leaf = int(line[1]), line[2]
+        row = table[index]
+        # Ordinal mapping is allowed only for a complete single table with the same
+        # item sequence and description context. The claim must select the row,
+        # even when prices, quantities or item codes repeat elsewhere.
+        return (row.quote in unique_rows and row.quote == flat(claim.quote) and leaf in row.values
+                and supported_cell(row.values[leaf], value, claim, invoice.currency))
+    return False
+
+
 def ground_evidence(invoice: ExtractedInvoiceV1, claims: tuple[SourceClaim, ...],
                     inspection: DocumentInspection) -> ExtractedInvoiceV1:
+    pages = {page.number: page for page in inspection.pages}
+    native_pages = {number: page for number, page in pages.items() if page.route == "native_text"}
+    layouts = {number: rows_for(page) for number, page in native_pages.items()}
+    headers = {number: split_headers(rows) for number, rows in layouts.items()}
+    tables = {number: table_rows(rows) for number, rows in layouts.items()}
+    full_tables = [table for table in tables.values() if table]
+    eligible_table = ()
+    if len(full_tables) == 1:
+        table = full_tables[0]
+        if len(table) == len(invoice.lines) and all(
+            line.item_code and printed_value(row.values["item_code"], line.item_code)
+            and ("description" not in row.values or not line.description or printed_value(row.values["description"], line.description))
+            for row, line in zip(table, invoice.lines)
+        ):
+            eligible_table = table
+    located_quotes = {
+        number: {pair.quote for group in pairs.values() for pair in group if pair.quote}
+                | {row.quote for row in tables[number]}
+        for number, pairs in headers.items()
+    }
+    distinct_rows = unique_quotes(eligible_table)
     if invoice.bank_instructions is None:
         bank_claimed = any(c.field.startswith("bank_instructions.") and c.raw_value for c in claims)
         bank_printed = any(re.fullmatch(rf"\s*(?:{LABELS['account']}|{LABELS['ifsc']})\s*:\s*\S.*", text, re.I)
                            for page in inspection.pages if page.route == "native_text" for text, _ in page.lines)
-        if bank_claimed or bank_printed:
+        bank_split = any(pair.value for pairs in headers.values() for field, group in pairs.items()
+                         if field.startswith("bank_instructions.") for pair in group)
+        if bank_claimed or bank_printed or bank_split:
             # A detected native instruction or explicit claim makes this omission
             # an invalid extraction response. Never backfill credentials.
             raise ExtractionError("INVALID_RESPONSE")
-    disputed = disputed_headers(inspection.pages)
+    disputed = disputed_headers(inspection.pages, headers.values())
+    sources = {number: flat(page.native_text) for number, page in native_pages.items()}
+    line_counts = {number: Counter(flat(text) for text, _ in page.lines) for number, page in native_pages.items()}
+    by_field = defaultdict(list)
+    for claim in claims:
+        by_field[claim.field].append(claim)
     grounded = []
     for field, value in values(invoice).items():
-        matches = [claim for claim in claims if claim.field == field]
+        matches = by_field.get(field, ())
         claim = matches[0] if matches else None
-        page = next((p for p in inspection.pages if claim and p.number == claim.page), None)
+        page = pages.get(claim.page) if claim else None
         state = "MISSING"
         if value is not None and claim and page and claim.quote and claim.raw_value:
             if page.route != "native_text":
                 state = "SOURCE_LOCATED_UNVERIFIED"
             else:
-                source, quote = flat(page.native_text), flat(claim.quote)
+                source, quote = sources[page.number], flat(claim.quote)
                 occurrences = source.count(quote) if quote else 0
-                if occurrences:
+                if occurrences or quote in located_quotes[page.number]:
                     state = "SOURCE_LOCATED_UNVERIFIED"
-                    if (field not in disputed
-                            and len(matches) == 1 and occurrences == 1
-                            and local_support(invoice, field, value, page, claim)):
-                        state = "NATIVE_VERIFIED"
+                    if field not in disputed and len(matches) == 1:
+                        table = eligible_table if tables[page.number] is eligible_table else ()
+                        split = headers[page.number]
+                        if field in split or (LINE_FIELD.fullmatch(field) and tables[page.number]):
+                            supported = layout_support(invoice, field, value, claim, split, table, distinct_rows)
+                        else:
+                            # A complete source line is distinct from its substring in a longer
+                            # statement label. Duplicate complete lines still fail closed.
+                            unique = occurrences == 1 or line_counts[page.number][quote] == 1
+                            supported = unique and local_support(invoice, field, value, page, claim)
+                        if supported:
+                            state = "NATIVE_VERIFIED"
         grounded.append(EvidenceRefV1(
             field=field, raw_value=claim.raw_value if claim else None,
             normalized_value=None if value is None else str(value),

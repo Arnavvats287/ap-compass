@@ -40,6 +40,8 @@ def inspect_pdf(raw: bytes) -> DocumentInspection:
             raise ExtractionError(data["error"] if data["error"] in allowed else "PARSER_FAILED")
         result = data["result"]
         pages = tuple(PageInspection(**{**p, "lines": tuple(tuple(line) for line in p["lines"]),
+                                       "line_rects": tuple(tuple(rect) if rect is not None else None
+                                                           for rect in p.get("line_rects", ())),
                                        "image_png": base64.b64decode(p["image_png"]) if p["image_png"] else None})
                       for p in result["pages"])
         return DocumentInspection(route=result["route"], pages=pages, byte_count=result["byte_count"])
