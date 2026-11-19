@@ -1,0 +1,982 @@
+{
+  "dataset_version": "heldout-v1",
+  "dataset_sha256": "30e8850f67dec06662d7fc1843ab0600e01ccebb4a4a704db8cbbbca2ae0ca73",
+  "code_commit": "0c3838610f36769aec1c28af0fd2756c7be7ebcc",
+  "layer": "B",
+  "split": "heldout",
+  "attempts": [
+    {
+      "case_id": "H01",
+      "track": "submission",
+      "attempt": 1,
+      "status": "executed",
+      "execution_state": "COMPLETED",
+      "decision": "REVIEW_REQUIRED",
+      "target_decision": "READY_FOR_AP",
+      "finding_codes": [
+        "PO_MATCH_CONFIRMED",
+        "SOURCE_EVIDENCE_MISSING",
+        "BANK_DETAILS_NOT_PROVIDED"
+      ],
+      "fields": [
+        {
+          "field": "vendor_name_raw",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED"
+        },
+        {
+          "field": "invoice_number",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "MISSING"
+        },
+        {
+          "field": "invoice_date",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "MISSING"
+        },
+        {
+          "field": "po_reference",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "MISSING"
+        },
+        {
+          "field": "currency",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "MISSING"
+        },
+        {
+          "field": "net",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED",
+          "expected_decimal": "12000.00",
+          "observed_decimal": "12000.00"
+        },
+        {
+          "field": "tax",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED",
+          "expected_decimal": "2160.00",
+          "observed_decimal": "2160.00"
+        },
+        {
+          "field": "total",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED",
+          "expected_decimal": "14160.00",
+          "observed_decimal": "14160.00"
+        },
+        {
+          "field": "lines[0].description",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED"
+        },
+        {
+          "field": "lines[0].item_code",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED"
+        },
+        {
+          "field": "lines[0].qty",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED",
+          "expected_decimal": "12",
+          "observed_decimal": "12"
+        },
+        {
+          "field": "lines[0].unit_price_net",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED",
+          "expected_decimal": "1000.00",
+          "observed_decimal": "1000.00"
+        },
+        {
+          "field": "lines[0].net",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED",
+          "expected_decimal": "12000.00",
+          "observed_decimal": "12000.00"
+        },
+        {
+          "field": "bank_instructions.account",
+          "comparison": "correct_absence",
+          "evidence": "correct",
+          "actual_evidence_state": null
+        },
+        {
+          "field": "bank_instructions.ifsc",
+          "comparison": "correct_absence",
+          "evidence": "correct",
+          "actual_evidence_state": null
+        }
+      ],
+      "model_calls": 0,
+      "latency_ms": 543.145,
+      "required_findings": [],
+      "pdf_sha256": "82262342ed0de702381412f87fcc3333f6099c0dac4cd3eb358b797fa104b330",
+      "run_reference": "54b07823fff848dabf76c9cd3afdd4e7",
+      "input_tokens": null,
+      "output_tokens": null,
+      "error_code": null,
+      "route": "native_text",
+      "model_id": "TEST_ONLY-benchmark-wire-v1",
+      "controlled_calls": 1,
+      "owner": "AP",
+      "primary_reason": "SOURCE_EVIDENCE_MISSING",
+      "next_action": "Verify the source invoice and request clarification from the vendor.",
+      "classification": "Unnecessary Review"
+    },
+    {
+      "case_id": "H02",
+      "track": "submission",
+      "attempt": 1,
+      "status": "executed",
+      "execution_state": "COMPLETED",
+      "decision": "REVIEW_REQUIRED",
+      "target_decision": "READY_FOR_AP",
+      "finding_codes": [
+        "PO_MATCH_CONFIRMED",
+        "SOURCE_EVIDENCE_MISSING",
+        "BANK_DETAILS_NOT_PROVIDED"
+      ],
+      "fields": [
+        {
+          "field": "vendor_name_raw",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "MISSING"
+        },
+        {
+          "field": "invoice_number",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "MISSING"
+        },
+        {
+          "field": "invoice_date",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "MISSING"
+        },
+        {
+          "field": "po_reference",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED"
+        },
+        {
+          "field": "currency",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "MISSING"
+        },
+        {
+          "field": "net",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED",
+          "expected_decimal": "50000.00",
+          "observed_decimal": "50000.00"
+        },
+        {
+          "field": "tax",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED",
+          "expected_decimal": "9000.00",
+          "observed_decimal": "9000.00"
+        },
+        {
+          "field": "total",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED",
+          "expected_decimal": "59000.00",
+          "observed_decimal": "59000.00"
+        },
+        {
+          "field": "lines[0].description",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "MISSING"
+        },
+        {
+          "field": "lines[0].item_code",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "MISSING"
+        },
+        {
+          "field": "lines[0].qty",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "MISSING",
+          "expected_decimal": "4",
+          "observed_decimal": "4"
+        },
+        {
+          "field": "lines[0].unit_price_net",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "MISSING",
+          "expected_decimal": "5000.00",
+          "observed_decimal": "5000.00"
+        },
+        {
+          "field": "lines[0].net",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "MISSING",
+          "expected_decimal": "20000.00",
+          "observed_decimal": "20000.00"
+        },
+        {
+          "field": "lines[1].description",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "MISSING"
+        },
+        {
+          "field": "lines[1].item_code",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "MISSING"
+        },
+        {
+          "field": "lines[1].qty",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "MISSING",
+          "expected_decimal": "6",
+          "observed_decimal": "6"
+        },
+        {
+          "field": "lines[1].unit_price_net",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "MISSING",
+          "expected_decimal": "5000.00",
+          "observed_decimal": "5000.00"
+        },
+        {
+          "field": "lines[1].net",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "MISSING",
+          "expected_decimal": "30000.00",
+          "observed_decimal": "30000.00"
+        },
+        {
+          "field": "bank_instructions.account",
+          "comparison": "correct_absence",
+          "evidence": "correct",
+          "actual_evidence_state": null
+        },
+        {
+          "field": "bank_instructions.ifsc",
+          "comparison": "correct_absence",
+          "evidence": "correct",
+          "actual_evidence_state": null
+        }
+      ],
+      "model_calls": 0,
+      "latency_ms": 511.277,
+      "required_findings": [],
+      "pdf_sha256": "16fcc3764310043973c89a4c117d3b45e5650cb4552a93a847af8bbcb1cc51f5",
+      "run_reference": "307e9776798f4463b05bb4c991a8fbd7",
+      "input_tokens": null,
+      "output_tokens": null,
+      "error_code": null,
+      "route": "native_text",
+      "model_id": "TEST_ONLY-benchmark-wire-v1",
+      "controlled_calls": 1,
+      "owner": "AP",
+      "primary_reason": "SOURCE_EVIDENCE_MISSING",
+      "next_action": "Verify the source invoice and request clarification from the vendor.",
+      "classification": "Unnecessary Review"
+    },
+    {
+      "case_id": "H03",
+      "track": "submission",
+      "attempt": 1,
+      "status": "executed",
+      "execution_state": "COMPLETED",
+      "decision": "REVIEW_REQUIRED",
+      "target_decision": "READY_FOR_AP",
+      "finding_codes": [
+        "PO_MATCH_CONFIRMED",
+        "SOURCE_EVIDENCE_MISSING",
+        "BANK_DETAILS_NOT_PROVIDED"
+      ],
+      "fields": [
+        {
+          "field": "vendor_name_raw",
+          "comparison": "exact",
+          "evidence": "correct",
+          "actual_evidence_state": "NATIVE_VERIFIED"
+        },
+        {
+          "field": "invoice_number",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED"
+        },
+        {
+          "field": "invoice_date",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED"
+        },
+        {
+          "field": "po_reference",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED"
+        },
+        {
+          "field": "currency",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED"
+        },
+        {
+          "field": "net",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED",
+          "expected_decimal": "8000.00",
+          "observed_decimal": "8000.00"
+        },
+        {
+          "field": "tax",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED",
+          "expected_decimal": "1440.00",
+          "observed_decimal": "1440.00"
+        },
+        {
+          "field": "total",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED",
+          "expected_decimal": "9440.00",
+          "observed_decimal": "9440.00"
+        },
+        {
+          "field": "lines[0].description",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "MISSING"
+        },
+        {
+          "field": "lines[0].item_code",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "MISSING"
+        },
+        {
+          "field": "lines[0].qty",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "MISSING",
+          "expected_decimal": "8",
+          "observed_decimal": "8"
+        },
+        {
+          "field": "lines[0].unit_price_net",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "MISSING",
+          "expected_decimal": "1000.00",
+          "observed_decimal": "1000.00"
+        },
+        {
+          "field": "lines[0].net",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "MISSING",
+          "expected_decimal": "8000.00",
+          "observed_decimal": "8000.00"
+        },
+        {
+          "field": "bank_instructions.account",
+          "comparison": "correct_absence",
+          "evidence": "correct",
+          "actual_evidence_state": null
+        },
+        {
+          "field": "bank_instructions.ifsc",
+          "comparison": "correct_absence",
+          "evidence": "correct",
+          "actual_evidence_state": null
+        }
+      ],
+      "model_calls": 0,
+      "latency_ms": 547.937,
+      "required_findings": [],
+      "pdf_sha256": "0ed5a8835288020e0234e62a05b7108238925b5f1c9d4546bcfbbfd198e61865",
+      "run_reference": "4a77ce0a462848f8a3916190f990f9ae",
+      "input_tokens": null,
+      "output_tokens": null,
+      "error_code": null,
+      "route": "native_text",
+      "model_id": "TEST_ONLY-benchmark-wire-v1",
+      "controlled_calls": 1,
+      "owner": "AP",
+      "primary_reason": "SOURCE_EVIDENCE_MISSING",
+      "next_action": "Verify the source invoice and request clarification from the vendor.",
+      "classification": "Unnecessary Review"
+    },
+    {
+      "case_id": "H04",
+      "track": "submission",
+      "attempt": 1,
+      "status": "executed",
+      "execution_state": "COMPLETED",
+      "decision": "REVIEW_REQUIRED",
+      "target_decision": "REVIEW_REQUIRED",
+      "finding_codes": [
+        "PO_MATCH_CONFIRMED",
+        "SOURCE_EVIDENCE_MISSING",
+        "LINE_MAPPING_UNRESOLVED",
+        "BANK_DETAILS_NOT_PROVIDED"
+      ],
+      "fields": [
+        {
+          "field": "vendor_name_raw",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "MISSING"
+        },
+        {
+          "field": "invoice_number",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "MISSING"
+        },
+        {
+          "field": "invoice_date",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED"
+        },
+        {
+          "field": "po_reference",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED"
+        },
+        {
+          "field": "currency",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED"
+        },
+        {
+          "field": "net",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED",
+          "expected_decimal": "57500.00",
+          "observed_decimal": "57500.00"
+        },
+        {
+          "field": "tax",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED",
+          "expected_decimal": "10350.00",
+          "observed_decimal": "10350.00"
+        },
+        {
+          "field": "total",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED",
+          "expected_decimal": "67850.00",
+          "observed_decimal": "67850.00"
+        },
+        {
+          "field": "lines[0].description",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "MISSING"
+        },
+        {
+          "field": "lines[0].item_code",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "MISSING"
+        },
+        {
+          "field": "lines[0].qty",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "MISSING",
+          "expected_decimal": "8",
+          "observed_decimal": "8"
+        },
+        {
+          "field": "lines[0].unit_price_net",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "MISSING",
+          "expected_decimal": "5000.00",
+          "observed_decimal": "5000.00"
+        },
+        {
+          "field": "lines[0].net",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "MISSING",
+          "expected_decimal": "40000.00",
+          "observed_decimal": "40000.00"
+        },
+        {
+          "field": "lines[1].description",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "MISSING"
+        },
+        {
+          "field": "lines[1].item_code",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "MISSING"
+        },
+        {
+          "field": "lines[1].qty",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "MISSING",
+          "expected_decimal": "1",
+          "observed_decimal": "1"
+        },
+        {
+          "field": "lines[1].unit_price_net",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "MISSING",
+          "expected_decimal": "17500.00",
+          "observed_decimal": "17500.00"
+        },
+        {
+          "field": "lines[1].net",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "MISSING",
+          "expected_decimal": "17500.00",
+          "observed_decimal": "17500.00"
+        },
+        {
+          "field": "bank_instructions.account",
+          "comparison": "correct_absence",
+          "evidence": "correct",
+          "actual_evidence_state": null
+        },
+        {
+          "field": "bank_instructions.ifsc",
+          "comparison": "correct_absence",
+          "evidence": "correct",
+          "actual_evidence_state": null
+        }
+      ],
+      "model_calls": 0,
+      "latency_ms": 487.405,
+      "required_findings": [
+        "LINE_MAPPING_UNRESOLVED"
+      ],
+      "pdf_sha256": "2bb35df19fd389e57ed70349024a751af914f43d4021dc999d758bdd0fc20999",
+      "owner_match": false,
+      "next_action_match": false,
+      "run_reference": "1c2f43a97f94488d82e677515347bcc1",
+      "input_tokens": null,
+      "output_tokens": null,
+      "error_code": null,
+      "route": "native_text",
+      "model_id": "TEST_ONLY-benchmark-wire-v1",
+      "controlled_calls": 1,
+      "owner": "AP",
+      "primary_reason": "SOURCE_EVIDENCE_MISSING",
+      "next_action": "Verify the source invoice and request clarification from the vendor.",
+      "classification": "Correct Review"
+    },
+    {
+      "case_id": "H05",
+      "track": "submission",
+      "attempt": 1,
+      "status": "executed",
+      "execution_state": "COMPLETED",
+      "decision": "REVIEW_REQUIRED",
+      "target_decision": "REVIEW_REQUIRED",
+      "finding_codes": [
+        "PO_MATCH_CONFIRMED",
+        "SOURCE_EVIDENCE_MISSING",
+        "BANK_DETAILS_NOT_PROVIDED"
+      ],
+      "fields": [
+        {
+          "field": "vendor_name_raw",
+          "comparison": "exact",
+          "evidence": "correct",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED"
+        },
+        {
+          "field": "invoice_number",
+          "comparison": "exact",
+          "evidence": "correct",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED"
+        },
+        {
+          "field": "invoice_date",
+          "comparison": "exact",
+          "evidence": "correct",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED"
+        },
+        {
+          "field": "po_reference",
+          "comparison": "exact",
+          "evidence": "correct",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED"
+        },
+        {
+          "field": "currency",
+          "comparison": "exact",
+          "evidence": "correct",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED"
+        },
+        {
+          "field": "net",
+          "comparison": "exact",
+          "evidence": "correct",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED",
+          "expected_decimal": "30000.00",
+          "observed_decimal": "30000.00"
+        },
+        {
+          "field": "tax",
+          "comparison": "exact",
+          "evidence": "correct",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED",
+          "expected_decimal": "5400.00",
+          "observed_decimal": "5400.00"
+        },
+        {
+          "field": "total",
+          "comparison": "exact",
+          "evidence": "correct",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED",
+          "expected_decimal": "35400.00",
+          "observed_decimal": "35400.00"
+        },
+        {
+          "field": "lines[0].description",
+          "comparison": "exact",
+          "evidence": "correct",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED"
+        },
+        {
+          "field": "lines[0].item_code",
+          "comparison": "exact",
+          "evidence": "correct",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED"
+        },
+        {
+          "field": "lines[0].qty",
+          "comparison": "exact",
+          "evidence": "correct",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED",
+          "expected_decimal": "3",
+          "observed_decimal": "3"
+        },
+        {
+          "field": "lines[0].unit_price_net",
+          "comparison": "exact",
+          "evidence": "correct",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED",
+          "expected_decimal": "10000.00",
+          "observed_decimal": "10000.00"
+        },
+        {
+          "field": "lines[0].net",
+          "comparison": "missing",
+          "evidence": "incorrect",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED",
+          "expected_decimal": "30000.00"
+        },
+        {
+          "field": "bank_instructions.account",
+          "comparison": "correct_absence",
+          "evidence": "correct",
+          "actual_evidence_state": null
+        },
+        {
+          "field": "bank_instructions.ifsc",
+          "comparison": "correct_absence",
+          "evidence": "correct",
+          "actual_evidence_state": null
+        }
+      ],
+      "model_calls": 0,
+      "latency_ms": 721.169,
+      "required_findings": [
+        "SOURCE_EVIDENCE_MISSING"
+      ],
+      "pdf_sha256": "09c8869740b33d578174da706354f2932ee7b509de37066ada876a615fa031ff",
+      "owner_match": true,
+      "next_action_match": false,
+      "run_reference": "370d650ec02a46b0a7b60af771936b69",
+      "input_tokens": null,
+      "output_tokens": null,
+      "error_code": null,
+      "route": "image_only",
+      "model_id": "TEST_ONLY-benchmark-wire-v1",
+      "controlled_calls": 1,
+      "owner": "AP",
+      "primary_reason": "SOURCE_EVIDENCE_MISSING",
+      "next_action": "Verify the source invoice and request clarification from the vendor.",
+      "classification": "Correct Review"
+    },
+    {
+      "case_id": "H06",
+      "track": "submission",
+      "attempt": 1,
+      "status": "executed",
+      "execution_state": "COMPLETED",
+      "decision": "REVIEW_REQUIRED",
+      "target_decision": "REVIEW_REQUIRED",
+      "finding_codes": [
+        "PO_MATCH_CONFIRMED",
+        "DOCUMENT_CONTENT_UNVERIFIED",
+        "SOURCE_EVIDENCE_MISSING",
+        "BANK_DETAILS_NOT_PROVIDED"
+      ],
+      "fields": [
+        {
+          "field": "vendor_name_raw",
+          "comparison": "exact",
+          "evidence": "correct",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED"
+        },
+        {
+          "field": "invoice_number",
+          "comparison": "exact",
+          "evidence": "correct",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED"
+        },
+        {
+          "field": "invoice_date",
+          "comparison": "exact",
+          "evidence": "correct",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED"
+        },
+        {
+          "field": "po_reference",
+          "comparison": "exact",
+          "evidence": "correct",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED"
+        },
+        {
+          "field": "currency",
+          "comparison": "exact",
+          "evidence": "correct",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED"
+        },
+        {
+          "field": "net",
+          "comparison": "exact",
+          "evidence": "correct",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED",
+          "expected_decimal": "20000.00",
+          "observed_decimal": "20000.00"
+        },
+        {
+          "field": "tax",
+          "comparison": "exact",
+          "evidence": "correct",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED",
+          "expected_decimal": "3600.00",
+          "observed_decimal": "3600.00"
+        },
+        {
+          "field": "total",
+          "comparison": "exact",
+          "evidence": "correct",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED",
+          "expected_decimal": "23600.00",
+          "observed_decimal": "23600.00"
+        },
+        {
+          "field": "lines[0].description",
+          "comparison": "exact",
+          "evidence": "correct",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED"
+        },
+        {
+          "field": "lines[0].item_code",
+          "comparison": "exact",
+          "evidence": "correct",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED"
+        },
+        {
+          "field": "lines[0].qty",
+          "comparison": "exact",
+          "evidence": "correct",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED",
+          "expected_decimal": "2",
+          "observed_decimal": "2"
+        },
+        {
+          "field": "lines[0].unit_price_net",
+          "comparison": "exact",
+          "evidence": "correct",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED",
+          "expected_decimal": "10000.00",
+          "observed_decimal": "10000.00"
+        },
+        {
+          "field": "lines[0].net",
+          "comparison": "missing",
+          "evidence": "incorrect",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED",
+          "expected_decimal": "20000.00"
+        },
+        {
+          "field": "bank_instructions.account",
+          "comparison": "correct_absence",
+          "evidence": "correct",
+          "actual_evidence_state": null
+        },
+        {
+          "field": "bank_instructions.ifsc",
+          "comparison": "correct_absence",
+          "evidence": "correct",
+          "actual_evidence_state": null
+        }
+      ],
+      "model_calls": 0,
+      "latency_ms": 658.589,
+      "required_findings": [
+        "DOCUMENT_CONTENT_UNVERIFIED"
+      ],
+      "pdf_sha256": "2111f612c15cca25e84c0e3308d216556a1ca769cb809782b0542f2f39b1f2e7",
+      "owner_match": true,
+      "next_action_match": true,
+      "run_reference": "c3082e30bfa14863a5eb56ac14896104",
+      "input_tokens": null,
+      "output_tokens": null,
+      "error_code": null,
+      "route": "mixed",
+      "model_id": "TEST_ONLY-benchmark-wire-v1",
+      "controlled_calls": 1,
+      "owner": "Accounts Payable",
+      "primary_reason": "DOCUMENT_CONTENT_UNVERIFIED",
+      "next_action": "Inspect the complete rendered invoice and independently confirm any relevant charges or payment instructions before proceeding.",
+      "classification": "Correct Review"
+    }
+  ],
+  "metrics": {
+    "invoice_count": {
+      "numerator": 6,
+      "denominator": 6
+    },
+    "executed_count": {
+      "numerator": 6,
+      "denominator": 6
+    },
+    "technical_failures": {
+      "numerator": 0,
+      "denominator": 6
+    },
+    "critical_field_exact_matches": {
+      "numerator": 72,
+      "denominator": 72
+    },
+    "missing_fields": {
+      "numerator": 2,
+      "denominator": 88
+    },
+    "hallucinated_fields": {
+      "numerator": 0,
+      "denominator": 12
+    },
+    "evidence_grounding_correct": {
+      "numerator": 37,
+      "denominator": 100
+    },
+    "exact_decisions": {
+      "numerator": 3,
+      "denominator": 6
+    },
+    "false_ready": {
+      "numerator": 0,
+      "denominator": 3
+    },
+    "unnecessary_review": {
+      "numerator": 3,
+      "denominator": 3
+    },
+    "required_finding_recall": {
+      "numerator": 3,
+      "denominator": 3
+    },
+    "owner_matches": {
+      "numerator": 2,
+      "denominator": 3
+    },
+    "next_action_matches": {
+      "numerator": 1,
+      "denominator": 3
+    },
+    "model_calls": {
+      "numerator": 0,
+      "denominator": 6
+    },
+    "input_tokens": {
+      "numerator": 0,
+      "denominator": 0
+    },
+    "output_tokens": {
+      "numerator": 0,
+      "denominator": 0
+    },
+    "latency_ms": {
+      "numerator": 3469.522,
+      "denominator": 6
+    }
+  },
+  "provenance": {
+    "started_utc": "2026-11-19T14:24:38.895597+00:00",
+    "authority_fingerprint": "f6e95512f3e71d59bf512c1afc861e69587c3bbf40a9400c0f6c04739d02bf31",
+    "seed_sha256": "66be24c67f8869e05b997273659fd9ba59d23000ea08a0ed17afda520bffcbed",
+    "policy": {
+      "version": "policy-v1",
+      "effective_at": "2026-11-19T00:00:00Z",
+      "price_tolerance_pct": "0.02",
+      "require_explicit_po": true,
+      "amount_rounding_allowance": "1.00",
+      "commitment_overrun_allowance": "0.00"
+    },
+    "registry_sha256": "100534567bcecdacf2303fbe87b8db260fb6c9138aa693fc586b34c4540e5255",
+    "annotation_sha256": "358c92130fc959d4e6372758dfaf7aa87e0ec48c04bfe64514f788c15de1e369",
+    "latency_scope": "ASGI POST start through terminal persisted GET response",
+    "requested_primary": null,
+    "live_selection": [],
+    "live_budget": 0,
+    "finished_utc": "2026-11-19T14:24:43.291999+00:00",
+    "actual_generation_attempts": 0
+  }
+}
