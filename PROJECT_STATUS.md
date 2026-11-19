@@ -161,3 +161,7 @@ Core browser15views+7controlled states,policy12recorded/preview+3controlled trac
 separate human-resolution manifest/PDF only; frozen seed/fixture manifests and original6PDF bytes unchanged.
 Reports:HUMAN_PO_RESOLUTION.md,PHASE_06B1_REPORT.md; ADR-020. Local app8007 uses runtime/phase6b1-demo copy;
 older8006 untouched. No corrections/undo/multiple confirmations or new creative showcase cases. Stop for review.
+
+## Phase 6B.2A partial review
+
+REPRODUCTION INCOMPLETE — INVESTIGATION REQUIRED. Static review of F1–F3 and safe target criteria are recorded. Three benign offline API controls passed. No bypass probes were run and all three runtime findings remain inconclusive. Baseline 328 backend and 58 frontend tests passed. Zero Gemini requests. Production and frozen business oracles unchanged. See docs/ADVERSARIAL_REPRODUCTION_REPORT.md and docs/ADVERSARIAL_EVALUATION_PLAN.md.

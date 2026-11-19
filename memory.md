@@ -170,3 +170,7 @@ TEST_ONLY and never saved. No extra actions on rerun.
 DEMO reviewer identity is not authenticated. Required release safeguard before public write exposure recorded
 in ADR-020/HUMAN_PO_RESOLUTION. No maker-checker/auth/payment/ERP/hosting/correction/undo/additional scenarios.
 Original6PDF/frozen manifests unchanged;one separate new regression scenario and reusedAMBIGPDF. Review only.
+
+## Phase 6B.2A partial review
+
+REPRODUCTION INCOMPLETE — INVESTIGATION REQUIRED. Static review of F1–F3 and safe target criteria are recorded. Three benign offline API controls passed. No bypass probes were run and all three runtime findings remain inconclusive. Baseline 328 backend and 58 frontend tests passed. Zero Gemini requests. Production and frozen business oracles unchanged. See docs/ADVERSARIAL_REPRODUCTION_REPORT.md and docs/ADVERSARIAL_EVALUATION_PLAN.md.

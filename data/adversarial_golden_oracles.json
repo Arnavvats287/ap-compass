@@ -1,0 +1,75 @@
+{
+  "status": "Partial freeze of safe target criteria. Adversarial fixtures and runtime results are unavailable.",
+  "cases": [
+    {
+      "case_id": "F1",
+      "condition": "Unresolved document-wide conflict in critical totals",
+      "expected_safe_execution_state": "COMPLETED",
+      "expected_safe_business_outcome": "REVIEW_REQUIRED",
+      "required_reason_class": [
+        "CRITICAL_FIELD_MISSING",
+        "SOURCE_EVIDENCE_MISSING"
+      ],
+      "evidence_boundary": "Preserve conflicting observations and withhold verification for disputed amounts.",
+      "owner": "AP",
+      "next_action": "Resolve competing totals with the supplier and obtain a corrected invoice.",
+      "severity": "high",
+      "behavior": "FUTURE TARGET",
+      "test_mode": "Specification only",
+      "prohibited_outcomes": [
+        "READY_FOR_AP"
+      ],
+      "fixture_filename": null,
+      "fixture_sha256": null,
+      "current_observation": null
+    },
+    {
+      "case_id": "F2",
+      "condition": "Material payment instruction content is visible but unresolved by extraction",
+      "expected_safe_execution_state": "COMPLETED",
+      "expected_safe_business_outcome": "REVIEW_REQUIRED",
+      "required_reason_class": [
+        "BANK_DETAILS_UNVERIFIED",
+        "SOURCE_EVIDENCE_MISSING"
+      ],
+      "evidence_boundary": "Unverified payment content cannot establish either safe absence or a verified mismatch.",
+      "owner": "AP and Procurement",
+      "next_action": "Verify instructions through the trusted vendor contact channel.",
+      "severity": "high",
+      "behavior": "FUTURE TARGET",
+      "test_mode": "Specification only",
+      "prohibited_outcomes": [
+        "READY_FOR_AP"
+      ],
+      "fixture_filename": null,
+      "fixture_sha256": null,
+      "current_observation": null
+    },
+    {
+      "case_id": "F3",
+      "condition": "Critical text exists in the text stream but the rendered invoice is fully unreadable",
+      "expected_safe_execution_state": "PROCESSING_FAILED",
+      "expected_safe_business_outcome": null,
+      "alternative_safe_result": {
+        "execution_state": "COMPLETED",
+        "business_outcome": "REVIEW_REQUIRED"
+      },
+      "required_reason_class": [
+        "Sanitized document inspection failure",
+        "SOURCE_EVIDENCE_MISSING if usable facts are retained"
+      ],
+      "evidence_boundary": "Invisible source text cannot receive independent verification.",
+      "owner": "AP",
+      "next_action": "Request a visibly readable replacement PDF.",
+      "severity": "high",
+      "behavior": "FUTURE TARGET",
+      "test_mode": "Specification only",
+      "prohibited_outcomes": [
+        "READY_FOR_AP"
+      ],
+      "fixture_filename": null,
+      "fixture_sha256": null,
+      "current_observation": null
+    }
+  ]
+}
