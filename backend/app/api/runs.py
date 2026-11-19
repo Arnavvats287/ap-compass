@@ -1,6 +1,7 @@
 """Request validation and read projections; no financial rules."""
 import asyncio
 from datetime import datetime
+from decimal import Decimal, localcontext
 
 from fastapi import APIRouter, HTTPException, Query, Request
 from pydantic import BaseModel
@@ -117,6 +118,8 @@ def dashboard(request: Request):
     counts = dict(total_runs=len(snapshots), in_progress=0, completed=0, ready=0, review_required=0,
                   blocked=0, processing_failed=0, interrupted=0)
     outcomes = {"READY_FOR_AP": "ready", "REVIEW_REQUIRED": "review_required", "BLOCKED": "blocked"}
+    flagged = {}
+    missing = 0
     for snapshot in snapshots:
         if snapshot.execution_state in ("QUEUED", "RUNNING"):
             counts["in_progress"] += 1
@@ -124,4 +127,20 @@ def dashboard(request: Request):
             counts[snapshot.execution_state.lower()] += 1
         if snapshot.decision:
             counts[outcomes[snapshot.decision.outcome]] += 1
-    return counts
+            if snapshot.decision.outcome in ("REVIEW_REQUIRED", "BLOCKED"):
+                invoice = snapshot.extracted_invoice
+                if invoice is None or invoice.net is None or not invoice.currency:
+                    missing += 1
+                else:
+                    flagged.setdefault(invoice.currency, []).append(invoice.net)
+    values = {}
+    for currency, amounts in sorted(flagged.items()):
+        # Exact display projection, including widely separated decimal exponents.
+        # No rounding, cross-currency addition or financial decision is performed.
+        with localcontext() as context:
+            context.prec = max(28, max(amount.adjusted() for amount in amounts)
+                               - min(amount.as_tuple().exponent for amount in amounts)
+                               + len(str(len(amounts))) + 4)
+            values[currency] = str(sum(amounts, Decimal(0)))
+    return {**counts, "flagged_invoice_net_by_currency": values,
+            "flagged_invoice_net_missing_count": missing}

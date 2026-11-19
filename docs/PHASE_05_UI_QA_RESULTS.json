@@ -1,0 +1,188 @@
+{
+  "base": "http://127.0.0.1:8005",
+  "realPersistedRuns": [
+    {
+      "id": "7b3a699bea514c7f9eed52b34d90d639",
+      "outcome": "READY_FOR_AP"
+    },
+    {
+      "id": "e0eb6a058c574f66aa48cb474e28a33f",
+      "outcome": "REVIEW_REQUIRED"
+    },
+    {
+      "id": "3af82d60d6624971b7aa48de920407d5",
+      "outcome": "BLOCKED"
+    }
+  ],
+  "views": [
+    {
+      "name": "overview",
+      "width": 1440,
+      "path": "/",
+      "screenshot": "overview-1440.png",
+      "overflow": false
+    },
+    {
+      "name": "queue",
+      "width": 1440,
+      "path": "/runs",
+      "screenshot": "queue-1440.png",
+      "overflow": false
+    },
+    {
+      "name": "ready",
+      "width": 1440,
+      "path": "/runs/7b3a699bea514c7f9eed52b34d90d639",
+      "screenshot": "ready-1440.png",
+      "overflow": false
+    },
+    {
+      "name": "blocked",
+      "width": 1440,
+      "path": "/runs/3af82d60d6624971b7aa48de920407d5",
+      "screenshot": "blocked-1440.png",
+      "overflow": false
+    },
+    {
+      "name": "review",
+      "width": 1440,
+      "path": "/runs/e0eb6a058c574f66aa48cb474e28a33f",
+      "screenshot": "review-1440.png",
+      "overflow": false
+    },
+    {
+      "name": "overview",
+      "width": 1024,
+      "path": "/",
+      "screenshot": "overview-1024.png",
+      "overflow": false
+    },
+    {
+      "name": "queue",
+      "width": 1024,
+      "path": "/runs",
+      "screenshot": "queue-1024.png",
+      "overflow": false
+    },
+    {
+      "name": "ready",
+      "width": 1024,
+      "path": "/runs/7b3a699bea514c7f9eed52b34d90d639",
+      "screenshot": "ready-1024.png",
+      "overflow": false
+    },
+    {
+      "name": "blocked",
+      "width": 1024,
+      "path": "/runs/3af82d60d6624971b7aa48de920407d5",
+      "screenshot": "blocked-1024.png",
+      "overflow": false
+    },
+    {
+      "name": "review",
+      "width": 1024,
+      "path": "/runs/e0eb6a058c574f66aa48cb474e28a33f",
+      "screenshot": "review-1024.png",
+      "overflow": false
+    },
+    {
+      "name": "overview",
+      "width": 390,
+      "path": "/",
+      "screenshot": "overview-390.png",
+      "overflow": false,
+      "dataCellsWithinViewport": true
+    },
+    {
+      "name": "queue",
+      "width": 390,
+      "path": "/runs",
+      "screenshot": "queue-390.png",
+      "overflow": false,
+      "dataCellsWithinViewport": true
+    },
+    {
+      "name": "ready",
+      "width": 390,
+      "path": "/runs/7b3a699bea514c7f9eed52b34d90d639",
+      "screenshot": "ready-390.png",
+      "overflow": false,
+      "dataCellsWithinViewport": true
+    },
+    {
+      "name": "blocked",
+      "width": 390,
+      "path": "/runs/3af82d60d6624971b7aa48de920407d5",
+      "screenshot": "blocked-390.png",
+      "overflow": false,
+      "dataCellsWithinViewport": true
+    },
+    {
+      "name": "review",
+      "width": 390,
+      "path": "/runs/e0eb6a058c574f66aa48cb474e28a33f",
+      "screenshot": "review-390.png",
+      "overflow": false,
+      "dataCellsWithinViewport": true
+    }
+  ],
+  "checks": [
+    "Skip link first, visible focus, Enter moves to main",
+    "Keyboard search/filter updates URL, invoice link opens workspace, findings/evidence disclose, source PDF returns 200",
+    "Reduced-motion disables the real-state spinner; no essential content hidden",
+    "Queued, processing, technical failure, interruption, long values, empty and API error states rendered with deterministic API test data",
+    "No uncaught application JavaScript errors"
+  ],
+  "deterministicStates": [
+    {
+      "state": "queued",
+      "screenshot": "deterministic-queued-390.png",
+      "source": "TEST_ONLY response interception; not persisted"
+    },
+    {
+      "state": "running",
+      "screenshot": "deterministic-running-390.png",
+      "source": "TEST_ONLY response interception; not persisted"
+    },
+    {
+      "state": "failed",
+      "screenshot": "deterministic-failed-390.png",
+      "source": "TEST_ONLY response interception; not persisted"
+    },
+    {
+      "state": "interrupted",
+      "screenshot": "deterministic-interrupted-390.png",
+      "source": "TEST_ONLY response interception; not persisted"
+    },
+    {
+      "state": "long",
+      "screenshot": "deterministic-long-390.png",
+      "source": "TEST_ONLY response interception; not persisted"
+    },
+    {
+      "state": "empty",
+      "screenshot": "deterministic-empty-390.png",
+      "source": "TEST_ONLY response interception; not persisted"
+    },
+    {
+      "state": "error",
+      "screenshot": "deterministic-error-390.png",
+      "source": "TEST_ONLY response interception; not persisted"
+    }
+  ],
+  "newModelCalls": 0,
+  "visualInspection": {
+    "observations": "Inspected actual Chrome captures: overview, queue, READY, BLOCKED, REVIEW, mobile, technical failure and empty states. No clipping or page overflow in required layouts. Mobile table cells retained. Native PDF support is browser-dependent; source links remain available.",
+    "reviewMethod": "In-thread, no subagents",
+    "hallmark": "v2.0.0, redesign/app scope",
+    "taste": "2.5.1, post-implementation critique only"
+  },
+  "hallmarkFinal": {
+    "failures": 0,
+    "unresolvedReflex": 0,
+    "warnings": 0,
+    "answered": 3,
+    "realDataRoutes": 5,
+    "renderedCaptures": 25
+  }
+}

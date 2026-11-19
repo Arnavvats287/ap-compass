@@ -1,63 +1,62 @@
 # AP Compass — Project Status / Gate Register
 
 **Updated:** 2026-11-19 IST.
-**Current gate:** Phase 4 vertical slice PASS; architectural review pending. STOP before Phase 5.
-**Authorized base:** phase-03-document-engine / c0d06f07fc3d0d70b26318dc247778402dd1fbab.
-**Branch:** codex/phase-04-orchestration-api.
-**Checkpoint:** phase-04-vertical-slice, published only after required checks; resolve tag for exact SHA.
-**Publication evidence:** Final SHA/branch/tag remote verification and clean-tree status are reported in the
-final chat after this file is committed. No force push/default-branch change or prior-tag alteration.
-**Deadline:** Saturday 2026-11-21 IST.
+**Current gate:** Phase 5 connected operations UI PASS; architectural review pending. STOP before Phase 6.
+**Base:** phase-04-vertical-slice / 13fe35d792c2fb47a84604e21966ad4a2bd2048b.
+**Branch:** codex/phase-05-operations-ui. **Checkpoint:** phase-05-operations-ui, published only after checks.
+Resolve the annotated tag for exact SHA; final commit/push/clean-tree evidence is in the publication chat.
+No prior-tag/default-branch alteration. Deadline remains Saturday 2026-11-21 IST.
 
 | Phase | State | Evidence |
 |---|---|---|
-| 01 Foundation | ACCEPTED by user | Original checkpoint preserved |
-| 02 Finance | ACCEPTED by user | All 99 finance tests unchanged/passing |
-| 03/3.1 Extraction | ACCEPTED by user | All 100 document tests unchanged/passing; primary only |
-| 04 Orchestration + API | PASS; review pending | Real upload -> persisted stages -> Gemini -> pure decision -> reload |
-| 05 Operations UI | LOCKED | Foundation shell only; no authorization |
-| 06 Scenarios | LOCKED | Original manifests/fixtures unchanged |
-| 07 Release | LOCKED | No deployment/public release work |
+| 01 Foundation | ACCEPTED | Checkpoint preserved |
+| 02 Finance | ACCEPTED | Original financial code/tests unchanged |
+| 03/3.1 Extraction | ACCEPTED | Original document/AI code/tests unchanged; primary only |
+| 04 API/orchestration | ACCEPTED | User review passed; original workflow/tests unchanged |
+| 05 Operations UI | PASS, review pending | Connected real-data UI, 280 backend + 32 frontend tests, browser/live smoke |
+| 06 Scenarios | LOCKED | No new fixtures/scenarios authorized |
+| 07 Release | LOCKED | No public/paid/Docker deployment |
 
-## Verified evidence
+## Verified Phase 5 evidence
 
-- Final full suite: **268 passed**, zero failures/errors, one existing warning, 46.24s.
-  30 foundation + 99 finance + 100 document + 39 new API/integration tests.
-  One Phase 1 absent-upload assertion now expects 415 for missing multipart; no financial assertion changed.
-- Frontend TypeScript/Vite production build PASS, 1682 modules; source unchanged.
-- Manifest validator PASS: 6 vendors, 7 POs, 3 billed invoices, 10 scenarios.
-- Git hygiene PASS: 11 exclusions, PDFs intact, .env/runtime ignored; pip check no broken requirements.
-- Actual Uvicorn HTTP boot/read/shutdown PASS: health, policy, dashboard, runs=200; no inference needed.
-- Exactly 3 real Flash-Lite API E2E generations: HAPPY_CLEAN READY, OVERBILLED_PARTIAL BLOCKED,
-  SCAN_CONFLICT REVIEW, all COMPLETED. Zero metadata or optional Flash requests. Expected fields match.
-- Genuine source: native refs independently verified; scan refs unverified; optional scan line.net=None,
-  gross 86200 and arithmetic discrepancy 3600 preserved. No source evidence upgrade or finance workaround.
-- Extraction/total ms: clean 3213/3259; overbilled 2680/2716; scan 3696/3738.
-  Reported input/output tokens: 543/913, 542/681, 1399/914. One model call each; no invented cost/usage.
-- All three full snapshots and PDF hashes identical after app recreation; zero additional generation calls.
-- Authoritative table hash before/after: 7fb54a84f32bd0bf75a29396bb50c450878503dd70515b33bafcc330e2a54398.
-- Event-synchronized test proves active extraction progress and second run QUEUED. Restart tests interrupt both
-  QUEUED/RUNNING work with SERVER_RESTART; no active stages or automatic model replay remain.
-- RunStage is the sole stage store. InvoiceRun JSON stages=[]; detail uses one atomic joined query.
-- Policy version collisions fail without overwriting existing PolicySnapshot. Authority rows never mutate.
+- All **280 backend tests pass**, zero failures, one existing warning, 49.42s: original 268 + 3 display
+  projection tests + 9 static-route tests. Original test files and business outcomes unchanged.
+- All **32 frontend tests pass**; TypeScript tsc -b and Vite 7.3.8 production build PASS, 1747 modules.
+- Manifests/hygiene/pip check PASS; npm dependency tree valid and audit zero vulnerabilities after non-major
+  Vite security patch. Runtime/.env/screenshots/local skill installs ignored; no frontend credentials.
+- Three routes: overview, Invoice Operations queue and /runs/:id decision workspace. Typed API client,
+  TanStack Query active-only 1000ms polling, real persisted stages, terminal invalidation and reload support.
+- Exact known-net by currency projection only; unknown amounts excluded/disclosed, repeats count separately.
+- Real Chrome QA: 15 actual-data views across 1440/1024/390, 7 explicitly deterministic API states, no page
+  overflow, keyboard/skip/filter/disclosures/PDF response, reduced motion and no uncaught application JS.
+- Actual one-PDF browser upload OVERBILLED_PARTIAL: run 3af82d60d6624971b7aa48de920407d5,
+  RUNNING observed three times, then COMPLETED/BLOCKED. One Flash-Lite call, no stronger request.
+- Live facts: Aster / PO-3015 / INR net30000 tax5400 gross35400; remaining25000, excess5000, owner Procurement,
+  value+quantity+line commitment controls. Returned evidence native verified. No financial workaround.
+- Live measured extraction3312/matching2/evaluation2/total3389ms; 542 input / 920 output tokens.
+- Source opened, queue/dashboard refreshed, snapshot identical after reload, no repeat inference. Initial
+  PDF popup harness mismatch was corrected by resuming this SAME run, not by another upload.
+- Authority before/after hash identical: 7fb54a84f32bd0bf75a29396bb50c450878503dd70515b33bafcc330e2a54398.
+- Current demo history: 4 submissions, 1 ready / 1 review / 2 blocked; flagged known INR net130000 including
+  repeated analysis, not unique payable exposure. Existing Phase 4 runs/documents survive restart.
 
-## Contract and implementation boundaries
+## Scope and decisions
 
-Only approved shared addition: RunSnapshotV1.execution_error_code: str | None = None (ADR-017), allowlisted
-and null for nontechnical states. Historical JSON remains valid. Existing tables/schema, financial rules,
-matching, evidence grounding, seed/fixture manifests and PDFs, frontend and Docker are unchanged.
-Runtime extractor bypasses per-invoice model metadata dependency; credentials missing -> controlled run
-CONFIGURATION failure, healthy application. Escalation remains disabled; Flash was never called in Phase 4.
+No shared-contract, financial/document/AI rule, DB schema, orchestration, seed or fixture change. Small backend
+changes: approved dashboard read projection and identified/reported static deep-link serving fix (ADR-018).
+The design note predates implementation. Hallmark app redesign, Vercel QA, then Taste critique applied;
+marketing heroes/shaders/mandatory loops/photography rejected in favor of finance work and reduced motion.
+Final audit/screenshot details in PHASE_05_REPORT and DESIGN_QA. Review remains in-thread; no agents.
 
-## Limitations / handoff
+## Local review and limitations
 
-Single-process in-process scheduling, one active workflow. Persist DB and document directory together; use one
-Uvicorn worker. Restart interrupts rather than replays. Scans remain unverified; no OCR/general accuracy claim.
-No frontend upload/queue/dashboard integration, approval, reevaluation/policy editor, auth/rate-limit suite,
-retention/orphan cleanup, distributed queue, cloud storage or deployment. Dashboard scans run snapshots in one
-query; large-history optimization deferred. DB outage can prevent failure persistence; no fabricated completion.
+Compiled UI/backend http://127.0.0.1:8005 in local Chrome; Vite http://127.0.0.1:5175 proxies it. The default
+8000 port belongs to an older process and was not overwritten. Existing demo DB/document location documented
+in OPERATIONS_UI. Native PDF embeds vary by browser; source-open links remain available. Queue filters cover
+100 recent runs. Original single-process/restart limits remain. No approval, confirmation, reevaluation,
+policy editor, batch, model selector, payment/ERP/email, auth suite, analytics, new fixtures or deployment.
 
-Current reports: docs/PHASE_04_REPORT.md, docs/PHASE_04_LIVE_RESULTS.json,
-docs/PHASE_04_FAILURE_EXAMPLE.json, docs/ORCHESTRATION_API.md. Historical reports remain unchanged.
-No failed test remains. Prior development failures and the narrow Phase 1 assertion update are documented.
-Next action: architectural review or bounded repair prompt only. Do not start Phase 5 automatically.
+Current evidence: docs/PHASE_05_REPORT.md, OPERATIONS_UI.md, PHASE_05_DESIGN_NOTE.md, PHASE_05_DESIGN_QA.md,
+PHASE_05_UI_QA_RESULTS.json and PHASE_05_LIVE_RESULTS.json. Screenshots stay in ignored tmp/phase05-qa.
+All encountered test/harness failures are documented and resolved. No general accuracy/accessibility certification.
+Next action: architectural review or an explicit repair prompt. Do not start Phase 6 automatically.

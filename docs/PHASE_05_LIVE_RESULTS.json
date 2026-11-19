@@ -1,0 +1,313 @@
+{
+  "fixture": "OVERBILLED_PARTIAL.pdf",
+  "live": true,
+  "transport": "actual Chrome UI -> FastAPI -> default extraction/finance workflow",
+  "observations": [
+    {
+      "state": "RUNNING",
+      "stages": [
+        {
+          "name": "received",
+          "state": "PASSED"
+        },
+        {
+          "name": "extracting_invoice",
+          "state": "RUNNING"
+        },
+        {
+          "name": "matching_records",
+          "state": "QUEUED"
+        },
+        {
+          "name": "evaluating_controls",
+          "state": "QUEUED"
+        },
+        {
+          "name": "finalizing",
+          "state": "QUEUED"
+        }
+      ],
+      "observedAt": "2026-11-19T00:44:55.965Z"
+    },
+    {
+      "state": "RUNNING",
+      "stages": [
+        {
+          "name": "received",
+          "state": "PASSED"
+        },
+        {
+          "name": "extracting_invoice",
+          "state": "RUNNING"
+        },
+        {
+          "name": "matching_records",
+          "state": "QUEUED"
+        },
+        {
+          "name": "evaluating_controls",
+          "state": "QUEUED"
+        },
+        {
+          "name": "finalizing",
+          "state": "QUEUED"
+        }
+      ],
+      "observedAt": "2026-11-19T00:44:56.951Z"
+    },
+    {
+      "state": "RUNNING",
+      "stages": [
+        {
+          "name": "received",
+          "state": "PASSED"
+        },
+        {
+          "name": "extracting_invoice",
+          "state": "RUNNING"
+        },
+        {
+          "name": "matching_records",
+          "state": "QUEUED"
+        },
+        {
+          "name": "evaluating_controls",
+          "state": "QUEUED"
+        },
+        {
+          "name": "finalizing",
+          "state": "QUEUED"
+        }
+      ],
+      "observedAt": "2026-11-19T00:44:57.963Z"
+    },
+    {
+      "state": "COMPLETED",
+      "stages": [
+        {
+          "name": "received",
+          "state": "PASSED"
+        },
+        {
+          "name": "extracting_invoice",
+          "state": "PASSED"
+        },
+        {
+          "name": "matching_records",
+          "state": "PASSED"
+        },
+        {
+          "name": "evaluating_controls",
+          "state": "PASSED"
+        },
+        {
+          "name": "finalizing",
+          "state": "PASSED"
+        }
+      ],
+      "observedAt": "2026-11-19T00:44:59.049Z"
+    },
+    {
+      "state": "COMPLETED",
+      "stages": [
+        {
+          "name": "received",
+          "state": "PASSED"
+        },
+        {
+          "name": "extracting_invoice",
+          "state": "PASSED"
+        },
+        {
+          "name": "matching_records",
+          "state": "PASSED"
+        },
+        {
+          "name": "evaluating_controls",
+          "state": "PASSED"
+        },
+        {
+          "name": "finalizing",
+          "state": "PASSED"
+        }
+      ],
+      "observedAt": "2026-11-19T00:48:24.595Z"
+    },
+    {
+      "state": "COMPLETED",
+      "stages": [
+        {
+          "name": "received",
+          "state": "PASSED"
+        },
+        {
+          "name": "extracting_invoice",
+          "state": "PASSED"
+        },
+        {
+          "name": "matching_records",
+          "state": "PASSED"
+        },
+        {
+          "name": "evaluating_controls",
+          "state": "PASSED"
+        },
+        {
+          "name": "finalizing",
+          "state": "PASSED"
+        }
+      ],
+      "observedAt": "2026-11-19T00:48:26.201Z"
+    }
+  ],
+  "dashboardBefore": {
+    "total_runs": 3,
+    "in_progress": 0,
+    "completed": 3,
+    "ready": 1,
+    "review_required": 1,
+    "blocked": 1,
+    "processing_failed": 0,
+    "interrupted": 0,
+    "flagged_invoice_net_by_currency": {
+      "INR": "100000"
+    },
+    "flagged_invoice_net_missing_count": 0
+  },
+  "runId": "3af82d60d6624971b7aa48de920407d5",
+  "uploadResponse": {
+    "run_id": "3af82d60d6624971b7aa48de920407d5",
+    "execution_state": "QUEUED"
+  },
+  "visibleProcessing": "Analysis is underway\n\nProgress below reflects real backend work. You can leave and return to this invoice.\n\nInvoice received\nComplete\n06:14:55 am\nReading invoice\nRunning\n06:14:55 am\nMatching procurement records\nWaiting\nRunning AP controls\nWaiting\nFinalizing decision\nWaiting",
+  "executionState": "COMPLETED",
+  "outcome": "BLOCKED",
+  "executionErrorCode": null,
+  "modelId": "gemini-3.5-flash-lite",
+  "sourceRoute": "native_text",
+  "usage": {
+    "model_calls": 1,
+    "input_tokens": 542,
+    "output_tokens": 920
+  },
+  "timings": [
+    {
+      "name": "extraction",
+      "milliseconds": 3312
+    },
+    {
+      "name": "matching",
+      "milliseconds": 2
+    },
+    {
+      "name": "evaluation",
+      "milliseconds": 2
+    },
+    {
+      "name": "total_processing",
+      "milliseconds": 3389
+    }
+  ],
+  "stages": [
+    {
+      "name": "received",
+      "state": "PASSED",
+      "started_at": "2026-11-19T00:44:55.592533Z",
+      "finished_at": "2026-11-19T00:44:55.592533Z"
+    },
+    {
+      "name": "extracting_invoice",
+      "state": "PASSED",
+      "started_at": "2026-11-19T00:44:55.612534Z",
+      "finished_at": "2026-11-19T00:44:58.935987Z"
+    },
+    {
+      "name": "matching_records",
+      "state": "PASSED",
+      "started_at": "2026-11-19T00:44:58.936988Z",
+      "finished_at": "2026-11-19T00:44:58.948000Z"
+    },
+    {
+      "name": "evaluating_controls",
+      "state": "PASSED",
+      "started_at": "2026-11-19T00:44:58.948000Z",
+      "finished_at": "2026-11-19T00:44:58.990253Z"
+    },
+    {
+      "name": "finalizing",
+      "state": "PASSED",
+      "started_at": "2026-11-19T00:44:58.990253Z",
+      "finished_at": "2026-11-19T00:44:59.000253Z"
+    }
+  ],
+  "reasonCodes": [
+    "PO_MATCH_CONFIRMED",
+    "PO_BALANCE_EXCEEDED",
+    "PO_QUANTITY_EXCEEDED",
+    "PO_LINE_BALANCE_EXCEEDED",
+    "BANK_DETAILS_NOT_PROVIDED"
+  ],
+  "primaryValues": [
+    {
+      "name": "po_id",
+      "value": "PO-3015"
+    },
+    {
+      "name": "authorized_net",
+      "value": "200000"
+    },
+    {
+      "name": "prior_billed_net",
+      "value": "175000"
+    },
+    {
+      "name": "remaining_net",
+      "value": "25000"
+    },
+    {
+      "name": "requested_net",
+      "value": "30000"
+    },
+    {
+      "name": "excess_net",
+      "value": "5000"
+    }
+  ],
+  "owner": "Procurement",
+  "nextAction": "Request a corrected invoice or have Procurement approve an authorized PO amendment; re-evaluate afterward.",
+  "criticalFields": {
+    "vendor": "Aster Systems",
+    "invoice": "OVERBILLED_PARTIAL-2026",
+    "po": "PO-3015",
+    "net": "30000",
+    "tax": "5400",
+    "total": "35400",
+    "currency": "INR"
+  },
+  "evidenceStates": [
+    "NATIVE_VERIFIED"
+  ],
+  "harnessRecovery": "Corrected popup matching to page/opener targets and resumed the existing run; no second upload or inference.",
+  "sourceOpened": true,
+  "queueContainsNewRun": true,
+  "dashboardAfter": {
+    "total_runs": 4,
+    "in_progress": 0,
+    "completed": 4,
+    "ready": 1,
+    "review_required": 1,
+    "blocked": 2,
+    "processing_failed": 0,
+    "interrupted": 0,
+    "flagged_invoice_net_by_currency": {
+      "INR": "130000"
+    },
+    "flagged_invoice_net_missing_count": 0
+  },
+  "dashboardRefreshed": true,
+  "identicalAfterReload": true,
+  "completed": true,
+  "authorityBeforeSha256": "7fb54a84f32bd0bf75a29396bb50c450878503dd70515b33bafcc330e2a54398",
+  "authorityAfterSha256": "7fb54a84f32bd0bf75a29396bb50c450878503dd70515b33bafcc330e2a54398",
+  "ledgerUnchanged": true
+}

@@ -1,10 +1,10 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
 from .api.health import router
 from .db.session import create_db_engine, initialize, ROOT
 from .db.seed import seed
 from .api.runs import router as runs_router
+from .api.spa import AppStaticFiles
 from .ai.gemini import extract_runtime_pdf
 from .orchestration.documents import DocumentStore
 from .orchestration.repository import RunRepository
@@ -33,7 +33,7 @@ def create_app(db_path=None, *, document_dir=None, extractor=None):
     application.include_router(runs_router)
     static = ROOT / "frontend/dist"
     if static.is_dir():
-        application.mount("/", StaticFiles(directory=static, html=True), name="frontend")
+        application.mount("/", AppStaticFiles(directory=static, html=True), name="frontend")
     return application
 
 app = create_app()

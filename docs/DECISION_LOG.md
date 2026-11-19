@@ -112,3 +112,22 @@ Do not rewrite past records to pretend a previous design was never chosen. Recor
 - **Boundaries:** Financial rules, identity, evidence grounding, manifests, fixtures and UI unchanged.
   The obsolete Phase 1 assertion that uploads do not exist now asserts 415 on missing multipart data.
   No new financial behavior, contract exception, paid deployment, optional model call or Phase 5 work.
+
+
+## ADR-018 — Phase 5 connected operations display and deep-link serving
+
+- **Date/status:** 2026-11-19 IST, ACCEPTED by explicit Phase 5 scope and design hierarchy.
+- **UI architecture:** React Router for three app views, TanStack Query server state, typed API client,
+  one token system. Financial decisions and evidence verification remain exclusively backend-owned.
+- **Dashboard projection:** User-approved known extracted invoice NET for completed review/blocked runs,
+  exact Decimal sums by currency. Missing net/currency excluded and counted; repeated analyses count.
+  This is flagged net value, not unique payable exposure, savings or prevented loss. No average-time KPI.
+- **Serving blocker:** Direct reload of /runs/:id failed with the previous static server. Reported before
+  changing it; add only narrow React entry fallback for frontend route shapes, preserving API/asset 404.
+  Windows separators tested. No financial/document/orchestration/DB/shared-contract changes.
+- **Design authority:** Product > Hallmark redesign/app scope > Vercel accessibility/interaction > Taste critique.
+  Retain forest identity; adopt dense table/workbench. Reject hero/shader/photo/loop/full-screen marketing
+  prescriptions. Required disclaimer and exact business identifiers/amounts take precedence over copy heuristics.
+- **Evidence:** PHASE_05_REPORT.md, PHASE_05_DESIGN_NOTE.md, PHASE_05_DESIGN_QA.md and live/UI QA JSONs.
+  One real browser upload, one primary model call, actual stages and BLOCKED result; authority hash unchanged.
+- **Deferred:** Human confirmation/approval/reevaluation/policy editing, new scenarios, hosting and Phase 6.

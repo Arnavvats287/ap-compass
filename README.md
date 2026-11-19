@@ -1,41 +1,44 @@
 # AP Compass
 
 AI-assisted Invoice Operations & Exception Resolution for Zamp ASA PS-1.
-**Phase 4 vertical slice passes; architectural review pending.** Deadline: November 21, 2026 (IST).
+**Phase 5 connected operations UI passes; architectural review pending.** Deadline: November 21, 2026 (IST).
 All supplied vendors, procurement records, billed invoices and fixture PDFs are synthetic.
 
-## Persistent API workflow (Phase 4)
+## Connected operations workspace (Phase 5)
 
-Read `docs/ORCHESTRATION_API.md` and `docs/PHASE_04_REPORT.md`. Current suite: **268 passing tests**.
-Upload -> persisted real stages -> actual Flash-Lite extraction -> trusted authority/context -> pure evaluation
--> reloadable decision/document. Three genuine API E2E fixtures matched READY / BLOCKED / REVIEW outcomes;
-authoritative history stayed unchanged and app recreation made no model requests.
+Read `docs/OPERATIONS_UI.md` and `docs/PHASE_05_REPORT.md`.
+Routes: `/` overview, `/runs` invoice queue, `/runs/:runId` source-and-decision workspace.
+Actual PDF upload, persisted stages, real Flash-Lite extraction, trusted PO/history and deterministic decisions.
+Real-data counts/net-by-currency, keyboard filters/search, evidence disclosures and reloadable documents.
+**Verified: 280 backend tests + 32 frontend tests; TypeScript/build and browser QA pass.**
 
 ```powershell
-.venv/Scripts/python -m pytest -c backend/pytest.ini backend/tests -q --basetemp tmp/pytest-phase04-final --tb=short
-# Backend with explicitly loaded local secrets; frontend remains the foundation shell:
-.venv/Scripts/python -m uvicorn app.main:app --app-dir backend --env-file .env --host 127.0.0.1 --port 8000
-curl.exe -F "file=@tests/fixtures/HAPPY_CLEAN.pdf;type=application/pdf" http://127.0.0.1:8000/api/runs
+.venv/Scripts/python -m pytest -c backend/pytest.ini backend/tests -q --basetemp tmp/pytest-phase05-acceptance --tb=short
+npm --prefix frontend test
+npm --prefix frontend run typecheck
+npm --prefix frontend run build
 ```
 
-Poll GET /api/runs/{id}; other APIs: /api/runs, /api/runs/{id}/document, /api/policy, /api/dashboard, /api/health.
-Uploads return 202; technical failures have decision=null and sanitized execution_error_code.
-Run **one Uvicorn worker**: one active workflow per process, queued work interrupted on restart, no automatic replay.
-Persist both AP_COMPASS_DB_PATH and AP_COMPASS_DOCUMENT_DIR (default runtime/documents).
-The runtime uses gemini-3.5-flash-lite with GEMINI_ESCALATION_ENABLED=false, no per-invoice metadata lookup.
-Keep the key only in ignored server-side .env; boot and health work without it.
+One additional genuine UI upload of OVERBILLED_PARTIAL passed COMPLETED/BLOCKED with Procurement action,
+source-verified native fields and unchanged authority. One primary inference only. Viewports 1440/1024/390,
+keyboard/reduced-motion, actual READY/REVIEW/BLOCK and deterministic failure/empty states were inspected.
+The compiled app is served by FastAPI with deep-link reload support. Phase 5 local review: http://127.0.0.1:8005
+(open in local Chrome); Vite 5175 proxies that server because an older process already owns port 8000.
+See OPERATIONS_UI for the existing live demo DB/document paths; a fresh default database has an honest empty queue.
 
-The Phase 3 independent evidence verifier and conservative scan behavior remain intact. Native verified fields
-may support READY; scan facts remain unverified, unstated line net stays None, printed totals are not repaired.
-See `docs/DOCUMENT_ENGINE.md` and historical `docs/PHASE_03_1_REPORT.md` for provider/evidence details.
-Optional stronger inference remains unverified and disabled. No Phase 5 UI, approval, reevaluation or deployment.
+Required runtime: gemini-3.5-flash-lite, GEMINI_ESCALATION_ENABLED=false, server-side key only in ignored .env.
+No per-invoice metadata lookup or stronger calls. Run one Uvicorn worker; persistent DB + document directory.
+Source grounding, pure financial engine and authoritative billed ledger are unchanged. Scans remain unverified;
+missing optional line net stays unknown. Technical failure is never a financial rejection.
+No approval/Confirm PO/reevaluation/payment action, new scenarios, deployment or Phase 6 was added.
+Historical backend integration evidence remains in docs/PHASE_04_REPORT.md and ORCHESTRATION_API.md.
 
 ## Pure financial engine (Phase 2)
 
 Use `from app.domain import build_context, evaluate` from the backend Python path. Supply immutable typed
 invoice facts, trusted vendor/PO/billed snapshots and PolicyV1; no database or provider call occurs during evaluation.
 See `docs/FINANCE_ENGINE.md` for evidence keys, rule catalog, trust requirements and deterministic matching.
-Synthetic manifest facts are test inputs, not actual extraction results. The UI remains the Phase 1 shell.
+Synthetic manifest facts are test inputs; actual live extraction/UI evidence is recorded separately in the phase reports.
 
 ```powershell
 .venv/Scripts/python -m pytest -c backend/pytest.ini backend/tests -q --basetemp tmp/pytest-phase02-final
@@ -109,7 +112,7 @@ No tests require network, provider keys, or paid services once dependencies are 
 - Immutable typed Pydantic v1 boundary snapshots; missing extracted amounts stay null; binary floats rejected.
 - SQLAlchemy SQLite initial schema. Exact Decimal values stored as TEXT/JSON decimal strings.
 - Idempotent seed: 6 vendors, 7 POs/7 lines, 3 prior billed invoices; drift rejected and rolled back.
-- React/TypeScript/Vite/Tailwind/Lucide shell, working navigation, disabled and honestly labeled processing CTA.
+- Connected React/TypeScript/Tailwind/Lucide operations overview, queue and source-and-decision workspace.
 - Four native-text PDFs and the authorized image-only SCAN_CONFLICT fixture, from the untouched manifest.
 - Pure matching, financial reconciliation, duplicate/bank/evidence controls and severity-based decisions.
 - Persisted asynchronous invoice orchestration, bounded PDF upload/document storage and run/history/policy/dashboard APIs.

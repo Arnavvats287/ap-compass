@@ -1,0 +1,122 @@
+/** Explicit synthetic API test responses; no inference or financial evaluation in TypeScript. */
+import type { Dashboard, Finding, Run, RunSummary } from '../types'
+export const finding: Finding = {
+  code: 'PO_BALANCE_EXCEEDED',
+  severity: 'BLOCK',
+  title: 'Invoice exceeds remaining PO commitment',
+  explanation: 'The invoice requests net 30000; remaining net is 25000.',
+  owner: 'Procurement',
+  next_action: 'Request a corrected invoice or an authorized PO amendment.',
+  values: [
+    { name: 'remaining_net', value: '25000' },
+    { name: 'requested_net', value: '30000' },
+    { name: 'excess_net', value: '5000' },
+  ],
+  evidence_refs: [],
+}
+export const run: Run = {
+  id: 'test-run',
+  document_id: 'test-doc',
+  execution_state: 'COMPLETED',
+  execution_error_code: null,
+  created_at: '2026-11-18T23:21:04Z',
+  updated_at: '2026-11-18T23:21:07Z',
+  source_route: 'native_text',
+  model_id: 'TEST_ONLY',
+  extraction_schema_version: 'invoice-extraction-wire-v1',
+  policy_snapshot: { version: 'policy-v1' },
+  timings: [],
+  usage: null,
+  decision: {
+    outcome: 'BLOCKED',
+    primary_reason_code: finding.code,
+    owner: finding.owner,
+    next_action: finding.next_action,
+    policy_version: 'policy-v1',
+    findings: [finding],
+  },
+  extracted_invoice: {
+    vendor_name_raw: 'Aster Systems',
+    vendor_name_normalized: 'aster systems',
+    invoice_number: 'OVERBILLED_PARTIAL-2026',
+    invoice_date: '2026-11-14',
+    po_reference: 'PO-3015',
+    currency: 'INR',
+    net: '30000',
+    tax: '5400',
+    total: '35400',
+    lines: [
+      {
+        description: 'Managed IT services',
+        item_code: 'AS-SERVICE-01',
+        qty: '6',
+        unit_price_net: '5000',
+        net: '30000',
+      },
+    ],
+    evidence: [
+      {
+        field: 'net',
+        raw_value: '30000',
+        normalized_value: '30000',
+        page: 1,
+        quote: 'Net subtotal: INR 30000',
+        route: 'native_text',
+        evidence_state: 'NATIVE_VERIFIED',
+      },
+    ],
+  },
+  candidates: [
+    {
+      po: {
+        id: 'PO-3015',
+        vendor_id: 'V-AST',
+        authorized_net: '200000',
+        currency: 'INR',
+        status: 'OPEN',
+      },
+      selection_provenance:
+        'Explicit invoice PO reference; financial eligibility checked separately',
+      rank: 1,
+    },
+  ],
+  stages: [
+    {
+      name: 'received',
+      state: 'PASSED',
+      started_at: '2026-11-18T23:21:04Z',
+      finished_at: '2026-11-18T23:21:04Z',
+    },
+    {
+      name: 'extracting_invoice',
+      state: 'PASSED',
+      started_at: '2026-11-18T23:21:04Z',
+      finished_at: '2026-11-18T23:21:07Z',
+    },
+  ],
+}
+export const summary: RunSummary = {
+  id: run.id,
+  created_at: run.created_at,
+  updated_at: run.updated_at,
+  execution_state: run.execution_state,
+  outcome: 'BLOCKED',
+  vendor_name: 'Aster Systems',
+  invoice_number: 'OVERBILLED_PARTIAL-2026',
+  total: '35400',
+  currency: 'INR',
+  primary_reason_code: finding.code,
+  owner: 'Procurement',
+}
+export const dashboard: Dashboard = {
+  total_runs: 17,
+  in_progress: 2,
+  completed: 13,
+  ready: 6,
+  review_required: 4,
+  blocked: 3,
+  processing_failed: 1,
+  interrupted: 1,
+  flagged_invoice_net_by_currency: { INR: '123456' },
+  flagged_invoice_net_missing_count: 0,
+}

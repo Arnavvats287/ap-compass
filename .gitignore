@@ -25,3 +25,5 @@ AP_COMPASS_STARTER_PACK*.zip
 *.key
 credentials*.json
 service-account*.json
+
+.hallmark/

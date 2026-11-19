@@ -1,8 +1,8 @@
 # AP Compass — Project Memory (living handoff)
 
 **Last reviewed:** 2026-11-19 (IST)
-**Repository status:** Phase 4 vertical slice PASS: 268 tests, three genuine API E2E outcomes, reload proof, unchanged ledger. Architectural review pending.
-**Current authorized segment:** `04 ORCHESTRATION + API` only; complete and stop for review.
+**Repository status:** Phase 5 connected operations UI PASS: 280 backend + 32 frontend tests, one actual UI inference, real-data browser QA; architectural review pending.
+**Current authorized segment:** `05 OPERATIONS UI` only; complete and stop for review.
 **Deadline:** Saturday 2026-11-21 (IST); target Friday evening feature freeze.
 **Maintainers:** Builder owns product decisions; Codex implements one authorized phase; architectural review gates further work.
 
@@ -47,8 +47,8 @@ Minimum happy path: `HAPPY_CLEAN`, `HAPPY_PARTIAL` (partial invoice is within re
 - `01 FOUNDATION`: accepted by user architectural review; checkpoint `phase-01-foundation` unchanged.
 - `02 FINANCE ENGINE`: accepted by explicit user review; tag phase-02-finance-engine unchanged.
 - `03 DOCUMENT ENGINE`: ACCEPTED by explicit user review; primary native/scan evidence; optional escalation disabled.
-- `04 ORCHESTRATION + API`: gate PASS; 268 tests and genuine persisted API E2E; architectural review pending.
-- `05 OPERATIONS UI`: live dashboard/workspace against actual API; shell can start earlier, final integration after 04.
+- `04 ORCHESTRATION + API`: ACCEPTED by explicit user review; checkpoint unchanged.
+- `05 OPERATIONS UI`: gate PASS; 280 backend + 32 frontend tests, real UI upload and viewport/interaction QA; review pending.
 - `06 SCENARIOS + EVAL`: richer edge cases and frozen evaluation; after connected vertical slice.
 - `07 RELEASE`: security checks, deploy smoke test, real video and submission; after core gates.
 
@@ -56,7 +56,7 @@ Read `docs/SEGMENTS_AND_PARALLELISM.md` for ownership, scope cuts and acceptance
 
 ## Current known unknowns (not blockers for 01)
 
-- Which Gemini model is actually enabled and adequate under the project's own API key?
+- Primary Flash-Lite is verified for native/scan; stronger inference remains disabled/unverified.
 - Exact persistent deployment host and ability to keep app available during interview?
 - Whether to implement analyst Confirm-PO action and policy rerun after MVP passes?
 - Final creative fourth demo edge case (decide later; no schema rewrite permitted without review)?
@@ -71,31 +71,34 @@ Read `docs/SEGMENTS_AND_PARALLELISM.md` for ownership, scope cuts and acceptance
 
 ## Last handoff
 
-**Current task:** Phase 4 orchestration + API complete; gate PASS; STOP for architectural review. Phase 5 not authorized.
-**Base/branch:** c0d06f07fc3d0d70b26318dc247778402dd1fbab / codex/phase-04-orchestration-api.
-**Checkpoint:** phase-04-vertical-slice; resolve annotated tag for SHA. Exact commit/push/clean-tree verification
-in final chat after commit. Preserve all previous tags and default branch.
-**Checks:** 268 passed (30 foundation, 99 finance, 100 document, 39 new integration/API), zero failures/errors,
-one existing warning, 46.24s. Build 1682 modules PASS; manifests/hygiene/pip PASS. Actual Uvicorn HTTP
-health/policy/dashboard/runs PASS and shutdown clean, no inference. Only obsolete Phase 1 upload-absence assertion
-updated to expect 415. Initial oversized test-ID and obsolete assertion failures resolved and documented.
-**Live:** Exactly three actual API E2E Flash-Lite generations, no metadata/Flash requests. HAPPY_CLEAN COMPLETED/
-READY; OVERBILLED_PARTIAL COMPLETED/BLOCKED with PO-3015, value+quantity controls; SCAN_CONFLICT COMPLETED/REVIEW,
-gross86200/discrepancy3600/optional line netNone, all scan refs unverified. Native refs independently verified.
-Actual input/output tokens: 543/913, 542/681, 1399/914. Extraction/total ms: 3213/3259, 2680/2716, 3696/3738.
-**Persistence:** All full live snapshots/documents identical after app recreation, zero model calls on reload.
-Authority row hash unchanged: 7fb54a84f32bd0bf75a29396bb50c450878503dd70515b33bafcc330e2a54398.
-RunStage rows exclusively own stages; payload stages=[]; detail atomic joined query. Policy version drift fails.
-**Execution:** Tracked async tasks, per-app semaphore1, queued runs wait, no transactions during inference.
-Restart reconciles queued/running as INTERRUPTED/SERVER_RESTART with no active stages/replay. Expected failures
-persist sanitized categories, no business decision; actual business REVIEW/BLOCK remain COMPLETED.
-**Documents:** AP_COMPASS_DOCUMENT_DIR default runtime/documents; bounded one-PDF upload, opaque IDs, atomic
-writes, run-scoped safe serving. Credential-less app boots/health works; extraction fails CONFIGURATION.
-**Contract:** Only approved execution_error_code optional field + state/allowlist validation, ADR-017.
-No DB schema, finance/matching/evidence rules, seed/fixture/PDF, frontend or Docker change. Multipart dependency added.
-**Limits:** Single process/worker, no durable queue/restart replay/auth/retention/orphan cleanup/cloud/deployment.
-Dashboard currently projects all snapshots in one query. No generalized accuracy claim, OCR, stronger model,
-UI integration, approval or reevaluation. DB outage can prevent error persistence; do not claim successful completion.
-**Reports:** docs/PHASE_04_REPORT.md, docs/PHASE_04_LIVE_RESULTS.json, docs/PHASE_04_FAILURE_EXAMPLE.json,
-docs/ORCHESTRATION_API.md. Historical Phase 3 failures/scope adjustment remain in their original reports/ADRs.
-**Next authorized action:** Architectural review or explicitly requested repair only. No automatic Phase 5.
+**Current task:** Phase 5 operations UI complete; gate PASS; STOP for architectural review. Phase 6 not authorized.
+**Base/branch:** 13fe35d792c2fb47a84604e21966ad4a2bd2048b / codex/phase-05-operations-ui.
+**Checkpoint:** phase-05-operations-ui; resolve annotated tag for SHA. Exact final commit/push/clean-tree
+verification in publication chat after commit. Previous tags and default branch preserved.
+**Checks:** 280 backend (268 original unchanged + 12 projection/static tests) and 32 frontend tests PASS;
+TypeScript/build PASS (1747 modules), manifests/hygiene/pip PASS, npm tree/audit clean. One existing warning.
+**UI:** / overview, /runs URL filters/search, /runs/:id PDF/decision/findings/owner/action/evidence/PO/diagnostics.
+Central typed API/Query, active-only 1000ms polling, terminal invalidation, no client financial decisions or
+source verification. Exact decimal formatting without Number-based money arithmetic; unknowns stay unknown.
+**Live:** One genuine browser upload of OVERBILLED_PARTIAL, run 3af82d60d6624971b7aa48de920407d5. Actual
+RUNNING/read stage observations then COMPLETED/BLOCKED. One Flash-Lite generation, no stronger calls;
+542 input / 920 output tokens. extraction3312/matching2/evaluation2/total3389ms. Aster PO-3015 retained;
+net30000/gross35400 vs remaining25000/excess5000, Procurement action; returned source refs native verified.
+**Reload/ledger:** Source opened, new queue/dashboard data and identical reload verified without new inference.
+Hash unchanged: 7fb54a84f32bd0bf75a29396bb50c450878503dd70515b33bafcc330e2a54398. PDF popup harness
+initially matched iframe; fixed and resumed same completed run without resubmission. No provider/business failure.
+**QA:** Actual Chrome, 15 real-data captures at1440/1024/390 plus7 deterministic API states, keyboard/skip/
+filters/disclosures, reduced-motion, no clipping or uncaught app JS. Deterministic states not persisted as real
+runs. Screenshots ignored in tmp/phase05-qa. Hallmark v2 app/redesign -> Vercel -> Taste2.5 critique; marketing
+hero/shader/photo/loop prescriptions rejected. Skill files persist in ignored tmp/phase05-skills, not global.
+**Backend scope:** Approved known flagged invoice NET grouped by currency, missing count disclosed, repeat
+analyses count; plus reported frontend deep-link fallback blocker fixed with API/asset404 preservation.
+No shared contracts/finance/document/AI/DB/orchestration/seeds/fixtures/original tests changed. ADR-018.
+**Demo:** Local compiled UI/backend8005, Vite5175 (older8000 process untouched). Existing Phase4 smoke DB/docs
+reused; now4 submissions (ready1/review1/blocked2), known flagged net INR130000 including repeat analysis.
+Not unique payable exposure/savings. OPERATIONS_UI documents paths and default development commands.
+**Limits:** Browser-dependent PDF embed with open-source fallback;100 recent-run filter scope; no Confirm PO,
+approval, reevaluation, policy editor, batch/model selector/ERP/email/payment/auth suite/new scenarios/deployment.
+Original single-process restart behavior remains; no general model-accuracy/accessibility-certification claim.
+**Reports:** PHASE_05_REPORT, OPERATIONS_UI, PHASE_05_DESIGN_NOTE/QA and sanitized UI_QA/LIVE_RESULTS JSONs.
+**Next authorized action:** Architectural review or explicitly requested repair only. No automatic Phase 6.
