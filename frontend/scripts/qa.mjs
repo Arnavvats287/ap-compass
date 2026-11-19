@@ -1,11 +1,15 @@
 /** Explicit local browser QA. Deterministic state interceptions are test data, never persisted. */
 import assert from 'node:assert/strict'
+import { createHash } from 'node:crypto'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
+import { resolve, sep } from 'node:path'
 import puppeteer from 'puppeteer-core'
 
 const base = process.env.AP_COMPASS_UI_URL ?? 'http://127.0.0.1:5173'
-const output = fileURLToPath(new URL('../../tmp/phase05-qa/', import.meta.url))
+const output = process.env.AP_COMPASS_QA_DIR
+  ? resolve(process.env.AP_COMPASS_QA_DIR) + sep
+  : fileURLToPath(new URL('../../tmp/phase05-qa/', import.meta.url))
 await mkdir(output, { recursive: true })
 const json = async (path) => {
   const response = await fetch(base + '/api' + path)
@@ -21,6 +25,8 @@ const selected = Object.fromEntries(
   }),
 )
 const blocked = await json('/runs/' + selected.BLOCKED.id)
+const persistedBefore = await Promise.all(summaries.map((run) => json('/runs/' + run.id)))
+const fingerprint = (value) => createHash('sha256').update(JSON.stringify(value)).digest('hex')
 const browser = await puppeteer.launch({
   executablePath:
     process.env.CHROME_PATH ?? 'C:/Program Files/Google/Chrome/Application/chrome.exe',
@@ -56,6 +62,14 @@ async function geometry(page, label, width) {
 }
 try {
   const page = await browser.newPage()
+  const mutations = []
+  page.on('request', (request) => {
+    if (
+      new URL(request.url()).pathname.startsWith('/api/') &&
+      !['GET', 'HEAD'].includes(request.method())
+    )
+      mutations.push(request.method())
+  })
   page.on('pageerror', (error) => errors.push(error.message))
   const routes = [
     ['overview', '/', '.metric-strip .metric'],
@@ -65,7 +79,7 @@ try {
     ['review', '/runs/' + selected.REVIEW_REQUIRED.id, '.review-brief'],
   ]
   for (const width of [1440, 1024, 390]) {
-    await page.setViewport({ width, height: width === 390 ? 844 : 1000 })
+    await page.setViewport({ width, height: width === 390 ? 844 : width === 1024 ? 900 : 1000 })
     for (const [name, path, selector] of routes) {
       await page.goto(base + path, { waitUntil: 'networkidle0' })
       await page.waitForSelector(selector)
@@ -91,10 +105,12 @@ try {
         await page.evaluate(() => window.scrollTo(0, 0))
       }
       const screenshot = `${name}-${width}.png`
+      await page.screenshot({ path: output + `${name}-${width}-fold.png`, fullPage: false })
       await page.screenshot({ path: output + screenshot, fullPage: true })
       results.views.push({
         name,
         width,
+        height: width === 390 ? 844 : width === 1024 ? 900 : 1000,
         path,
         screenshot,
         overflow: false,
@@ -121,6 +137,7 @@ try {
   await page.focus('#invoice-search')
   await page.keyboard.type('Aster')
   await page.waitForFunction(() => location.search.includes('q=Aster'))
+  assert.equal(await page.$eval('#invoice-search', (input) => input.value), 'Aster')
   const filter = await page.$('button.filter:nth-child(4)')
   await filter.focus()
   await page.keyboard.press('Enter')
@@ -290,6 +307,14 @@ try {
     'Queued, processing, technical failure, interruption, long values, empty and API error states rendered with deterministic API test data',
   )
   assert.deepEqual(errors, [])
+  assert.deepEqual(mutations, [])
+  const persistedAfter = await Promise.all(summaries.map((run) => json('/runs/' + run.id)))
+  assert.deepEqual(persistedAfter, persistedBefore)
+  assert.deepEqual(await json('/runs?limit=100'), summaries)
+  results.persistedSnapshotFingerprint = fingerprint(persistedAfter)
+  results.checks.push(
+    'Zero API mutation requests; all persisted run snapshots and summaries unchanged',
+  )
   results.checks.push('No uncaught application JavaScript errors')
   await writeFile(output + 'results.json', JSON.stringify(results, null, 2) + '\n')
   console.log(

@@ -103,6 +103,33 @@ export function FindingValues({
     </dl>
   ) : null
 }
+/** Presentation only: emphasize existing backend comparison values; never calculate them. */
+function ExceptionValues({ finding, currency }: { finding: Finding; currency?: string | null }) {
+  const keys = ['remaining_net', 'requested_net', 'excess_net'].every((name) =>
+    finding.values.some((value) => value.name === name),
+  )
+    ? ['remaining_net', 'requested_net', 'excess_net']
+    : ['expected_gross', 'stated_gross', 'difference'].every((name) =>
+          finding.values.some((value) => value.name === name),
+        )
+      ? ['expected_gross', 'stated_gross', 'difference']
+      : []
+  if (!keys.length) return <FindingValues finding={finding} currency={currency} />
+  const comparison = keys.flatMap((name) => finding.values.filter((value) => value.name === name))
+  const supporting = finding.values.filter((value) => !keys.includes(value.name))
+  return (
+    <>
+      <div className="exception-comparison">
+        <FindingValues finding={{ ...finding, values: comparison }} currency={currency} />
+      </div>
+      {supporting.length > 0 && (
+        <div className="comparison-context">
+          <FindingValues finding={{ ...finding, values: supporting }} currency={currency} />
+        </div>
+      )}
+    </>
+  )
+}
 export function FindingDetails({
   finding,
   currency,
@@ -325,13 +352,13 @@ function BusinessDecision({ run }: { run: Run }) {
                   'Review the findings and original invoice before continuing.')}
             </p>
             {primary && primary.code !== 'SOURCE_EVIDENCE_MISSING' && (
-              <FindingValues finding={primary} currency={invoice?.currency} />
+              <ExceptionValues finding={primary} currency={invoice?.currency} />
             )}
             {arithmetic && arithmetic !== primary && (
               <div className="related-financial">
                 <h3>{arithmetic.title}</h3>
                 <p>{arithmetic.explanation}</p>
-                <FindingValues finding={arithmetic} currency={invoice?.currency} />
+                <ExceptionValues finding={arithmetic} currency={invoice?.currency} />
               </div>
             )}
             <div className="ownership">

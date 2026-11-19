@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { Search } from 'lucide-react'
 import { useRuns, active } from './queries'
@@ -40,7 +41,10 @@ export default function Queue() {
   const [params, setParams] = useSearchParams()
   const requested = params.get('status') ?? 'all'
   const status = filters.some(([key]) => key === requested) ? requested : 'all'
-  const search = params.get('q') ?? ''
+  const urlSearch = params.get('q') ?? ''
+  // Keep typing immediate while router navigation synchronizes the shareable URL.
+  const [search, setSearch] = useState(urlSearch)
+  useEffect(() => setSearch(urlSearch), [urlSearch])
   const update = (key: string, value: string) =>
     setParams(
       (previous) => {
@@ -83,7 +87,10 @@ export default function Queue() {
               autoComplete="off"
               placeholder="Search invoice or supplier…"
               value={search}
-              onChange={(e) => update('q', e.target.value)}
+              onChange={(e) => {
+                setSearch(e.target.value)
+                update('q', e.target.value)
+              }}
             />
           </div>
         </div>

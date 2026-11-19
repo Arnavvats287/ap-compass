@@ -1,10 +1,11 @@
 # AP Compass — Project Status / Gate Register
 
 **Updated:** 2026-11-19 IST.
-**Current gate:** Phase 5 connected operations UI PASS; architectural review pending. STOP before Phase 6.
-**Base:** phase-04-vertical-slice / 13fe35d792c2fb47a84604e21966ad4a2bd2048b.
-**Branch:** codex/phase-05-operations-ui. **Checkpoint:** phase-05-operations-ui, published only after checks.
-Resolve the annotated tag for exact SHA; final commit/push/clean-tree evidence is in the publication chat.
+**Current gate:** Phase 5 accepted by user; Phase 5.1 visual refinement PASS, review pending. STOP before Phase 6.
+**Base:** phase-05-operations-ui / 8816cff9ee721bfdf2ce35ac5faf4601eb3f18df.
+**Branch:** codex/phase-05-1-visual-refinement. Accepted `phase-05-operations-ui` checkpoint preserved.
+Checkpoint-only publication authorized after fresh checks. Checkpoint name: `phase-05-1-visual-refinement`.
+Exact SHA and independently verified remote publication/clean-tree evidence are in the publication handoff.
 No prior-tag/default-branch alteration. Deadline remains Saturday 2026-11-21 IST.
 
 | Phase | State | Evidence |
@@ -13,9 +14,37 @@ No prior-tag/default-branch alteration. Deadline remains Saturday 2026-11-21 IST
 | 02 Finance | ACCEPTED | Original financial code/tests unchanged |
 | 03/3.1 Extraction | ACCEPTED | Original document/AI code/tests unchanged; primary only |
 | 04 API/orchestration | ACCEPTED | User review passed; original workflow/tests unchanged |
-| 05 Operations UI | PASS, review pending | Connected real-data UI, 280 backend + 32 frontend tests, browser/live smoke |
+| 05 Operations UI | ACCEPTED | User confirmed functional gate passed; existing checkpoint preserved |
+| 05.1 Visual refinement | PASS, review pending | Two rendered iterations, 280 backend + 32 frontend tests, 15 real-data views + 7 deterministic states; zero model calls |
 | 06 Scenarios | LOCKED | No new fixtures/scenarios authorized |
 | 07 Release | LOCKED | No public/paid/Docker deployment |
+
+## Phase 5.1 publication verification
+
+Fresh checkpoint checks:280 backend passed in50.46s (one existing warning),32 frontend passed in6.00s;
+typecheck/build/manifests/hygiene/pip PASS. Actual Chrome:15 real-data views +7 deterministic states PASS,
+with separate sticky/no-overlap/mobile-order/comparison checks. All persisted snapshots unchanged; zero API
+mutations and **0 new Gemini calls**. No application changes in the publication task. Protected backend/data
+diff empty against accepted Phase5. Exact commands/classification:docs/PHASE_05_1_REPORT.md sectionJ.
+
+## Verified Phase 5.1 evidence
+
+- Rendered baseline critique before UI edits; two visual iterations using actual persisted READY/REVIEW/BLOCKED runs.
+- Attention summary and financial comparison are the only two signature patterns. Existing metric definitions,
+  amounts, evidence states, owner/actions, payment disclaimer and decisions retained.
+- All **280 backend tests pass**, zero failures, one existing warning, 50.76s. All **32 frontend tests pass**,
+  final5.63s; typecheck/build PASS, 1747 modules. Original tests unchanged.
+- Final browser QA:15 real-data views at1440×1000/1024×900/390×844,7 test-only states, keyboard/search/filter/
+  disclosures/PDF200/reduced-motion/overflow pass. One first-iteration rapid-search timeout was reproduced and
+  fixed with immediate input state while retaining URL synchronization; final QA passes.
+- Zero Gemini calls or API mutations; all four stored snapshots and summaries deep-equal before/after browsing.
+  Authoritative-row hash still7fb54a84f32bd0bf75a29396bb50c450878503dd70515b33bafcc330e2a54398.
+- Hallmark rendered five-route audit:0FAIL/0WARN/3ANSWERED; final static0FAIL/0WARN/1ANSWERED. Vercel review
+  and app-specific Taste critique complete. Marketing hero/photo/shader/loop prescriptions rejected.
+- Manifests/hygiene/pip/npm tree pass; no dependency changes. Backend/data/API/query/types/format/test diff empty.
+- Screenshots local/ignored:tmp/phase051-before, tmp/phase051-iteration1, tmp/phase051-after. Native PDF frame
+  may be blank in mobile headless Chrome; functional open-source fallback retained.
+- Full critique, commands, screenshot comparison matrix, audit decisions and limits:docs/PHASE_05_1_REPORT.md.
 
 ## Verified Phase 5 evidence
 

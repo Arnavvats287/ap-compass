@@ -1,6 +1,6 @@
 /* Hallmark · shape: app screen · genre: modern-minimal · theme: brand · redesign: full
  * paper: warm neutral · accent: forest · display: Segoe UI · body: Segoe UI
- * nav: horizontal app shell · signature: source-and-decision workbench · states: loading, empty, error, full, processing
+ * nav: horizontal app shell · signature: attention summary and exception comparison · states: loading, empty, error, full, processing
  * axes: paper/sans/forest · posture: restrained surfaces · contrast: tested in sweep · v2.0.0 */
 /* Hallmark · pre-emit critique: P4 H4 E4 S5 R5 V4 · weakest: H, elevated owner and next action beside source instead of a repeated card grid */
 /* Hallmark · dropped #operations and Foundation status · user explicitly replaces the Phase 1 placeholder with real routes and data */
@@ -26,7 +26,7 @@
   max-width: var(--container);
   margin: 0 auto;
   padding: 0 var(--gutter);
-  min-height: 88px;
+  min-height: 80px;
   display: flex;
   align-items: center;
   gap: var(--space-xl);
@@ -257,7 +257,7 @@
   display: block;
   font-size: var(--text-sm);
   color: var(--color-ink-2);
-  margin-bottom: var(--space-xs);
+  margin-bottom: var(--space-md);
 }
 .metric strong {
   font-size: var(--text-figure);
@@ -516,7 +516,7 @@ td {
   vertical-align: middle;
 }
 td {
-  height: 80px;
+  height: 88px;
   overflow-wrap: anywhere;
 }
 td:first-child {
@@ -550,7 +550,8 @@ td time {
 .issue-cell {
   min-width: 160px;
   max-width: 220px;
-  color: var(--color-ink-2);
+  color: var(--color-ink);
+  font-weight: 600;
 }
 tbody tr:hover {
   background: var(--color-paper);
@@ -711,7 +712,7 @@ tbody tr:focus-within {
   font-size: var(--text-3xl);
 }
 .invoice-identity {
-  font-size: var(--text-md);
+  font-size: var(--text-lg);
   margin-top: var(--space-2xs);
   color: var(--color-ink-2);
   overflow-wrap: anywhere;
@@ -1460,4 +1461,323 @@ blockquote {
 .finding-group-heading h3 {
   font-size: inherit;
   color: inherit;
+}
+
+/* Phase 5.1: attention first, then the supporting operational ledger. */
+.metric.review {
+  background: var(--color-review-bg);
+}
+.metric.blocked {
+  background: var(--color-blocked-bg);
+}
+.metric.review:hover,
+.metric.blocked:hover {
+  background: var(--color-paper-3);
+}
+.metric:focus-visible {
+  z-index: 1;
+  outline-offset: -4px;
+}
+.overview-grid {
+  align-items: start;
+}
+.attention-value {
+  background: var(--color-nav);
+  color: var(--color-nav-text);
+  border: 0;
+  border-radius: var(--radius-card);
+  padding: var(--space-lg);
+  align-items: start;
+}
+.attention-value h2 {
+  font-size: var(--text-xl);
+}
+.attention-value p,
+.attention-value > small,
+.attention-value small {
+  color: var(--color-nav-muted);
+}
+.attention-value p {
+  margin-top: var(--space-sm);
+}
+.flagged-amounts strong {
+  font-size: var(--text-figure);
+  line-height: 1.15;
+}
+.flagged-amounts small {
+  margin-top: var(--space-xs);
+}
+.distribution.panel {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 0 var(--space-lg);
+}
+.distribution h2 {
+  font-size: var(--text-lg);
+}
+.distribution-bar {
+  height: var(--space-xs);
+  margin-top: var(--space-md);
+}
+.technical-counts {
+  border-top: 1px solid var(--color-rule);
+}
+.overview-grid > .upload-panel {
+  border-style: solid;
+  border-top: var(--space-2xs) solid var(--color-accent);
+  padding: var(--space-lg);
+}
+.overview-grid .upload-heading h2 {
+  font-size: var(--text-xl);
+}
+.overview-grid .drop-copy {
+  padding: var(--space-lg) var(--space-md);
+  background: var(--color-paper);
+  border: 1px dashed var(--color-strong-rule);
+  border-radius: var(--radius-input);
+}
+.overview-grid .drop-copy .button {
+  width: 100%;
+}
+.brand > svg {
+  width: 36px;
+  height: 36px;
+}
+.brand {
+  font-size: var(--text-2xl);
+}
+.brand small {
+  font-size: var(--text-xs);
+}
+.queue-panel {
+  box-shadow: none;
+}
+td:nth-child(5) {
+  min-width: 110px;
+  overflow-wrap: normal;
+}
+td.numeric {
+  font-weight: 600;
+}
+td.numeric .table-secondary {
+  font-weight: 400;
+}
+tbody tr {
+  cursor: pointer;
+}
+tbody tr:hover .invoice-link,
+tbody tr:focus-within .invoice-link {
+  color: var(--color-accent);
+}
+tbody tr:hover .icon-button,
+tbody tr:focus-within .icon-button {
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+}
+.finding-disclosure[open],
+.evidence-item[open] {
+  background: var(--color-surface);
+}
+.finding-disclosure[open] summary,
+.evidence-item[open] summary {
+  border-bottom: 1px solid var(--color-rule);
+}
+.decision-brief {
+  border-top: var(--space-2xs) solid var(--color-strong-rule);
+}
+.blocked-brief {
+  border-top-color: var(--color-blocked);
+}
+.review-brief {
+  border-top-color: var(--color-review);
+}
+.ready-brief {
+  border-top-color: var(--color-ready);
+}
+.exception-comparison {
+  margin-top: var(--space-lg);
+  padding: var(--space-lg) 0;
+  border-top: 1px solid var(--color-rule);
+  border-bottom: 1px solid var(--color-rule);
+}
+.exception-comparison .finding-values {
+  margin: 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.exception-comparison .finding-values dd {
+  font-size: var(--text-comparison);
+  letter-spacing: var(--tracking-display);
+}
+.exception-comparison .finding-values > div:last-child dd {
+  color: var(--color-blocked);
+}
+.review-brief .exception-comparison .finding-values > div:last-child dd {
+  color: var(--color-review);
+}
+.comparison-context .finding-values {
+  margin-top: var(--space-md);
+}
+.comparison-context .finding-values dd {
+  font-size: var(--text-sm);
+}
+.ownership p {
+  font-size: var(--text-md);
+}
+.ownership > div:first-child p {
+  color: var(--color-accent);
+}
+@media (min-width: 901px) and (max-width: 1100px) {
+  th,
+  td {
+    padding-left: var(--space-sm);
+    padding-right: var(--space-sm);
+  }
+  td:first-child {
+    min-width: 180px;
+  }
+  .status {
+    padding-left: var(--space-xs);
+    padding-right: var(--space-xs);
+  }
+  .issue-cell {
+    min-width: 140px;
+  }
+  td time {
+    white-space: normal;
+  }
+  .exception-comparison .finding-values {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .exception-comparison .finding-values > div:last-child {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 900px) {
+  .brand {
+    font-size: var(--text-xl);
+  }
+  .brand > svg {
+    width: 28px;
+    height: 28px;
+  }
+  .metric-strip {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+  .metric {
+    grid-column: span 2;
+    min-height: 100px;
+    padding: var(--space-sm);
+  }
+  .metric.review,
+  .metric.blocked {
+    grid-column: span 3;
+  }
+  .metric:nth-child(2n) {
+    border-right: 1px solid var(--color-rule);
+  }
+  .metric:nth-child(2),
+  .metric:last-child {
+    border-right: 0;
+  }
+  .metric:nth-child(n + 3) {
+    border-bottom: 0;
+  }
+  .metric:last-child {
+    grid-column: span 2;
+  }
+  .metric strong {
+    font-size: var(--text-3xl);
+  }
+  .metric span {
+    font-size: var(--text-xs);
+    margin-bottom: var(--space-xs);
+  }
+  .metric svg {
+    right: var(--space-xs);
+    bottom: var(--space-md);
+    width: 14px;
+  }
+  .attention-value {
+    padding: var(--space-lg) var(--space-md);
+  }
+  .flagged-amounts strong {
+    font-size: var(--text-figure);
+  }
+  .distribution.panel {
+    padding: 0;
+  }
+  .overview-grid > .upload-panel {
+    padding: var(--space-md);
+  }
+  .overview-grid .drop-copy {
+    padding: var(--space-md);
+  }
+  td:nth-child(5) {
+    min-width: 0;
+  }
+  .exception-comparison {
+    padding: var(--space-md) 0;
+  }
+  .exception-comparison .finding-values {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .exception-comparison .finding-values > div:last-child {
+    grid-column: 1 / -1;
+  }
+  .evidence-item summary {
+    flex-direction: row;
+    align-items: center;
+  }
+  .evidence-item summary > span:first-child {
+    flex: 1;
+  }
+  .evidence-state {
+    max-width: 132px;
+  }
+}
+
+/* Iteration 2: aligned mobile figures and a persistent route to the real upload control. */
+.metric:first-child {
+  border-top-left-radius: var(--radius-card);
+  border-bottom-left-radius: var(--radius-card);
+}
+.overview-upload-link {
+  display: none;
+}
+@media (min-width: 901px) and (max-width: 1100px) {
+  .exception-comparison .finding-values {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .exception-comparison .finding-values > div:last-child {
+    grid-column: auto;
+  }
+  .exception-comparison .finding-values dd {
+    font-size: var(--text-2xl);
+  }
+}
+@media (max-width: 900px) {
+  .overview-upload-link {
+    display: inline-flex;
+  }
+  .metric span {
+    min-height: 2lh;
+  }
+  .metric:first-child {
+    border-bottom-left-radius: 0;
+  }
+  .metric:nth-child(2) {
+    border-top-right-radius: var(--radius-card);
+  }
+  .metric:nth-child(3) {
+    border-bottom-left-radius: var(--radius-card);
+  }
+  .exception-comparison .finding-values > div:last-child {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-md);
+    padding-top: var(--space-sm);
+    border-top: 1px solid var(--color-rule);
+  }
 }

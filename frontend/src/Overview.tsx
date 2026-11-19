@@ -15,6 +15,9 @@ export default function Overview() {
           <h1>Operations overview</h1>
           <p>Turn messy vendor invoices into clear, controlled, actionable AP decisions.</p>
         </div>
+        <a className="button secondary overview-upload-link" href="#upload">
+          Process an invoice
+        </a>
         <span className="quiet-label">
           <ShieldCheck size={16} aria-hidden="true" />
           Two-way AP controls
@@ -29,10 +32,10 @@ export default function Overview() {
           <>
             <section className="metric-strip" aria-label="Invoice operations counts">
               {[
-                ['Total invoices', metrics.total_runs, 'all', ''],
-                ['Ready to process', metrics.ready, 'ready', 'ready'],
                 ['Needs review', metrics.review_required, 'review', 'review'],
                 ['Blocked', metrics.blocked, 'blocked', 'blocked'],
+                ['Ready to process', metrics.ready, 'ready', 'ready'],
+                ['Total invoices', metrics.total_runs, 'all', ''],
                 ['In progress', metrics.in_progress, 'processing', 'processing'],
               ].map(([label, count, filter, tone]) => (
                 <Link
@@ -48,6 +51,36 @@ export default function Overview() {
             </section>
             <div className="overview-grid">
               <div className="overview-main">
+                {metrics.flagged_invoice_net_by_currency && (
+                  <section className="attention-value" aria-label="Flagged invoice net value">
+                    <div>
+                      <h2>Invoice value requiring attention</h2>
+                      <p>
+                        Known invoice net for completed review or blocked runs. Each analysis is
+                        counted; this is not unique payable exposure.
+                      </p>
+                    </div>
+                    <div className="flagged-amounts">
+                      {Object.entries(metrics.flagged_invoice_net_by_currency).length ? (
+                        Object.entries(metrics.flagged_invoice_net_by_currency).map(
+                          ([currency, value]) => (
+                            <strong className="amount" key={currency}>
+                              {money(value, currency)} <small>{currency} net</small>
+                            </strong>
+                          ),
+                        )
+                      ) : (
+                        <span>No flagged invoice value</span>
+                      )}
+                    </div>
+                    <small>
+                      Grouped by currency.{' '}
+                      {metrics.flagged_invoice_net_missing_count
+                        ? `${metrics.flagged_invoice_net_missing_count} run(s) with unknown net or currency excluded.`
+                        : 'Unknown amounts are excluded.'}
+                    </small>
+                  </section>
+                )}
                 <section className="distribution panel" aria-labelledby="distribution-title">
                   <div className="section-heading">
                     <h2 id="distribution-title">Decision distribution</h2>
@@ -89,36 +122,6 @@ export default function Overview() {
                     </p>
                   )}
                 </section>
-                {metrics.flagged_invoice_net_by_currency && (
-                  <section className="attention-value" aria-label="Flagged invoice net value">
-                    <div>
-                      <h2>Invoice value requiring attention</h2>
-                      <p>
-                        Known invoice net for completed review or blocked runs. Each analysis is
-                        counted; this is not unique payable exposure.
-                      </p>
-                    </div>
-                    <div className="flagged-amounts">
-                      {Object.entries(metrics.flagged_invoice_net_by_currency).length ? (
-                        Object.entries(metrics.flagged_invoice_net_by_currency).map(
-                          ([currency, value]) => (
-                            <strong className="amount" key={currency}>
-                              {money(value, currency)} <small>{currency} net</small>
-                            </strong>
-                          ),
-                        )
-                      ) : (
-                        <span>No flagged invoice value</span>
-                      )}
-                    </div>
-                    <small>
-                      Grouped by currency.{' '}
-                      {metrics.flagged_invoice_net_missing_count
-                        ? `${metrics.flagged_invoice_net_missing_count} run(s) with unknown net or currency excluded.`
-                        : 'Unknown amounts are excluded.'}
-                    </small>
-                  </section>
-                )}
                 <div className="technical-counts">
                   <Link to="/runs?status=failed">
                     Processing failed <strong>{metrics.processing_failed}</strong>

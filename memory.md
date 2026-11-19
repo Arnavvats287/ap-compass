@@ -1,8 +1,8 @@
 # AP Compass — Project Memory (living handoff)
 
 **Last reviewed:** 2026-11-19 (IST)
-**Repository status:** Phase 5 connected operations UI PASS: 280 backend + 32 frontend tests, one actual UI inference, real-data browser QA; architectural review pending.
-**Current authorized segment:** `05 OPERATIONS UI` only; complete and stop for review.
+**Repository status:** Phase 5 accepted by user. Phase 5.1 visual refinement PASS: 280 backend + 32 frontend tests, real-data browser QA, zero new model calls; review pending.
+**Current authorized segment:** `05.1 VISUAL REFINEMENT` only; complete and stop for review.
 **Deadline:** Saturday 2026-11-21 (IST); target Friday evening feature freeze.
 **Maintainers:** Builder owns product decisions; Codex implements one authorized phase; architectural review gates further work.
 
@@ -48,7 +48,8 @@ Minimum happy path: `HAPPY_CLEAN`, `HAPPY_PARTIAL` (partial invoice is within re
 - `02 FINANCE ENGINE`: accepted by explicit user review; tag phase-02-finance-engine unchanged.
 - `03 DOCUMENT ENGINE`: ACCEPTED by explicit user review; primary native/scan evidence; optional escalation disabled.
 - `04 ORCHESTRATION + API`: ACCEPTED by explicit user review; checkpoint unchanged.
-- `05 OPERATIONS UI`: gate PASS; 280 backend + 32 frontend tests, real UI upload and viewport/interaction QA; review pending.
+- `05 OPERATIONS UI`: accepted by user; original checkpoint preserved.
+- `05.1 VISUAL REFINEMENT`: PASS, review pending; two rendered iterations, 280 backend + 32 frontend tests, zero new inference calls.
 - `06 SCENARIOS + EVAL`: richer edge cases and frozen evaluation; after connected vertical slice.
 - `07 RELEASE`: security checks, deploy smoke test, real video and submission; after core gates.
 
@@ -71,34 +72,38 @@ Read `docs/SEGMENTS_AND_PARALLELISM.md` for ownership, scope cuts and acceptance
 
 ## Last handoff
 
-**Current task:** Phase 5 operations UI complete; gate PASS; STOP for architectural review. Phase 6 not authorized.
-**Base/branch:** 13fe35d792c2fb47a84604e21966ad4a2bd2048b / codex/phase-05-operations-ui.
-**Checkpoint:** phase-05-operations-ui; resolve annotated tag for SHA. Exact final commit/push/clean-tree
-verification in publication chat after commit. Previous tags and default branch preserved.
-**Checks:** 280 backend (268 original unchanged + 12 projection/static tests) and 32 frontend tests PASS;
-TypeScript/build PASS (1747 modules), manifests/hygiene/pip PASS, npm tree/audit clean. One existing warning.
-**UI:** / overview, /runs URL filters/search, /runs/:id PDF/decision/findings/owner/action/evidence/PO/diagnostics.
-Central typed API/Query, active-only 1000ms polling, terminal invalidation, no client financial decisions or
-source verification. Exact decimal formatting without Number-based money arithmetic; unknowns stay unknown.
-**Live:** One genuine browser upload of OVERBILLED_PARTIAL, run 3af82d60d6624971b7aa48de920407d5. Actual
-RUNNING/read stage observations then COMPLETED/BLOCKED. One Flash-Lite generation, no stronger calls;
-542 input / 920 output tokens. extraction3312/matching2/evaluation2/total3389ms. Aster PO-3015 retained;
-net30000/gross35400 vs remaining25000/excess5000, Procurement action; returned source refs native verified.
-**Reload/ledger:** Source opened, new queue/dashboard data and identical reload verified without new inference.
-Hash unchanged: 7fb54a84f32bd0bf75a29396bb50c450878503dd70515b33bafcc330e2a54398. PDF popup harness
-initially matched iframe; fixed and resumed same completed run without resubmission. No provider/business failure.
-**QA:** Actual Chrome, 15 real-data captures at1440/1024/390 plus7 deterministic API states, keyboard/skip/
-filters/disclosures, reduced-motion, no clipping or uncaught app JS. Deterministic states not persisted as real
-runs. Screenshots ignored in tmp/phase05-qa. Hallmark v2 app/redesign -> Vercel -> Taste2.5 critique; marketing
-hero/shader/photo/loop prescriptions rejected. Skill files persist in ignored tmp/phase05-skills, not global.
-**Backend scope:** Approved known flagged invoice NET grouped by currency, missing count disclosed, repeat
-analyses count; plus reported frontend deep-link fallback blocker fixed with API/asset404 preservation.
-No shared contracts/finance/document/AI/DB/orchestration/seeds/fixtures/original tests changed. ADR-018.
-**Demo:** Local compiled UI/backend8005, Vite5175 (older8000 process untouched). Existing Phase4 smoke DB/docs
-reused; now4 submissions (ready1/review1/blocked2), known flagged net INR130000 including repeat analysis.
-Not unique payable exposure/savings. OPERATIONS_UI documents paths and default development commands.
-**Limits:** Browser-dependent PDF embed with open-source fallback;100 recent-run filter scope; no Confirm PO,
-approval, reevaluation, policy editor, batch/model selector/ERP/email/payment/auth suite/new scenarios/deployment.
-Original single-process restart behavior remains; no general model-accuracy/accessibility-certification claim.
-**Reports:** PHASE_05_REPORT, OPERATIONS_UI, PHASE_05_DESIGN_NOTE/QA and sanitized UI_QA/LIVE_RESULTS JSONs.
-**Next authorized action:** Architectural review or explicitly requested repair only. No automatic Phase 6.
+**Current task:** Phase 5.1 creative visual refinement complete; PASS; STOP for review. No Phase 6 authorization.
+**Base/branch:** phase-05-operations-ui / 8816cff9ee721bfdf2ce35ac5faf4601eb3f18df;
+codex/phase-05-1-visual-refinement. Checkpoint-only publication now authorized after fresh acceptance.
+Checkpoint name: phase-05-1-visual-refinement; full SHA/remote/clean-tree evidence in publication handoff.
+Prior checkpoints/default branch unchanged.
+**Design:** Baseline real-app critique before UI changes; two rendered iterations. Retained forest/paper brand,
+strengthened existing attention summary and backend monetary comparisons, compacted mobile counts/evidence,
+clarified upload and queue/disclosure affordances. Immediate local search value prevents observed fast-keystroke
+loss during URL navigation; URL state retained. No new metrics/workflow actions or financial calculations.
+**Checks:** Publication rerun:280 backend PASS,50.46s,one existing warning;32 frontend PASS,6.00s. Typecheck/build PASS,
+1747 modules, JS308.18kB/CSS39.04kB. Manifests/hygiene/pip/npm tree pass. Original tests/dependencies unchanged.
+**Browser:** Actual compiled app8005 and existing persisted data. 15 real views at 1440×1000/1024×900/390×844,
+7 deterministic non-persisted states. Keyboard/skip/search/filter/row links/disclosures/source200/reduced motion/
+long values/mobile overflow checks pass. Baseline,iteration1,final screenshots in ignored tmp/phase051-*.
+Initial iteration1 keyboard timeout reproduced character loss; fixed and final full QA passes.
+**Audits:** Hallmark app/redesign rendered 0FAIL/0WARN/3ANSWERED (5 routes/25 shots), final static 0FAIL/0WARN/
+1ANSWERED. Vercel review and Taste app critique complete. Marketing hero/section pacing/photo/shader/loop
+recommendations rejected for operational usability. No formal accessibility certification claim.
+**Truth:** Zero new Gemini calls or API mutation requests. Four snapshots/summaries identical before/after final
+QA; fingerprint 790793570c14d5821823cc0c38de5e6beed6ace38de906c6f443dfdbf1871c91.
+Authoritative-row hash still 7fb54a84f32bd0bf75a29396bb50c450878503dd70515b33bafcc330e2a54398.
+Backend/data/contracts/API/query/format/financial/document/provider/orchestration/security unchanged. Scan still
+printed86200,expected82600,difference3600,optional line net unknown; source uncertainty remains independent.
+**Demo data:** Reused Phase4 smoke DB/documents runtime/phase04-smoke-0221866e9e214f3a84149d1f79098bd9;
+4 analyses ready1/review1/blocked2; flagged known net INR130000 including repeated analyses, not savings or
+unique payable exposure. Existing live blocked run3af82d60d6624971b7aa48de920407d5 stillPO-3015,remaining
+25000/net30000/excess5000,gross35400,Procurement owner/action. No resubmission performed.
+**Limits:** Browser-dependent native PDF embed can be blank in mobile headless Chrome; open-source fallback
+remains. 100 recent-run scope; no Confirm PO/approval/reevaluation/policy/model selector/batch/auth/deployment.
+**Reports:** docs/PHASE_05_1_CRITIQUE.md (pre-edit), docs/PHASE_05_1_REPORT.md (before/after matrix,commands,
+audits,design decisions,limitations). Phase5 report remains historical accepted evidence.
+**Publication QA:**15 real-data views +7 deterministic states pass in tmp/phase051-publish; separate Chrome
+sticky/no-column-overlap/mobile-order/amount/caveat checks pass. Backend/data diff empty. No UI changes or new
+inference in publication task. docs/PHASE_05_1_REPORT.md sectionJ records exact publication checks.
+**Next:** Review only; no automatic Phase6 or further visual repair.
