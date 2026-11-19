@@ -134,3 +134,14 @@ loads stored invoice/current authority,then calls existing build_context/evaluat
 policy. Returns original/preview policies and decisions plus changed. No PDF/Gemini call or run/stage/policy/
 authority write. API-local models only; no shared shape change or persisted reevaluation. See POLICY_PREVIEW.md
 and ADR-019. Dashboard counts/metric definitions,upload,existing processing and restart semantics are unchanged.
+
+
+## Phase 6B.1 audited PO identity resolution
+
+POST /api/runs/{id}/po-confirmations creates a separate immutable human action and full reassessment,never
+a run overwrite. GET /api/runs/{id}/review-history returns history,current reviewed assessment and eligibility.
+Use stored extraction + original policy + current authoritative snapshots,then explicit pure human identity
+entry point. No extraction/PDF/Gemini/stage work. Unique-run first-confirmation-wins and idempotent client UUID.
+GET original snapshot and stage ownership unchanged. Run list remains one joined SELECT and adds separately
+labelled reviewed_outcome,reviewed_at,review_action_id. Dashboard quantities/net definitions remain original
+automated analyses; review actions are never additional uploaded invoices. See HUMAN_PO_RESOLUTION.md.

@@ -52,3 +52,11 @@ and quantity25 accommodate it; only price variance should require review at2%, t
 other control passes. Overbilling and exact duplicates remain blocked at both tolerances. Native fixture:
 .venv/Scripts/python scripts/generate_fixtures.py --case PRICE_3PCT (defaults still generate the original four).
 No global policy editing, persisted reevaluation, PO confirmation or Phase6B actions are implemented.
+
+
+## Interaction with Phase 6B.1
+
+A saved PO confirmation is a distinct reassessment. Policy preview continues to use the original automated
+run extraction/context and recorded policy; it does not reuse human identity selection or mutate its action.
+Therefore a human-reviewed-ready missing-reference case may still have a review-required automated policy
+preview. UI discloses this distinction. No financial or preview semantics changed.

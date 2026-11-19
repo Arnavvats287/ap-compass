@@ -66,3 +66,13 @@ class RunStage(Base):
     id: Mapped[str] = mapped_column(primary_key=True)
     run_id: Mapped[str] = mapped_column(ForeignKey("invoice_run.id"))
     payload: Mapped[dict] = mapped_column(JSON)
+
+
+class ReviewAction(Base):
+    """One append-only confirmation plus its full typed assessment, atomically committed."""
+    __tablename__ = "review_action"
+    id: Mapped[str] = mapped_column(primary_key=True)
+    run_id: Mapped[str] = mapped_column(ForeignKey("invoice_run.id"), unique=True)
+    client_action_id: Mapped[str] = mapped_column(String(36))
+    request_fingerprint: Mapped[str] = mapped_column(String(64))
+    payload: Mapped[dict] = mapped_column(JSON)

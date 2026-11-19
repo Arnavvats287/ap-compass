@@ -1,8 +1,8 @@
 # AP Compass — Project Memory (living handoff)
 
 **Last reviewed:** 2026-11-19 (IST)
-**Repository status:** Phase 6A functionally accepted; Phase 6A.1 signature frontend refinement locally verified; user visual review pending.
-**Current authorized segment:** `06A.1 SIGNATURE UI` only; stop for review before Phase 6B.
+**Repository status:** Phase 6A.1 accepted; Phase 6B.1 audited PO resolution locally verified; architectural review pending.
+**Current authorized segment:** `06B.1 AUDITED HUMAN PO RESOLUTION` only; stop for review.
 **Deadline:** Saturday 2026-11-21 (IST); target Friday evening feature freeze.
 **Maintainers:** Builder owns product decisions; Codex implements one authorized phase; architectural review gates further work.
 
@@ -51,7 +51,8 @@ Minimum happy path: `HAPPY_CLEAN`, `HAPPY_PARTIAL` (partial invoice is within re
 - `05 OPERATIONS UI`: accepted by user; original checkpoint preserved.
 - `05.1 VISUAL REFINEMENT`: accepted by explicit user review; checkpoint4e9665daac7dda661f19217ab9ba8630c640b839 preserved.
 - `06A POLICY IMPACT + TRACE`: PASS,review pending;299 backend +47 frontend tests,one live PRICE extraction,zero-AI previews and two creative browser iterations.
-- `06B HUMAN RESOLUTION + SCENARIOS`: LOCKED; no confirmation/action-history/new creative-case authorization.
+- `06B.1 HUMAN PO RESOLUTION`: locally verified; source/ledger immutable; stop for review.
+- `FURTHER 06B SCENARIOS`: LOCKED; no additional creative-case/correction authorization.
 - `07 RELEASE`: security checks, deploy smoke test, real video and submission; after core gates.
 
 Read `docs/SEGMENTS_AND_PARALLELISM.md` for ownership, scope cuts and acceptance gates.
@@ -71,7 +72,7 @@ Read `docs/SEGMENTS_AND_PARALLELISM.md` for ownership, scope cuts and acceptance
 4. Builder sends Codex report (plus logs/diffs if failing) to ChatGPT. ChatGPT reviews it and issues exactly the next bounded prompt or a repair prompt.
 5. Changes to financial invariants, shared typed contracts, DB schema or segment scope require explicit approval and a line in `docs/DECISION_LOG.md`.
 
-## Last handoff
+## Historical Phase 6A handoff
 
 **Task:** Phase6A complete; PASS; STOP for architectural/visual review. No Phase6B authorization.
 **Base/branch/checkpoint:**4e9665daac7dda661f19217ab9ba8630c640b839 (phase-05-1-visual-refinement),
@@ -136,3 +137,36 @@ Protected backend/data/fixtures/client/types unchanged. Hallmark0FAIL/0WARN/1cha
 Vercel and Taste review documented. No full assistive-technology certification or speed benchmark claimed.
 Remaining limits: mobile/native PDF may be blank (source-open fallback); many evidence references still
 lengthen mobile cases; original backend explanation prose deliberately unchanged. Review only; no6B.
+
+
+## Last handoff — Phase 6B.1, 2026-11-19
+
+Base b8e5ced6e7dcb3774364cfef44f1a0be0f06a5d0; branch codex/phase-06b1-human-resolution;
+checkpoint phase-06b1-human-resolution. ExactSHA/remote verification accompany final publication.
+New pure domain human_resolution.py rederives authoritative context,validates missing PO/approved vendor/
+same-vendor candidate/rationale,and substitutes only the PO identity rule. Normal evaluator and all rules
+unchanged. No extracted-PO rewrite,policy weakening or evidence promotion. App also requires completed
+source and intersection of original candidate IDs/current canonical candidates. Recorded source policy,
+current procurement/billing snapshots. API-local response models; shared v1 contracts unchanged.
+ReviewService stores action+fullDecision+Policy atomically with source/authoritySHA256,time,DEMO label and
+provenance. Migration002 adds new table/version marker/triggers only;first-confirmation-wins+UUID replay;
+no edits/deletes/replacement inserts. Original JSON/stages/authority/policy never updated by confirmation.
+One-query queue projection labels reviewed assessment separately. Dashboard/filter counts remain recorded;
+policy preview still evaluates original automated context (explicit UI/docs disclosure).
+328backend PASS58.00s/one existing warning;58frontend PASS;typecheck/build/manifests/hygiene8PDF/pip/npm0 PASS.
+Actual browser2 regression uploads use TEST_ONLY provider+realPDFgrounding/API/DB. MISSING_PO_VALID run
+099a7620a724409bbe03cbc58b63cd6c/action54411285e8874a2d9e4f4b5aeb22564f:REVIEW→READY withPO1042.
+AMBIGUOUS_PO runf81ab36476594ee8b12d77d595f88330/action814571fb44904c019e6af52b0eebce12:REVIEW→REVIEW,
+missing qty/price/item mapping retained. No invented source facts. Current policy stays2%; all ceilings retained.
+Migration verified twice on actual populated old-runtime copy;old7tables' rows unchanged. Restart hashes for
+bothrun/action/PDF sets match;runtime verifier confirms source fingerprints/policy and current authoritySHA
+f6e95512f3e71d59bf512c1afc861e69587c3bbf40a9400c0f6c04739d02bf31 (canonical typed-master basis).
+0newGemini calls;prior6A generation guard still1. Two fake extraction calls only; reviewed UI labels TEST_ONLY.
+App8007/runtime/phase6b1-demo is copied demo data;older8006 untouched. Screens/results tmp/phase6b1-qa,
+phase6b1-core-qa,phase6b1-policy-qa; migration/restart/invariant JSON ignored. Core15+7/policy12+3 andreview
+1440/1024/390 modal/keyboard/focus/overflow PASS. Native modal can visit browser chrome at Tab boundary;
+background app controls remain inert,then focus returns. Controlled pre-confirmation screenshots labelled
+TEST_ONLY and never saved. No extra actions on rerun.
+DEMO reviewer identity is not authenticated. Required release safeguard before public write exposure recorded
+in ADR-020/HUMAN_PO_RESOLUTION. No maker-checker/auth/payment/ERP/hosting/correction/undo/additional scenarios.
+Original6PDF/frozen manifests unchanged;one separate new regression scenario and reusedAMBIGPDF. Review only.

@@ -13,7 +13,7 @@ tracked_ignored = subprocess.check_output(["git", "ls-files", "-ci", "--exclude-
 assert not tracked_ignored, f"Ignored files in index: {tracked_ignored}"
 print(f"GIT HYGIENE PASS: {len(PROBES)} exclusions; placeholder allowed; no ignored files tracked")
 
-for path in Path("tests/fixtures").glob("*.pdf"):
+for path in Path("tests/fixtures").rglob("*.pdf"):
     tracked = subprocess.check_output(["git", "show", ":" + path.as_posix()])
     assert tracked == path.read_bytes(), f"PDF changed by Git normalization: {path}"
-print(f"PDF GIT BYTES PASS: {len(list(Path('tests/fixtures').glob('*.pdf')))} fixture PDFs stored without line-ending conversion")
+print(f"PDF GIT BYTES PASS: {len(list(Path('tests/fixtures').rglob('*.pdf')))} fixture PDFs stored without line-ending conversion")

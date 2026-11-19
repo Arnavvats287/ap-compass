@@ -17,5 +17,7 @@ def create_db_engine(path=None):
     return engine
 
 def initialize(engine):
-    # Phase 1 initial schema only. Subsequent schema evolution requires migrations.
-    Base.metadata.create_all(engine)
+    # Existing baseline tables remain intact; new review schema has an explicit additive migration.
+    Base.metadata.create_all(engine, tables=[t for t in Base.metadata.sorted_tables if t.name != "review_action"])
+    from .migrations import migrate
+    migrate(engine)

@@ -8,7 +8,13 @@ from sqlalchemy.orm import Session
 from app.contracts import (RunSnapshotV1, RunStageV1, PolicyV1, VendorV1,
                            PurchaseOrderV1, PriorBilledInvoiceV1)
 from app.db.models import (InvoiceRun, RunStage, PolicySnapshot, Vendor,
-                           PurchaseOrder, PriorBilledInvoice)
+                           PurchaseOrder, PriorBilledInvoice, ReviewAction)
+
+def load_authority(session):
+    return tuple(tuple(contract.model_validate(row.payload) for row in session.scalars(select(model).order_by(model.id)))
+                 for model, contract in ((Vendor,VendorV1),(PurchaseOrder,PurchaseOrderV1),
+                                         (PriorBilledInvoice,PriorBilledInvoiceV1)))
+
 
 STAGES = ("received", "extracting_invoice", "matching_records", "evaluating_controls", "finalizing")
 
@@ -84,11 +90,16 @@ class RunRepository:
         with Session(self.engine) as session:
             return [RunSnapshotV1.model_validate({**row.payload, "stages": ()}) for row in session.scalars(statement)]
 
+    def all_with_reviews(self, limit):
+        statement=select(InvoiceRun,ReviewAction).outerjoin(ReviewAction,ReviewAction.run_id==InvoiceRun.id).order_by(
+            InvoiceRun.payload["created_at"].as_string().desc(),InvoiceRun.id).limit(limit)
+        with Session(self.engine) as session:
+            return [(RunSnapshotV1.model_validate({**run.payload,"stages":()}),review.payload if review else None)
+                    for run,review in session.execute(statement)]
+
     def authority(self):
         with Session(self.engine) as session:
-            return tuple(tuple(contract.model_validate(row.payload) for row in session.scalars(select(model)))
-                         for model, contract in ((Vendor, VendorV1), (PurchaseOrder, PurchaseOrderV1),
-                                                 (PriorBilledInvoice, PriorBilledInvoiceV1)))
+            return load_authority(session)
 
     def policy(self, policy: PolicyV1):
         payload = policy.model_dump(mode="json")

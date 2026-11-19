@@ -1,0 +1,30 @@
+{
+  "spec_version": "human-resolution-test-v1",
+  "fixture_cases": [
+    {
+      "id": "MISSING_PO_VALID",
+      "filename": "MISSING_PO_VALID.pdf",
+      "label": "Human-resolution regression fixture; not a frozen showcase scenario",
+      "vendor_name": "Meridian Cloud Ltd.",
+      "invoice_number": "MISSING_PO_VALID-2026",
+      "invoice_date": "2026-11-18",
+      "po_reference": null,
+      "currency": "INR",
+      "lines": [
+        {
+          "description": "Cloud hosting service",
+          "item_code": "MC-CLOUD-01",
+          "qty": "2",
+          "unit_price_net": "5000"
+        }
+      ],
+      "net": "10000",
+      "tax": "1800",
+      "gross": "11800",
+      "document_route": "native_text",
+      "expected_original": "REVIEW_REQUIRED",
+      "confirmed_po": "PO-1042",
+      "expected_reassessment": "READY_FOR_AP"
+    }
+  ]
+}

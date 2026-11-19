@@ -83,6 +83,9 @@ export interface Run {
   } | null
 }
 export interface RunSummary {
+  reviewed_outcome?: Outcome | null
+  reviewed_at?: string | null
+  review_action_id?: string | null
   id: string
   created_at: string
   updated_at: string
@@ -114,4 +117,38 @@ export interface PolicyPreview {
   original_decision: Decision
   preview_decision: Decision
   changed: boolean
+}
+
+export interface ReviewAction {
+  id: string
+  source_run_id: string
+  client_action_id: string
+  action_type: 'CONFIRM_PO'
+  selected_po_id: string
+  reviewer_label: string
+  reviewer_identity: 'Demo reviewer — identity not authenticated'
+  rationale: string
+  created_at: string
+  original_decision: Decision
+  reassessment: Decision
+  policy_snapshot: { version: string; price_tolerance_pct: string }
+  authority_fingerprint: string
+  source_snapshot_fingerprint: string
+  selection_provenance: string
+  canonical_vendor_name: string
+}
+export interface ReviewHistory {
+  actions: ReviewAction[]
+  current_reviewed_assessment: Decision | null
+  confirmation_available: boolean
+  unavailable_reason: string | null
+  candidates: Candidate[]
+  canonical_vendor_name: string | null
+  authority_basis: string
+}
+export interface POConfirmationInput {
+  po_id: string
+  reviewer_label: string
+  rationale: string
+  client_action_id: string
 }

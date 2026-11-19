@@ -120,7 +120,8 @@ export default function Queue() {
         )}
         <p className="table-note">
           Amounts are invoice totals including tax. Showing up to 100 recent runs; filters apply to
-          this list.
+          this list. Filters and overview counts use original automated decisions. Current
+          human-reviewed assessments are labelled separately.
         </p>
       </section>
       <UploadPanel compact />

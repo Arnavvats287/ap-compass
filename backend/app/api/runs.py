@@ -10,6 +10,7 @@ from starlette.datastructures import UploadFile
 from starlette.responses import Response
 
 from app.contracts import RunSnapshotV1, PolicyV1, Amount
+from app.orchestration.reviews import ReviewActionSnapshot
 from app.documents.limits import MAX_INPUT_BYTES
 
 router = APIRouter(prefix="/api")
@@ -32,6 +33,9 @@ class RunSummary(BaseModel):
     currency: str | None = None
     primary_reason_code: str | None = None
     owner: str | None = None
+    reviewed_outcome: str | None = None
+    reviewed_at: datetime | None = None
+    review_action_id: str | None = None
 
 
 def find(request, run_id):
@@ -81,13 +85,16 @@ async def create_run(request: Request):
 @router.get("/runs", response_model=list[RunSummary])
 def list_runs(request: Request, limit: int = Query(50, ge=1, le=100)):
     output = []
-    for snapshot in request.app.state.runs.repository.all(limit):
+    for snapshot, review_payload in request.app.state.runs.repository.all_with_reviews(limit):
+        review = ReviewActionSnapshot.model_validate(review_payload) if review_payload else None
         invoice, decision = snapshot.extracted_invoice, snapshot.decision
         output.append(RunSummary(id=snapshot.id, created_at=snapshot.created_at, updated_at=snapshot.updated_at,
             execution_state=snapshot.execution_state, outcome=decision.outcome if decision else None,
             vendor_name=invoice.vendor_name_raw if invoice else None, invoice_number=invoice.invoice_number if invoice else None,
             total=invoice.total if invoice else None, currency=invoice.currency if invoice else None,
-            primary_reason_code=decision.primary_reason_code if decision else None, owner=decision.owner if decision else None))
+            primary_reason_code=decision.primary_reason_code if decision else None, owner=decision.owner if decision else None,
+            reviewed_outcome=review.reassessment.outcome if review else None, reviewed_at=review.created_at if review else None,
+            review_action_id=review.id if review else None))
     return output
 
 

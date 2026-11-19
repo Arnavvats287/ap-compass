@@ -1,4 +1,13 @@
-import type { Dashboard, Run, RunSummary, PolicyPreview, PriceTolerance } from './types'
+import type {
+  ReviewAction,
+  ReviewHistory,
+  POConfirmationInput,
+  Dashboard,
+  Run,
+  RunSummary,
+  PolicyPreview,
+  PriceTolerance,
+} from './types'
 
 export class ApiError extends Error {
   constructor(public status: number) {
@@ -11,6 +20,14 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   return response.json() as Promise<T>
 }
 export const api = {
+  reviewHistory: (id: string, signal?: AbortSignal) =>
+    request<ReviewHistory>(`/runs/${encodeURIComponent(id)}/review-history`, { signal }),
+  confirmPO: (id: string, body: POConfirmationInput) =>
+    request<ReviewAction>(`/runs/${encodeURIComponent(id)}/po-confirmations`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }),
   dashboard: (signal?: AbortSignal) => request<Dashboard>('/dashboard', { signal }),
   runs: (signal?: AbortSignal) => request<RunSummary[]>('/runs?limit=100', { signal }),
   run: (id: string, signal?: AbortSignal) =>

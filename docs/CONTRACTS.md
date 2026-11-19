@@ -75,3 +75,12 @@ RUNNING and COMPLETED require None. Historical JSON without the field still vali
 No exception messages, stack traces, provider bodies or sensitive values may be stored here.
 RunStage rows exclusively own stages. InvoiceRun JSON stores stages=[]; GET detail composes
 stages from rows with one atomic joined query. See ORCHESTRATION_API.md for implemented APIs.
+
+
+## Approved Phase 6B.1 human-resolution boundary (ADR-020)
+
+No shared v1 contract shape changes. New internal POConfirmation and API-local ReviewActionSnapshot/ReviewHistory
+compose existing DecisionV1/PolicyV1. POST /api/runs/{id}/po-confirmations and GET /api/runs/{id}/review-history
+are additive. GET original run remains unchanged. Summary projection adds nullable reviewed_outcome,reviewed_at,
+review_action_id; original metrics/filter semantics remain. See HUMAN_PO_RESOLUTION.md for strict validation,
+immutable source policy/current authority,append-only migration and explicitly unauthenticated demo identity.

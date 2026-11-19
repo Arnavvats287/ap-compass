@@ -158,3 +158,16 @@ columns. A desktop sticky rail retains the recorded outcome. Selection and async
 Mobile rail is static, decision-first ordering remains, native PDF fallback stays available. Secondary working
 text is14px; small body16px; original cream/forest/mint/citrus semantic tokens, Georgia/system-sans pairing.
 See PHASE_06A1_DESIGN.md and PHASE_06A1_REPORT.md for rendered iterations, audits and actual checks.
+
+
+## Phase 6B.1 human review
+
+Missing-reference completed cases load server-authoritative review eligibility/candidates. Review PO candidates
+opens a native keyboard-operable modal with PO/vendor/status/authorized net/provenance,required rationale and
+explicitly unauthenticated demo actor. No candidate preselected. A deliberate confirmation requests deterministic
+reassessment; disabled pending state and stable idempotency key prevent accidental duplicate submission.
+Original automated decision remains visible,with a separately labelled current reassessment,stored action time,
+rationale and outstanding findings. Ready means supported controls pass,not payment/posting approval.
+Queue labels original and current reviewed statuses separately; filters/overview counts retain original basis.
+Policy impact still previews original automated facts without the human selection. The visual system is intact.
+See HUMAN_PO_RESOLUTION.md and PHASE_06B1_REPORT.md; no auth/approval/correction/deployment workflow added.

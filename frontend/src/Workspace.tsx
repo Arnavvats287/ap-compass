@@ -25,6 +25,7 @@ import {
 } from './format'
 import DecisionTrace, { stageLabels } from './DecisionTrace'
 import PolicyImpact from './PolicyImpact'
+import HumanPOReview from './HumanPOReview'
 export { StageTimeline } from './DecisionTrace'
 import type { Evidence, Finding, Run } from './types'
 
@@ -374,7 +375,8 @@ function SupportingRecords({ run }: { run: Run }) {
         <h2>Purchase order context</h2>
         {run.candidates.length > 1 && (
           <p className="review-note">
-            Human confirmation required. These are alternatives; no PO can be confirmed here.
+            The original analysis returned alternatives. Use Review PO candidates above when
+            available; this historical context does not select a PO.
           </p>
         )}
         {run.candidates.length ? (
@@ -557,7 +559,21 @@ export default function Workspace() {
       </nav>
       <div className="workspace-grid" id="case-decision">
         <div className="decision-column">
-          {run.decision && <BusinessDecision run={run} />}
+          <HumanPOReview
+            key={run.id}
+            run={run}
+            renderFinding={(finding) => (
+              <FindingDetails finding={finding} currency={invoice?.currency} />
+            )}
+          />
+          {run.decision && (
+            <>
+              {!invoice?.po_reference?.trim() && (
+                <p className="recorded-assessment-label">Original automated decision</p>
+              )}
+              <BusinessDecision run={run} />
+            </>
+          )}
           {invoice && (
             <section className="workspace-section" id="evidence">
               <h2>Source evidence</h2>

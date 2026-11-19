@@ -35,6 +35,9 @@ export default function PolicyImpact({ run }: { run: Run }) {
             change the active policy or authorize payment.
           </p>
         </div>
+        <p>
+          Preview uses the original automated context; saved human PO confirmations are not applied.
+        </p>
         <div className="policy-compare">
           <section aria-label="Current evaluation">
             <h3>Current evaluation</h3>
@@ -141,7 +144,10 @@ export default function PolicyImpact({ run }: { run: Run }) {
               ['PO commitment ceiling', 'Cannot be bypassed'],
               ['PO quantity authorization', 'Cannot be bypassed'],
               ['Exact duplicate protection', 'Cannot be bypassed'],
-              ['Explicit PO requirement', 'Required under the current control framework'],
+              [
+                'PO identity required',
+                'Invoice reference or a separately audited human PO confirmation',
+              ],
             ].map(([name, detail]) => (
               <li key={name}>
                 <LockKeyhole size={15} aria-hidden="true" />

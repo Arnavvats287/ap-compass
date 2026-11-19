@@ -45,6 +45,7 @@ describe('connected operations views', () => {
     )
     expect(screen.queryByText(/savings|hours saved|ROI|accuracy/i)).not.toBeInTheDocument()
     expect(screen.getByText(/Each analysis is counted/)).toBeInTheDocument()
+    expect(screen.getByText(/Counts reflect recorded automated decisions/)).toBeInTheDocument()
   })
   it('has stable loading and actual empty dashboard states', async () => {
     vi.spyOn(api, 'dashboard').mockResolvedValue({
@@ -304,7 +305,7 @@ describe('connected operations views', () => {
       </Routes>,
       '/runs/test-run',
     )
-    expect(await screen.findByText(/Human confirmation required/)).toBeInTheDocument()
+    expect(await screen.findByText(/original analysis returned alternatives/)).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'PO-3015' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'PO-OTHER' })).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /Confirm PO/i })).not.toBeInTheDocument()

@@ -256,7 +256,8 @@ export function RunTable({ runs }: { runs: RunSummary[] }) {
     <div className="table-scroll">
       <table>
         <caption className="sr-only">
-          Invoice operations, newest first. Amounts are invoice totals including tax.
+          Invoice operations, newest first. Amounts are invoice totals including tax. Recorded
+          automated outcomes and current reviewed assessments are labelled separately.
         </caption>
         <thead>
           <tr>
@@ -299,7 +300,16 @@ export function RunTable({ runs }: { runs: RunSummary[] }) {
                 <span className="table-secondary">{run.currency ?? 'Currency pending'}</span>
               </td>
               <td>
+                {run.reviewed_outcome && (
+                  <span className="table-secondary">Original automated</span>
+                )}
                 <Status state={run.execution_state} outcome={run.outcome} />
+                {run.reviewed_outcome && (
+                  <div className="table-reviewed">
+                    <span className="table-secondary">Current reviewed</span>
+                    <Status state="COMPLETED" outcome={run.reviewed_outcome} />
+                  </div>
+                )}
               </td>
               <td className="issue-cell">
                 {run.execution_state === 'PROCESSING_FAILED'

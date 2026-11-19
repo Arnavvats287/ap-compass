@@ -1,9 +1,9 @@
 # AP Compass — Project Status / Gate Register
 
 **Updated:** 2026-11-19 IST.
-**Current gate:** Phase 6A.1 local engineering/design acceptance PASS; user visual review pending. STOP before Phase 6B.
-**Base:** phase-06a-policy-decision-trace / 95e6e66ea6c9ce7d48f10466f40d9aa4af0e89d1.
-**Branch:** codex/phase-06a1-signature-ui. **Checkpoint:** phase-06a1-signature-ui.
+**Current gate:** Phase 6B.1 local acceptance PASS; stop for architectural review. No further6B/release authorization.
+**Base:** phase-06a1-signature-ui / b8e5ced6e7dcb3774364cfef44f1a0be0f06a5d0.
+**Branch:** codex/phase-06b1-human-resolution. **Checkpoint:** phase-06b1-human-resolution.
 Final exact SHA and remote publication/clean-tree verification accompany the checkpoint handoff.
 No prior-tag/default-branch alteration. Deadline remains Saturday 2026-11-21 IST.
 
@@ -15,8 +15,10 @@ No prior-tag/default-branch alteration. Deadline remains Saturday 2026-11-21 IST
 | 04 API/orchestration | ACCEPTED | User review passed; original workflow/tests unchanged |
 | 05 Operations UI | ACCEPTED | User confirmed functional gate passed; existing checkpoint preserved |
 | 05.1 Visual refinement | ACCEPTED | Two rendered iterations, 280 backend + 32 frontend tests, 15 real-data views + 7 deterministic states; zero model calls |
-| 06A Policy and trace | Functionally accepted; visual repair requested | 299 backend +47 frontend tests; one live PRICE extraction, zero-AI previews; two creative browser iterations |
-| 06B Human resolution/scenarios | LOCKED | No PO confirmation, action history or new creative fixtures authorized |
+| 06A Policy and trace | Functionally accepted; refinement accepted in6A.1 | 299 backend +47 frontend tests; one live PRICE extraction, zero-AI previews; two creative browser iterations |
+| 06A.1 Signature UI | ACCEPTED | b8e5ced6e7dcb3774364cfef44f1a0be0f06a5d0 checkpoint preserved |
+| 06B.1 Human PO resolution | Local PASS; review pending |328backend/58frontend tests; append-only action; source/ledger unchanged;0Gemini |
+| Further6B scenarios | LOCKED | No additional creative case,correction or release scope |
 | 07 Release | LOCKED | No public/paid/Docker deployment |
 
 ## Verified Phase 6A evidence
@@ -134,3 +136,28 @@ Hallmark0FAIL/0WARN,1 real-data-chart waiver,3 existing answered findings; Verce
 Protected backend/contracts/API/client/finance/extraction/orchestration/data/fixtures unchanged. Authority hash
 7fb54a84f32bd0bf75a29396bb50c450878503dd70515b33bafcc330e2a54398 unchanged; all five persisted run snapshots
 unchanged during browser checks. **0 new Gemini calls**. No6B features, release work or deployment.
+
+
+## Phase 6B.1 actual evidence — 2026-11-19
+
+User accepted6A.1. New isolated pure evaluate_with_confirmed_po changes only validated PO identity resolution;
+ordinary evaluate/matching/rules/shared contracts remain unchanged. New API-local POST po-confirmations and
+GET review-history; current candidate intersection,approved vendor,required rationale and UUID key. Original
+policy/current authority. Separate typed action/reassessment; original run and stage rows never overwritten.
+Migration002 adds review_action/schema_migration/append-only triggers. One source run/first-confirmation-wins,
+BEGIN IMMEDIATE,atomic insert; identical-key replay safe. Queue uses one joined query and labels reviewed
+assessment separately; filters/dashboard remain recorded automated decisions. Demo reviewer is unauthenticated.
+Release requires a basic access safeguard before exposing writes publicly. No approval/payment/auth/deployment.
+
+328backend tests PASS58.00s (one existing Starlette deprecation);58frontend tests PASS; typecheck/build,
+manifest6vendors/7POs/3billed/10frozen cases,hygiene11exclusions/8PDFs,pip check,npm audit0 PASS.
+Actual Chrome upload/confirm saved two actions with TEST_ONLY extraction and real native grounding/API/DB:
+MISSING_PO_VALID originalREVIEW→confirmedPO1042READY; AMBIGUOUS_PO originalREVIEW→confirmedPO1042REVIEW,
+CRITICAL_FIELD_MISSING/LINE_MAPPING_UNRESOLVED retained. Both survive actual server restart with identical
+run/review/PDF hashes. Old6vendors/7POs/7lines/3billed/5runs/25stages/1policy rows unchanged on migrated copy.
+Core browser15views+7controlled states,policy12recorded/preview+3controlled traces,review workflows/modal at
+1440/1024/390 pass keyboard/focus/overflow/no-fake-approval checks. No further actions on verification reruns.
+0newGemini calls; two fake-provider extraction calls for actual regression uploads,clearly labelled. New
+separate human-resolution manifest/PDF only; frozen seed/fixture manifests and original6PDF bytes unchanged.
+Reports:HUMAN_PO_RESOLUTION.md,PHASE_06B1_REPORT.md; ADR-020. Local app8007 uses runtime/phase6b1-demo copy;
+older8006 untouched. No corrections/undo/multiple confirmations or new creative showcase cases. Stop for review.

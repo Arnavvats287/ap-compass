@@ -162,3 +162,24 @@ Do not rewrite past records to pretend a previous design was never chosen. Recor
   asymmetric real-data attention bento and forest policy/trace surfaces. Original CSS/native controls; no
   imported Pro components or new Motion/design-library dependency. Two rendered iterations and full regression
   recorded in PHASE_06A_DESIGN/REPORT. This authorizes no new metric,financial rule,model call or Phase6B work.
+
+
+## ADR-020 — Phase 6B.1 trusted human PO identity and immutable reassessment
+
+- Accepted scope: explicit user request2026-11-19; no shared v1 contract shape change.
+- Add pure evaluate_with_confirmed_po, leaving ordinary evaluate/matching/rules unchanged. Re-derive trusted
+  canonical context and validate approved supplier,missing explicit reference,same-vendor candidate,rationale.
+  Substitute only PO identity finding; retain all hard/evidence controls. Never rewrite the extracted PO.
+- API additionally requires completed source and intersection of original candidate IDs/current canonical
+  candidates. Use recorded source policy,current authority; store source/authority fingerprints and provenance.
+- Dedicated append-only review_action stores full typed DecisionV1/PolicyV1 with action metadata atomically.
+  Additive migration002 creates new table/version marker/triggers only; no existing populated table recreation.
+  Unique source run plus BEGIN IMMEDIATE implement first-confirmation-wins; identical key/body replays safely.
+- Original run JSON/stage rows,active policy and authoritative ledger are immutable under this operation.
+  Summary projection adds separately labelled reviewed outcome through one joined query; dashboard/filter
+  counts stay recorded automated outcomes. Policy preview continues original-context simulation,no writes.
+- Reviewer is explicitly DEMO and unauthenticated. This is not approval,posting/payment,maker-checker or
+  authenticated employee auditing. Public deployment requires a basic write-access safeguard/request protection.
+- Only new test scenario: separate MISSING_PO_VALID using existing Meridian authority. Existing AMBIGUOUS_PO
+  remains a negative review case with missing line data. No creative showcase selection or new seed values.
+- No correction/supersession/undo,arbitrary manual approval,new model authority,hosting or further6B scope.

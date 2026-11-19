@@ -106,3 +106,14 @@ and checks the database file SHA256 before/after. Nothing consumes PO balance.
 
 No Gemini, OCR, PDF upload, frontend changes, orchestration, workers, human approval, Docker or deployment work.
 The INJECTION manifest's financial facts are evaluated, but no actual prompt-injection extraction test is claimed.
+
+
+## Phase 6B.1 explicit human identity entry point
+
+evaluate_with_confirmed_po(context,policy,POConfirmation) is a separate pure path. Ordinary evaluate,matching
+and all existing rule functions remain unchanged. It rederives canonical context,requires approved vendor/
+missing explicit reference/authoritative same-vendor candidate/rationale,and substitutes only po_identity
+with a human-provenance PO_MATCH_CONFIRMED. Same DEFAULT_RULES otherwise,aggregator and Decimal context.
+Source evidence and missing facts are never repaired by confirmation. Financial eligibility is not identity.
+Application validation additionally restricts selection to retained original/current candidates and a completed
+source; action/result are persisted atomically outside the pure engine. See ADR-020,HUMAN_PO_RESOLUTION.md.

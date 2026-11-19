@@ -23,6 +23,10 @@ export default function Overview() {
           Two-way AP controls
         </span>
       </div>
+      <p className="queue-basis">
+        Counts reflect recorded automated decisions. Human-reviewed assessments are labelled
+        separately in the queue.
+      </p>
       {dashboard.isPending ? (
         <Loading label="Loading operations overview…" />
       ) : dashboard.isError ? (
