@@ -45,8 +45,7 @@ def find(request, run_id):
     return snapshot
 
 
-@router.post("/runs", status_code=202, response_model=CreatedRun)
-async def create_run(request: Request):
+async def read_pdf(request: Request):
     if request.headers.get("content-type", "").split(";")[0].strip().lower() != "multipart/form-data":
         raise HTTPException(415, "Expected multipart PDF upload")
     # Bound the entire multipart envelope too. Starlette's per-part limit alone
@@ -75,10 +74,30 @@ async def create_run(request: Request):
         raise HTTPException(413, "PDF too large")
     if not raw or not raw.startswith(b"%PDF-"):
         raise HTTPException(400, "Empty or invalid PDF signature")
+    return raw
+
+
+@router.post("/runs", status_code=202, response_model=CreatedRun)
+async def create_run(request: Request):
     service = request.app.state.runs
-    document_id = await asyncio.to_thread(service.documents.write, raw)
-    snapshot = service.repository.create(document_id)
-    service.submit(snapshot.id)
+    if not service.uploads_enabled:
+        raise HTTPException(403, "New invoice uploads are disabled")
+    if not service.reserve_upload():
+        raise HTTPException(429, "Invoice capacity is full; try again after an active invoice finishes")
+    try:
+        try:
+            async with asyncio.timeout(30):
+                raw = await read_pdf(request)
+        except TimeoutError:
+            raise HTTPException(408, "Invoice upload timed out") from None
+        ready = service.submit_upload(raw)
+    except BaseException:
+        service.release_upload()
+        raise
+    # A disconnected caller must not cancel an accepted file/row pair or free its slot.
+    snapshot = await asyncio.shield(ready)
+    if snapshot is None:
+        raise HTTPException(503, "Invoice storage is temporarily unavailable; no run was confirmed")
     return CreatedRun(run_id=snapshot.id)
 
 
@@ -111,7 +130,8 @@ async def document(request: Request, run_id: str):
     except (OSError, ValueError):
         raise HTTPException(404, "Document not found") from None
     return Response(raw, media_type="application/pdf", headers={"Cache-Control": "no-store",
-        "X-Content-Type-Options": "nosniff", "Content-Disposition": 'inline; filename="invoice.pdf"'})
+        "X-Content-Type-Options": "nosniff", "Content-Disposition": 'inline; filename="invoice.pdf"',
+        "Content-Security-Policy": "frame-ancestors 'self'; base-uri 'none'", "X-Frame-Options": "SAMEORIGIN"})
 
 
 @router.get("/policy", response_model=PolicyV1)

@@ -37,3 +37,7 @@ class DocumentStore:
 
     def read(self, identifier):
         return self.path(identifier).read_bytes()
+
+    def discard_uncommitted(self, identifier):
+        """Compensate a rolled-back run creation for this request's generated ID only."""
+        self.path(identifier).unlink(missing_ok=True)

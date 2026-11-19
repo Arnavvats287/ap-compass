@@ -18,26 +18,73 @@ def usage_snapshot(calls, attempts):
 
 
 class RunService:
-    def __init__(self, repository, documents, extractor, policy=None):
+    def __init__(self, repository, documents, extractor, policy=None, *, uploads_enabled=True, capacity=3):
         self.repository, self.documents, self.extractor = repository, documents, extractor
         self.current_policy = policy or PolicyV1()
         self.semaphore = asyncio.Semaphore(1)
         self.tasks = set()
+        self.uploads_enabled = uploads_enabled
+        self.capacity = capacity
+        self.admitted = 0
 
-    def submit(self, run_id):
-        task = asyncio.create_task(self.process(run_id))
+    def reserve_upload(self):
+        # Reservation, transfer and release all happen on the application's event loop.
+        if self.admitted >= self.capacity:
+            return False
+        self.admitted += 1
+        return True
+
+    def release_upload(self):
+        self.admitted -= 1
+
+    def submit_upload(self, raw):
+        """Transfer one existing admission slot to the background workflow."""
+        ready = asyncio.get_running_loop().create_future()
+        task = asyncio.create_task(self.accept_and_process(raw, ready))
         self.tasks.add(task)
+
         def finished(done):
             self.tasks.discard(done)
+            self.release_upload()
+            if not ready.done():
+                ready.set_result(None)
             if not done.cancelled() and done.exception() is not None:
                 # Persistence itself may be unavailable; never emit exception payloads.
-                logger.error("run=%s stage=persistence error=INTERNAL_ERROR", run_id)
+                logger.error("stage=persistence error=INTERNAL_ERROR")
         task.add_done_callback(finished)
+        return ready
+
+    def store_run(self, raw):
+        document_id = self.documents.write(raw)
+        try:
+            return self.repository.create(document_id)
+        except Exception:
+            try:
+                self.documents.discard_uncommitted(document_id)
+            except OSError:
+                logger.error("stage=upload_cleanup error=DOCUMENT_CLEANUP_FAILED")
+            raise
+
+    async def accept_and_process(self, raw, ready):
+        persistence = asyncio.create_task(asyncio.to_thread(self.store_run, raw))
+        try:
+            snapshot = await asyncio.shield(persistence)
+        except asyncio.CancelledError:
+            # Let the file/DB pair settle before disposal. Startup will interrupt any queued row.
+            await asyncio.gather(persistence, return_exceptions=True)
+            raise
+        except Exception:
+            logger.error("stage=upload_persistence error=UPLOAD_STORAGE_UNAVAILABLE")
+            ready.set_result(None)
+            return
+        ready.set_result(snapshot)
+        await self.process(snapshot.id)
 
     async def close(self):
-        for task in self.tasks:
+        pending = tuple(self.tasks)
+        for task in pending:
             task.cancel()
-        await asyncio.gather(*self.tasks, return_exceptions=True)
+        await asyncio.gather(*pending, return_exceptions=True)
 
     async def idle(self):
         """Synchronization hook for shutdown/tests, not a polling timer."""

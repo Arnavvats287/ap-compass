@@ -117,6 +117,9 @@ export function UploadPanel({ compact = false }: { compact?: boolean }) {
               413: 'This file exceeds 8 MiB. Choose a smaller PDF.',
               415: 'Choose a PDF with the application/pdf file type.',
               400: 'The upload was rejected. Choose one readable PDF.',
+              403: 'New invoice uploads are disabled or unavailable from this page. Existing runs are still available.',
+              408: 'The upload timed out. Choose the PDF and try again.',
+              429: 'The demo is at invoice capacity. Wait for an active run to finish before uploading.',
             }[caught.status] ??
               'The invoice could not be uploaded. Try again; no run was confirmed.')
           : 'The upload could not reach the server. Check the connection and try again.',

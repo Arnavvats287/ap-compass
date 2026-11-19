@@ -1,9 +1,9 @@
 # AP Compass — Project Status / Gate Register
 
 **Updated:** 2026-11-19 IST.
-**Current gate:** Phase 6B.2D.1 financial evidence integrity.
-**Base:** bc674cac698a1c09ab94ff8b93592c50b5ebdad2.
-**Branch:** codex/phase-06b2d1-evidence-integrity. **Checkpoint:** phase-06b2d1-evidence-integrity.
+**Current gate:** Phase 6B.2D.2 private demo release hardening. Controlled demonstration verified on loopback.
+**Base:** b06b34d01a07f6543bfe048d22627be115f37033.
+**Branch:** codex/phase-06b2d2-private-demo-hardening. **Checkpoint:** phase-06b2d2-private-demo-hardening.
 Final exact SHA and remote publication/clean-tree verification accompany the checkpoint handoff.
 No prior-tag/default-branch alteration. Deadline remains Saturday 2026-11-21 IST.
 
@@ -24,8 +24,8 @@ No prior-tag/default-branch alteration. Deadline remains Saturday 2026-11-21 IST
 | 06B.2C.3 Source grounding and scope remediation | Verified base | 422 backend, including 26 development layout tests, and 58 frontend passed. Scope owner/action assertions pass without XFAIL. |
 | 06B.2C.4 Post-fix validation | Complete for release review | Offline evidence 123/135 development, 54/100 held-out. Decisions 9/10 and 3/6. Eight live generations yielded one Review and three terminal technical failures. No completed live non-Ready target. |
 | 06B.2D.1 Financial evidence integrity | Backend and frontend verification passed | Shared native source-currency invariant. 471 backend and 58 frontend tests passed, including 49 dedicated tests and controlled persisted reload without historical/audit changes. |
-| Release hardening and execution | LOCKED | Await explicit authorization |
-| 07 Release | LOCKED | No public/paid/Docker deployment |
+| 06B.2D.2 Private demo release hardening | Verified for controlled demonstration | 488 backend and 58 frontend tests passed. Real private Docker and Chrome acceptance, persistent PDF and audit restart checks, and four controlled demo scenarios. Zero Gemini requests. See [release report](docs/RELEASE_HARDENING_REPORT.md). |
+| 07 Release | LOCKED | Remote/public hosting and paid deployment await explicit authorization |
 
 ## Verified Phase 6A evidence
 

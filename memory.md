@@ -1,12 +1,16 @@
 # AP Compass — Project Memory (living handoff)
 
 **Last reviewed:** 2026-11-19 (IST)
-**Repository status:** Financial evidence integrity repair verified locally for release-hardening review.
-**Current authorized segment:** `06B.2D.1 FINANCIAL EVIDENCE INVARIANT HARDENING` only.
+**Repository status:** Private single-instance demo hardening verified on loopback using Docker and Chrome.
+**Current authorized segment:** `06B.2D.2 PRIVATE DEMO RELEASE HARDENING` only.
 **Deadline:** Saturday 2026-11-21 (IST); target Friday evening feature freeze.
 **Maintainers:** Builder owns product decisions; Codex implements one authorized phase; architectural review gates further work.
 
 > Repo-local continuity. Status is evidence, not completion by assertion. Latest user acceptance/routing adjustment is recorded in ADR-016 and the handoff below.
+
+## Phase 6B.2D.2 handoff
+
+Base `b06b34d01a07f6543bfe048d22627be115f37033`. Private mode uses fail-closed backend Basic auth and exact origin, and defaults to uploads disabled. Admission is bounded before reading requests, file/DB creation is compensated on failure, and a same-database instance lock protects restart reconciliation. One private Docker worker ran as UID 10001. Chrome rendered authenticated source PDF, saved an audited missing-PO reassessment and previewed 5% tolerance while preserving original decisions. Normal container recreation kept four snapshots, PDFs and audit history. Complete regression passed 488 backend and 58 frontend tests. No production business, evidence or provider changes, no benchmark changes, and zero Gemini requests. The runbook uses labeled controlled fixtures and works through outages. Remote gateway and public deployment remain outside this gate. See `docs/RELEASE_HARDENING_REPORT.md` and `docs/FIVE_MINUTE_DEMO_RUNBOOK.md`.
 
 ## Phase 6B.2D.1 handoff
 

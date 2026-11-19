@@ -490,6 +490,9 @@ export default function Workspace() {
           <p className="invoice-identity">
             {invoice?.invoice_number || `Run ${run.id.slice(0, 8)}`}
           </p>
+          {run.model_id?.startsWith('TEST_ONLY') && (
+            <p className="invoice-identity">Controlled extraction (TEST_ONLY)</p>
+          )}
           <div className="invoice-meta">
             <span>
               Invoice date <strong>{date(invoice?.invoice_date)}</strong>

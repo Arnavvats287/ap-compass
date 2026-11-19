@@ -5,10 +5,13 @@ from .models import Base
 
 ROOT = Path(__file__).resolve().parents[3]
 
-def create_db_engine(path=None):
+def database_path(path=None):
     db_path = Path(path or os.environ.get("AP_COMPASS_DB_PATH", ROOT / "runtime/ap-compass.db"))
-    if not db_path.is_absolute():
-        db_path = ROOT / db_path
+    return (ROOT / db_path).resolve()
+
+
+def create_db_engine(path=None):
+    db_path = database_path(path)
     db_path.parent.mkdir(parents=True, exist_ok=True)
     engine = create_engine("sqlite:///" + db_path.as_posix(), connect_args={"check_same_thread": False})
     @event.listens_for(engine, "connect")

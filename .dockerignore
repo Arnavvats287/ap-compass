@@ -1,7 +1,8 @@
 .git
 .env
 .env.*
-!.env.example
+**/.env
+**/.env.*
 .venv
 **/__pycache__
 **/.pytest_cache
@@ -13,6 +14,9 @@ uploads
 **/*.sqlite*
 **/*.log
 tmp
+evaluation
+tests
+backend/tests
 *.zip
 **/*.pem
 **/*.key

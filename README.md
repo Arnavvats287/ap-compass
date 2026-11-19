@@ -1,146 +1,59 @@
 # AP Compass
 
-AI-assisted Invoice Operations & Exception Resolution for Zamp ASA PS-1.
-**Phase 5 connected operations UI passes; architectural review pending.** Deadline: November 21, 2026 (IST).
-All supplied vendors, procurement records, billed invoices and fixture PDFs are synthetic.
+AP Compass is an invoice operations and exception-resolution workspace for the Zamp AI Solutions Associate case study. It helps Accounts Payable understand why invoices pass supported controls, need review, or are blocked by trusted procurement records. All bundled invoices and procurement records are synthetic.
 
-## Connected operations workspace (Phase 5)
+A PDF upload creates a persisted run. The bounded document adapter extracts typed invoice facts and independently checks source support. The deterministic evaluator applies vendor, PO, billed-history and policy controls. The dashboard and queue link to the source PDF, real decision trace and findings. A demo reviewer can confirm an eligible missing PO with a recorded reason. The price tolerance preview evaluates stored facts without spending a model call or writing a decision.
 
-Read `docs/OPERATIONS_UI.md` and `docs/PHASE_05_REPORT.md`.
-Routes: `/` overview, `/runs` invoice queue, `/runs/:runId` source-and-decision workspace.
-Actual PDF upload, persisted stages, real Flash-Lite extraction, trusted PO/history and deterministic decisions.
-Real-data counts/net-by-currency, keyboard filters/search, evidence disclosures and reloadable documents.
-**Verified: 280 backend tests + 32 frontend tests; TypeScript/build and browser QA pass.**
+## Local development
 
-```powershell
-.venv/Scripts/python -m pytest -c backend/pytest.ini backend/tests -q --basetemp tmp/pytest-phase05-acceptance --tb=short
+Use Python 3.12 and Node 24. From the repository root in PowerShell:
+
+```
+py -3.12 -m venv .venv
+.venv/Scripts/python -m pip install -r backend/requirements-dev.txt
+npm --prefix frontend ci
+npm --prefix frontend run build
+$env:PYTHONPATH = 'backend'
+.venv/Scripts/python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 1 --no-proxy-headers
+```
+
+Open `http://127.0.0.1:8000`. Local mode is unauthenticated and intended exclusively for loopback development. Set runtime variables on the backend, or use Uvicorn’s `--env-file` with an ignored configuration file. The application defaults to `runtime/ap-compass.db` and `runtime/documents`. For Vite development, see [Operations UI](docs/OPERATIONS_UI.md).
+
+## Private demonstration
+
+Private mode protects the app, API, source PDFs, health and documentation with a browser Basic-auth challenge. Remote access requires HTTPS and the controls in [Private demo security](docs/PRIVATE_DEMO_SECURITY.md). The Docker image defaults to private mode and disables new uploads unless enabled explicitly.
+
+| Setting | Purpose |
+|---|---|
+| `AP_COMPASS_MODE` | `local` or `private` |
+| `AP_COMPASS_PRIVATE_ORIGIN` | Required in private mode. Exact browser origin, including any nondefault port |
+| `AP_COMPASS_PRIVATE_USERNAME` and `AP_COMPASS_PRIVATE_PASSWORD` | Required in private mode. Backend runtime configuration only |
+| `AP_COMPASS_UPLOADS_ENABLED` | `true` or `false`. Defaults to `true` locally and `false` in private mode |
+| `AP_COMPASS_UPLOAD_CAPACITY` | Maximum admitted submissions. Defaults to 3 and accepts 1–8 |
+| `AP_COMPASS_DB_PATH` and `AP_COMPASS_DOCUMENT_DIR` | Persistent storage. Image defaults to `/data/ap-compass.db` and `/data/documents` |
+| `GEMINI_API_KEY` | Backend key for optional live extraction. Omit for the controlled demonstration |
+| `GEMINI_PRIMARY_MODEL` and `GEMINI_ESCALATION_ENABLED` | Primary defaults to `gemini-3.5-flash-lite`. Keep escalation `false` for the demo |
+
+Build and start Docker on a loopback port using [Deployment](docs/DEPLOYMENT.md). The [five-minute runbook](docs/FIVE_MINUTE_DEMO_RUNBOOK.md) prepares four synthetic workflows through the real application using a controlled extraction provider. Each carries a visible `TEST_ONLY` label. Use `HAPPY_CLEAN` for source-supported Ready, `OVERBILLED_PARTIAL` for hard PO controls, `MISSING_PO_VALID` for audited confirmation, and `PRICE_3PCT` for the 2% versus 5% policy preview. The prepared story makes zero Gemini calls.
+
+## Operational and evaluation limits
+
+Ready means supported controls passed at evaluation time. There is no payment approval, PO fund reservation, ERP posting, production identity, or multi-tenant isolation. Scans and ambiguous or mixed-content evidence can require review. Gateway outages can prevent a business decision. A technical failure stays in history. Reattempting requires a separate upload while submissions are enabled.
+
+The published post-remediation sample executed 16/16 controlled PDF submissions. Evidence scores improved, while final decisions matched 9/10 development and 3/6 held-out targets. All three held-out Ready-target invoices still required review. One of four live submissions completed and required review. That sample had no completed live non-Ready target. These are limited synthetic observations. The later currency-evidence repair was verified on separate development-only cases. See the [historical post-fix report](docs/PHASE_06B2C4_POSTFIX_VALIDATION.md) and [currency-evidence report](docs/PHASE_06B2D1_EVIDENCE_INTEGRITY_REPORT.md).
+
+## Verification and architecture
+
+```
+.venv/Scripts/python -m pytest -c backend/pytest.ini backend/tests -q
 npm --prefix frontend test
 npm --prefix frontend run typecheck
 npm --prefix frontend run build
-```
-
-One additional genuine UI upload of OVERBILLED_PARTIAL passed COMPLETED/BLOCKED with Procurement action,
-source-verified native fields and unchanged authority. One primary inference only. Viewports 1440/1024/390,
-keyboard/reduced-motion, actual READY/REVIEW/BLOCK and deterministic failure/empty states were inspected.
-The compiled app is served by FastAPI with deep-link reload support. Phase 5 local review: http://127.0.0.1:8005
-(open in local Chrome); Vite 5175 proxies that server because an older process already owns port 8000.
-See OPERATIONS_UI for the existing live demo DB/document paths; a fresh default database has an honest empty queue.
-
-Required runtime: gemini-3.5-flash-lite, GEMINI_ESCALATION_ENABLED=false, server-side key only in ignored .env.
-No per-invoice metadata lookup or stronger calls. Run one Uvicorn worker; persistent DB + document directory.
-Source grounding, pure financial engine and authoritative billed ledger are unchanged. Scans remain unverified;
-missing optional line net stays unknown. Technical failure is never a financial rejection.
-No approval/Confirm PO/reevaluation/payment action, new scenarios, deployment or Phase 6 was added.
-Historical backend integration evidence remains in docs/PHASE_04_REPORT.md and ORCHESTRATION_API.md.
-
-## Pure financial engine (Phase 2)
-
-Use `from app.domain import build_context, evaluate` from the backend Python path. Supply immutable typed
-invoice facts, trusted vendor/PO/billed snapshots and PolicyV1; no database or provider call occurs during evaluation.
-See `docs/FINANCE_ENGINE.md` for evidence keys, rule catalog, trust requirements and deterministic matching.
-Synthetic manifest facts are test inputs; actual live extraction/UI evidence is recorded separately in the phase reports.
-
-```powershell
-.venv/Scripts/python -m pytest -c backend/pytest.ini backend/tests -q --basetemp tmp/pytest-phase02-final
-```
-
-Verified: 129 tests (30 foundation + 99 domain), zero failures. See `docs/PHASE_02_REPORT.md`.
-
-## Local setup (PowerShell, repository root)
-
-Requires Python 3.12+ and Node 24 with npm. No API key is needed for health, history or offline tests; actual extraction requires a backend key.
-
-```powershell
-python -m venv .venv
-.venv/Scripts/python -m pip install -r backend/requirements-dev.txt
-npm --prefix frontend ci --no-audit --no-fund
-```
-
-The environment reads `AP_COMPASS_DB_PATH` from the process environment; `.env` is not automatically loaded.
-`.env.example` documents server-side configuration. Never put keys into frontend environment variables.
-The default DB is `runtime/ap-compass.db`, resolved from repository root regardless of working directory.
-On Windows sandbox temp-directory errors, use a writable temporary directory:
-
-```powershell
-New-Item -ItemType Directory -Force tmp | Out-Null
-$env:TEMP = Join-Path (Get-Location) 'tmp'
-$env:TMP = $env:TEMP
-.venv/Scripts/python -m ensurepip --upgrade
-```
-
-Start backend in one terminal:
-
-```powershell
-.venv/Scripts/python -m uvicorn app.main:app --app-dir backend --host 127.0.0.1 --port 8000
-```
-
-Start frontend in another:
-
-```powershell
-npm --prefix frontend run dev -- --port 5173 --strictPort
-```
-
-Visit http://127.0.0.1:5173. If occupied, use `--port 5174 --strictPort` (verified in this session).
-Vite proxies `/api` to port 8000. The status page uses the actual `/api/health` endpoint.
-Startup creates missing initial-schema tables and seeds missing authoritative records transactionally.
-Existing conflicting seed records cause startup to fail rather than overwrite financial history.
-
-## Reproducible verification
-
-Run from repository root:
-
-```powershell
 .venv/Scripts/python scripts/verify_manifests.py
-.venv/Scripts/python scripts/generate_fixtures.py
-.venv/Scripts/python -m pytest -c backend/pytest.ini backend/tests -q --basetemp tmp/pytest
-npm --prefix frontend run build
+.venv/Scripts/python scripts/verify_git_hygiene.py
 .venv/Scripts/python -m pip check
-$env:PYTHONPATH = 'backend'
-.venv/Scripts/python -m app.db.seed
-.venv/Scripts/python -m app.db.seed
-Invoke-RestMethod http://127.0.0.1:8000/api/health
 ```
 
-The backend suite uses isolated temporary SQLite files and never the runtime DB.
-Windows execution sandbox restricts sockets and the HTTP TestClient event loop in this environment;
-run the test/startup/HTTP commands with approved local execution access if needed.
-No tests require network, provider keys, or paid services once dependencies are installed.
-
-## What exists
-
-- FastAPI health API with a real database query and allowlisted build metadata.
-- Immutable typed Pydantic v1 boundary snapshots; missing extracted amounts stay null; binary floats rejected.
-- SQLAlchemy SQLite initial schema. Exact Decimal values stored as TEXT/JSON decimal strings.
-- Idempotent seed: 6 vendors, 7 POs/7 lines, 3 prior billed invoices; drift rejected and rolled back.
-- Connected React/TypeScript/Tailwind/Lucide operations overview, queue and source-and-decision workspace.
-- Four native-text PDFs and the authorized image-only SCAN_CONFLICT fixture, from the untouched manifest.
-- Pure matching, financial reconciliation, duplicate/bank/evidence controls and severity-based decisions.
-- Persisted asynchronous invoice orchestration, bounded PDF upload/document storage and run/history/policy/dashboard APIs.
-
-PO balances come exclusively from authorized POs minus prior billed history. Remaining net/qty:
-
-| PO | Net INR | Qty |
-|---|---:|---:|
-| PO-1042 | 80000 | 16 |
-| PO-1057 | 180000 | 30 |
-| PO-2010 | 25000 | 25 |
-| PO-3015 | 25000 | 5 |
-| PO-4002 | 100000 | 10 |
-| PO-5001 | 80000 | 8 |
-| PO-6001 | 50000 | 50 |
-
-These are synthetic authoritative seed balances, not analysis results or dashboard KPIs.
-
-## Boundaries and limitations
-
-No upload endpoints, run workflow, dashboard aggregates,
-payment/posting, auth or deployment exists. Pure-engine decisions are tested against synthetic oracle facts; end-to-end PDF/extraction decisions remain unverified.
-TanStack Query and shadcn/ui are deferred until server-state views or reusable interactive controls need them;
-the foundation has one health fetch and native accessible controls. No UI framework generator is required.
-`create_all` is the initial schema bootstrap, not a migration system. Future schema evolution requires additive migrations.
-Run/stage/policy tables are foundation storage boundaries; their workflow/repository APIs are not implemented.
-Direct database administration can change records; immutability here means no analysis code/hooks write authority,
-not a claim that SQLite is tamper-proof.
-
-See `docs/FOUNDATION_ARCHITECTURE.md`, `docs/DEPLOYMENT.md`, and `docs/PHASE_01_REPORT.md`.
-Stop after Phase 3 review; no later work is authorized.
+- [Orchestration and API](docs/ORCHESTRATION_API.md), [document engine](docs/DOCUMENT_ENGINE.md), and [financial controls](docs/FINANCE_ENGINE.md)
+- [Operations UI](docs/OPERATIONS_UI.md), [audited PO resolution](docs/HUMAN_PO_RESOLUTION.md), and [policy preview](docs/POLICY_PREVIEW.md)
+- [Deployment](docs/DEPLOYMENT.md), [private demo security](docs/PRIVATE_DEMO_SECURITY.md), and [release hardening report](docs/RELEASE_HARDENING_REPORT.md)
