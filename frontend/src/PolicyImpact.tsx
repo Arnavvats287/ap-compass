@@ -20,7 +20,7 @@ export default function PolicyImpact({ run }: { run: Run }) {
         <SlidersHorizontal size={19} aria-hidden="true" />
         <span>
           <strong>Policy impact</strong>
-          <small>Explore a different unit-price tolerance</small>
+          <small>Compare a hypothetical unit-price tolerance</small>
         </span>
         <span className="policy-current">
           {toleranceLabel(run.policy_snapshot?.price_tolerance_pct)} recorded
@@ -31,12 +31,13 @@ export default function PolicyImpact({ run }: { run: Run }) {
           <h3>Policy preview</h3>
           <p>Original AP decision unchanged. No document reprocessing required.</p>
           <p>
-            Uses stored extraction and current trusted procurement records. This simulation does not
-            change the active policy or authorize payment.
+            Uses stored extraction and current procurement records. The active policy stays in
+            place. Payment authorization remains separate.
           </p>
         </div>
         <p>
-          Preview uses the original automated context; saved human PO confirmations are not applied.
+          The preview starts from the original automated assessment. Human PO confirmations stay in
+          the review history.
         </p>
         <div className="policy-compare">
           <section aria-label="Current evaluation">

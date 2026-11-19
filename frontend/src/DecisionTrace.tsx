@@ -290,6 +290,7 @@ export default function DecisionTrace({ run }: { run: Run }) {
     <section
       className="decision-trace decision-journey"
       id="case-trace"
+      tabIndex={-1}
       aria-labelledby="journey-title"
       data-replay={replay > 0 && !live}
     >

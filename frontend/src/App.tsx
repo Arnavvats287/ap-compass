@@ -53,7 +53,6 @@ export default function App() {
               Invoice Operations
             </NavLink>
           </nav>
-          <span className="environment-label">Synthetic demo data</span>
         </div>
       </header>
       <main id="main" className="main-content" tabIndex={-1} ref={heading}>

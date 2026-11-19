@@ -1,12 +1,16 @@
 # AP Compass — Project Memory (living handoff)
 
 **Last reviewed:** 2026-11-20 (IST)
-**Repository status:** F.3 is preserved. The final automation quality pass is isolated in a separate worktree.
-**Current authorized segment:** Final automation quality pass only.
+**Repository status:** F.3 and the final-quality release source are preserved. Phase G.1 is isolated in a separate local worktree.
+**Current authorized segment:** Phase G.1 invoice workspace only.
 **Deadline:** Saturday 2026-11-21 (IST); target Friday evening feature freeze.
 **Maintainers:** Builder owns product decisions; Codex implements one authorized phase; architectural review gates further work.
 
 > Repo-local continuity. Status is evidence, not completion by assertion. Latest user acceptance/routing adjustment is recorded in ADR-016 and the handoff below.
+
+## Phase G.1 workspace handoff
+
+The invoice workspace reads decision-first with a collapsible section rail, an adjacent source viewer, a swipeable evidence inspector and policy preview beside the recorded decision. Demo extraction provenance remains explicit in diagnostics. Chrome passed at 1440, 1024, 768 and 390 px with a disposable copy of the saved rehearsal. The frontend suite passed 70 tests and typecheck/build. Zero Gemini calls. See `docs/PHASE_G1_WORKSPACE_REDESIGN_REPORT.md`. Stop after G.1.
 
 ## Final automation quality handoff
 

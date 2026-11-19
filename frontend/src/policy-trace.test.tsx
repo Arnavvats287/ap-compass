@@ -160,7 +160,7 @@ describe('read-only policy impact', () => {
         'Ready to process',
       ),
     ).toBeInTheDocument()
-    expect(document.querySelector('.decision-header .status')).toHaveTextContent('Blocked')
+    expect(document.querySelector('.invoice-hero .status')).toHaveTextContent('Blocked')
     expect(screen.getByText('Recorded AP decision')).toBeInTheDocument()
     expect(
       screen.getByText('Original AP decision unchanged. No document reprocessing required.'),

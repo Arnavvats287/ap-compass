@@ -304,9 +304,19 @@ describe('connected operations views', () => {
     expect(audit).not.toHaveAttribute('open')
     expect(audit.contains(screen.getByRole('region', { name: finding.title }))).toBe(false)
     expect(audit.contains(document.querySelector('#evidence'))).toBe(false)
-    expect(
-      screen.getByRole('navigation', { name: 'Invoice workspace sections' }),
-    ).toHaveTextContent('Recorded')
+    expect(document.querySelector('#case-decision')).toHaveTextContent('Recorded decision')
+    const nav = within(screen.getByRole('navigation', { name: 'Invoice workspace sections' }))
+    expect(nav.getByRole('link', { name: 'Run details' })).toHaveAttribute('href', '#case-details')
+    await userEvent.click(nav.getByRole('button', { name: 'Collapse workspace sidebar' }))
+    expect(nav.getByRole('button', { name: 'Expand workspace sidebar' })).toHaveAttribute(
+      'aria-expanded',
+      'false',
+    )
+    expect(nav.getByRole('link', { name: 'Source evidence' })).toHaveAttribute(
+      'aria-label',
+      'Source evidence',
+    )
+    expect(api.run).toHaveBeenCalledTimes(1)
     expect(document.querySelector('#case-trace')).not.toBeNull()
     expect(document.querySelector('#case-policy')).not.toBeNull()
   })
@@ -326,7 +336,7 @@ describe('connected operations views', () => {
     expect(screen.getByText('FUTURE_CONTROL_42')).toBeInTheDocument()
     expect(screen.getByText('A new backend rule requires Finance review.')).toBeInTheDocument()
   })
-  it('distinguishes verified, unverified and missing evidence language', () => {
+  it('distinguishes source states and opens each reference with the keyboard', async () => {
     const reference = run.extracted_invoice!.evidence[0]
     renderPage(
       <EvidenceList
@@ -345,10 +355,32 @@ describe('connected operations views', () => {
     expect(screen.getByText('Source verified')).toBeInTheDocument()
     expect(screen.getByText('Source needs review')).toBeInTheDocument()
     expect(screen.getByText('Source not confirmed')).toBeInTheDocument()
+    screen.getByRole('button', { name: /Source verified/ }).focus()
+    await userEvent.keyboard('{ArrowRight}')
     expect(
       screen.getByText(/image-based invoice and has not been independently text-verified/),
     ).toBeInTheDocument()
     expect(screen.getByText('Extraction reference, not verified source text')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Source needs review/ })).toHaveFocus()
+    await userEvent.keyboard('{End}')
+    expect(screen.getByRole('button', { name: /Source not confirmed/ })).toHaveFocus()
+    expect(screen.getByText('Page not located')).toBeInTheDocument()
+  })
+  it('shows controlled provenance in Run details and keeps raw model wording out of the hero', async () => {
+    defaults()
+    vi.mocked(api.run).mockResolvedValue({ ...run, model_id: 'TEST_ONLY-rehearsal' })
+    renderPage(
+      <Routes>
+        <Route path="/runs/:runId" element={<Workspace />} />
+      </Routes>,
+      '/runs/test-run',
+    )
+    await screen.findByRole('heading', { name: 'Aster Systems' })
+    expect(document.querySelector('#case-decision')).not.toHaveTextContent('TEST_ONLY')
+    const details = within(screen.getByRole('region', { name: 'Run details' }))
+    expect(details.getByText('Demo run', { exact: false })).toBeInTheDocument()
+    await userEvent.click(details.getByText('Run diagnostics'))
+    expect(details.getByText(/made no live Gemini request/)).toBeVisible()
   })
   it('renders technical failure without a business rejection', async () => {
     defaults()
@@ -484,7 +516,9 @@ describe('connected operations views', () => {
       </Routes>,
       '/runs/test-run',
     )
-    expect(await screen.findByText(/It does not authorize payment or posting/)).toBeInTheDocument()
+    expect(
+      await screen.findByText(/^This invoice passed the supported two-way controls\./),
+    ).toBeInTheDocument()
     expect(screen.getByText('1 extracted field references source verified')).toBeInTheDocument()
     expect(screen.queryByText(/no known billed duplicate/i)).not.toBeInTheDocument()
   })

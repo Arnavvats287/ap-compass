@@ -6,6 +6,7 @@ import {
   CircleCheck,
   Copy,
   FileText,
+  FlaskConical,
   ShieldCheck,
   TriangleAlert,
 } from 'lucide-react'
@@ -19,7 +20,10 @@ import { ExceptionValues, FindingValues } from './FindingValues'
 import PolicyImpact from './PolicyImpact'
 import HumanPOReview from './HumanPOReview'
 export { StageTimeline } from './DecisionTrace'
-import type { Evidence, Finding, Run } from './types'
+import EvidenceList from './EvidenceRail'
+import WorkspaceNavigation from './WorkspaceNavigation'
+import type { Finding, Run } from './types'
+export { default as EvidenceList } from './EvidenceRail'
 
 export { FindingValues } from './FindingValues'
 
@@ -62,87 +66,6 @@ export function FindingDetails({
     </details>
   )
 }
-const fieldLabels: Record<string, string> = {
-  vendor_name_raw: 'Supplier',
-  invoice_number: 'Invoice number',
-  invoice_date: 'Invoice date',
-  po_reference: 'PO reference',
-  currency: 'Currency',
-  net: 'Invoice net',
-  tax: 'Tax',
-  total: 'Invoice total',
-}
-function fieldName(field: string) {
-  const line = /^lines\[(\d+)\]\.(.+)$/.exec(field)
-  return (
-    fieldLabels[field] ?? (line ? `Line ${Number(line[1]) + 1}: ${words(line[2])}` : words(field))
-  )
-}
-export function EvidenceList({ evidence }: { evidence: Evidence[] }) {
-  const labels = {
-    NATIVE_VERIFIED: 'Source verified',
-    SOURCE_LOCATED_UNVERIFIED: 'Source needs review',
-    MISSING: 'Source not confirmed',
-  }
-  return (
-    <div className="evidence-list">
-      {!evidence.length ? (
-        <p>No source references are available. Verify the original invoice.</p>
-      ) : (
-        evidence.map((ref, index) => (
-          <details key={`${ref.field}-${index}`} className="evidence-item">
-            <summary>
-              <span>
-                <strong>{fieldName(ref.field)}</strong>
-                <span className="evidence-value">{ref.normalized_value ?? unknown}</span>
-              </span>
-              <span
-                className={`evidence-state ${ref.evidence_state === 'NATIVE_VERIFIED' ? 'ready' : 'review'}`}
-              >
-                {ref.evidence_state === 'NATIVE_VERIFIED' ? (
-                  <ShieldCheck size={14} aria-hidden="true" />
-                ) : (
-                  <TriangleAlert size={14} aria-hidden="true" />
-                )}
-                {labels[ref.evidence_state]}
-              </span>
-            </summary>
-            <div className="disclosure-content">
-              <p>{ref.page ? `Page ${ref.page}` : 'Page not located'}</p>
-              {ref.evidence_state === 'NATIVE_VERIFIED' ? (
-                <>
-                  <strong>Verified source text</strong>
-                  <blockquote>{ref.quote ?? unknown}</blockquote>
-                </>
-              ) : (
-                <>
-                  <p>
-                    {ref.route === 'image_only' || ref.route === 'mixed'
-                      ? 'The value was extracted from an image-based invoice and has not been independently text-verified.'
-                      : 'This value has not been independently verified against the source text.'}
-                  </p>
-                  {ref.quote && (
-                    <>
-                      <strong>Extraction reference, not verified source text</strong>
-                      <blockquote>{ref.quote}</blockquote>
-                    </>
-                  )}
-                  {ref.normalized_value === null && ref.raw_value && (
-                    <p>
-                      Unverified model claim: {ref.raw_value}. The document-stated value remains
-                      unknown.
-                    </p>
-                  )}
-                </>
-              )}
-              <small className="reason-code">{ref.field}</small>
-            </div>
-          </details>
-        ))
-      )}
-    </div>
-  )
-}
 export const failureMessages: Record<string, string> = {
   PROVIDER_TIMEOUT:
     'The invoice could not be analyzed because the document extraction service timed out.',
@@ -162,6 +85,7 @@ export const failureMessages: Record<string, string> = {
     'A usable invoice extraction could not be produced. Verify the source PDF and try uploading again.',
 }
 export function Diagnostics({ run }: { run: Run }) {
+  const controlled = run.model_id?.startsWith('TEST_ONLY')
   const values = [
     ['Source route', run.source_route ? words(run.source_route) : null],
     ['Extraction model', run.model_id],
@@ -180,6 +104,12 @@ export function Diagnostics({ run }: { run: Run }) {
   return (
     <details className="diagnostics">
       <summary>Run diagnostics</summary>
+      {controlled && (
+        <p className="run-provenance">
+          Controlled extraction (TEST_ONLY). This run used a saved extraction reply and made no live
+          Gemini request.
+        </p>
+      )}
       <dl>
         {values.map(([label, value]) => (
           <div key={String(label)}>
@@ -206,7 +136,6 @@ function BusinessDecision({ run }: { run: Run }) {
             <CircleCheck size={24} aria-hidden="true" />
             <h2>Ready to process</h2>
           </div>
-          <p>This invoice passed AP Compass’s supported two-way controls.</p>
           {decision.findings
             .filter((f) => f.severity === 'PASS')
             .map((f) => (
@@ -223,8 +152,8 @@ function BusinessDecision({ run }: { run: Run }) {
             </p>
           ) : null}
           <p className="control-disclaimer">
-            Ready to process means the invoice passed AP Compass's supported two-way controls. It
-            does not authorize payment or posting.
+            This invoice passed the supported two-way controls. Payment and posting require separate
+            authorization.
           </p>
         </section>
       ) : (
@@ -233,16 +162,14 @@ function BusinessDecision({ run }: { run: Run }) {
             className={`decision-brief ${decision.outcome === 'BLOCKED' ? 'blocked-brief' : 'review-brief'}`}
             aria-labelledby="primary-finding-title"
           >
-            <div className="brief-label">
-              <TriangleAlert size={18} aria-hidden="true" />
-              {decision.outcome === 'BLOCKED' ? 'Resolution required' : 'Analyst review required'}
-            </div>
             <h2 id="primary-finding-title">{primary?.title ?? 'This invoice needs attention'}</h2>
             <p>
               {primary?.code === 'SOURCE_EVIDENCE_MISSING'
                 ? 'Some invoice fields have not been independently source verified. Review the source evidence before continuing.'
-                : (primary?.explanation ??
-                  'Review the findings and original invoice before continuing.')}
+                : primary?.code === 'PO_BALANCE_EXCEEDED'
+                  ? 'The invoice net is above the remaining purchase order commitment.'
+                  : (primary?.explanation ??
+                    'Review the findings and original invoice before continuing.')}
             </p>
             {primary && primary.code !== 'SOURCE_EVIDENCE_MISSING' && (
               <ExceptionValues finding={primary} currency={invoice?.currency} />
@@ -352,6 +279,7 @@ export default function Workspace() {
   const query = useRun(runId)
   const [copied, setCopied] = useState(false)
   const [copyError, setCopyError] = useState(false)
+  const [sourcePage, setSourcePage] = useState<{ runId: string; number: number } | null>(null)
   useEffect(() => {
     setCopied(false)
     setCopyError(false)
@@ -372,6 +300,8 @@ export default function Workspace() {
   const run = query.data
   if (!run) return null
   const invoice = run.extracted_invoice
+  const page = sourcePage?.runId === run.id ? sourcePage.number : undefined
+  const sourceUrl = api.documentUrl(run.id)
   const pending = active(run.execution_state)
   const failed =
     run.execution_state === 'PROCESSING_FAILED' || run.execution_state === 'INTERRUPTED'
@@ -383,12 +313,15 @@ export default function Workspace() {
       ? 'Processing ended without an AP decision.'
       : `Analysis complete. ${run.decision ? statusInfo[run.decision.outcome].label : 'No decision available'}.`
   return (
-    <>
+    <div className="invoice-workspace">
       <div className="workspace-breadcrumb">
         <Link className="text-link" to="/runs">
           <ArrowLeft size={16} aria-hidden="true" />
-          Invoice Operations
+          Back to queue
         </Link>
+        <a className="invoice-mobile-source text-link" href="#source-document">
+          View PDF
+        </a>
         <button
           className="button quiet"
           onClick={async () => {
@@ -412,167 +345,192 @@ export default function Workspace() {
               : ''}
         </span>
       </div>
-      <header className="decision-header">
-        <div>
-          <Status state={run.execution_state} outcome={run.decision?.outcome} />
-          <h1>
-            {invoice?.vendor_name_raw ||
-              (pending
-                ? 'Invoice analysis in progress'
-                : failed
-                  ? 'Invoice processing incomplete'
-                  : 'Supplier not available')}
-          </h1>
-          <p className="invoice-identity">
-            {invoice?.invoice_number || `Run ${run.id.slice(0, 8)}`}
+      <div className="invoice-layout">
+        <WorkspaceNavigation key={run.id} hasDecision={!!run.decision} hasEvidence={!!invoice} />
+        <div className="invoice-content">
+          <header className="invoice-hero" id="case-decision" tabIndex={-1}>
+            <div>
+              <div className="invoice-hero-outcome">
+                {run.decision && <span>Recorded decision</span>}
+                <Status state={run.execution_state} outcome={run.decision?.outcome} />
+              </div>
+              <h1>
+                {invoice?.vendor_name_raw ||
+                  (pending
+                    ? 'Invoice analysis in progress'
+                    : failed
+                      ? 'Invoice processing incomplete'
+                      : 'Supplier not available')}
+              </h1>
+              <p className="invoice-identity">
+                {invoice?.invoice_number || `Run ${run.id.slice(0, 8)}`}
+              </p>
+              <div className="invoice-meta">
+                <span>
+                  Invoice date <strong>{date(invoice?.invoice_date)}</strong>
+                </span>
+                <span>
+                  Purchase order <strong>{invoice?.po_reference ?? unknown}</strong>
+                </span>
+              </div>
+            </div>
+            <div className="invoice-hero-amount">
+              <span>
+                Invoice total{invoice?.currency ? ` · ${invoice.currency}` : ''}
+                {invoice?.total ? ' incl. tax' : ''}
+              </span>
+              <strong className="amount">{money(invoice?.total, invoice?.currency)}</strong>
+            </div>
+          </header>
+          <p className="run-announcement" role="status" aria-live="polite" aria-atomic="true">
+            {announcement}
           </p>
-          {run.model_id?.startsWith('TEST_ONLY') && (
-            <p className="invoice-identity">Controlled extraction (TEST_ONLY)</p>
+          {pending && (
+            <section className="processing-panel">
+              <h2>
+                {run.execution_state === 'QUEUED' ? 'Waiting to process' : 'Analysis is underway'}
+              </h2>
+              <p>
+                {run.execution_state === 'QUEUED'
+                  ? 'Your PDF is stored. It will be processed when capacity is available.'
+                  : 'Progress below reflects real backend work. You can leave and return to this invoice.'}
+              </p>
+            </section>
           )}
-          <div className="invoice-meta">
-            <span>
-              Invoice date <strong>{date(invoice?.invoice_date)}</strong>
-            </span>
-            <span>
-              Purchase order <strong>{invoice?.po_reference ?? unknown}</strong>
-            </span>
-          </div>
-        </div>
-        <div className="invoice-header-amount">
-          <span>Invoice total</span>
-          <strong className="amount">{money(invoice?.total, invoice?.currency)}</strong>
-          <small>
-            {invoice?.currency ?? 'Currency pending extraction'}
-            {invoice?.total ? ' including tax' : ''}
-          </small>
-        </div>
-      </header>
-      <p className="run-announcement" role="status" aria-live="polite" aria-atomic="true">
-        {announcement}
-      </p>
-      {pending && (
-        <section className="processing-panel">
-          <h2>
-            {run.execution_state === 'QUEUED' ? 'Waiting to process' : 'Analysis is underway'}
-          </h2>
-          <p>
-            {run.execution_state === 'QUEUED'
-              ? 'Your PDF is stored. It will be processed when capacity is available.'
-              : 'Progress below reflects real backend work. You can leave and return to this invoice.'}
-          </p>
-          <DecisionTrace key={run.id} run={run} />
-        </section>
-      )}
-      {failed && (
-        <section className="technical-failure" role="alert">
-          <TriangleAlert size={26} aria-hidden="true" />
-          <h2>
-            {run.execution_state === 'INTERRUPTED'
-              ? 'Processing was interrupted'
-              : 'Invoice processing failed'}
-          </h2>
-          <p>
-            {run.execution_state === 'INTERRUPTED'
-              ? 'Processing stopped before completion. No AP decision was produced.'
-              : (failureMessages[run.execution_error_code ?? ''] ??
-                'The invoice could not be analyzed because of a technical processing problem.')}
-          </p>
-          <p>No financial decision was produced. This is not a financial rejection.</p>
-          <Link className="button secondary" to="/runs#upload">
-            Retry by uploading again
-          </Link>
-        </section>
-      )}
-      {failed && <DecisionTrace key={run.id} run={run} />}
-      <nav className="case-nav" aria-label="Invoice workspace sections">
-        <a href="#case-decision">{run.decision ? 'Decision' : 'Source invoice'}</a>
-        {invoice && <a href="#evidence">Source evidence</a>}
-        <a href="#case-trace">Decision journey</a>
-        {run.decision && <a href="#case-policy">Policy impact</a>}
-        {run.decision && (
-          <span className="case-recorded">
-            <small>Recorded</small>
-            <Status state={run.execution_state} outcome={run.decision.outcome} />
-          </span>
-        )}
-      </nav>
-      <div className="workspace-grid" id="case-decision">
-        <div className="decision-column">
-          <HumanPOReview
-            key={run.id}
-            run={run}
-            renderFinding={(finding) => (
-              <FindingDetails finding={finding} currency={invoice?.currency} />
-            )}
-          />
-          {run.decision && (
-            <>
-              {!invoice?.po_reference?.trim() && (
-                <p className="recorded-assessment-label">Original automated decision</p>
+          {failed && (
+            <section className="technical-failure" role="alert">
+              <TriangleAlert size={26} aria-hidden="true" />
+              <h2>
+                {run.execution_state === 'INTERRUPTED'
+                  ? 'Processing was interrupted'
+                  : 'Invoice processing failed'}
+              </h2>
+              <p>
+                {run.execution_state === 'INTERRUPTED'
+                  ? 'Processing stopped before completion. No AP decision was produced.'
+                  : (failureMessages[run.execution_error_code ?? ''] ??
+                    'The invoice could not be analyzed because of a technical processing problem.')}
+              </p>
+              <p>No financial decision was produced.</p>
+              <Link className="button secondary" to="/runs#upload">
+                Retry by uploading again
+              </Link>
+            </section>
+          )}
+          {(pending || failed) && <DecisionTrace key={run.id} run={run} />}
+          <div className="invoice-decision-grid">
+            <div className="decision-column">
+              {run.decision && (
+                <>
+                  {!invoice?.po_reference?.trim() && (
+                    <p className="recorded-assessment-label">Original automated decision</p>
+                  )}
+                  <BusinessDecision run={run} />
+                </>
               )}
-              <BusinessDecision run={run} />
-            </>
-          )}
+              <HumanPOReview
+                key={run.id}
+                run={run}
+                renderFinding={(finding) => (
+                  <FindingDetails finding={finding} currency={invoice?.currency} />
+                )}
+              />
+              {run.decision && (
+                <div id="case-policy" tabIndex={-1}>
+                  <PolicyImpact key={run.id} run={run} />
+                </div>
+              )}
+            </div>
+            <section
+              className="document-panel"
+              id="source-document"
+              tabIndex={-1}
+              aria-labelledby="source-title"
+            >
+              <div className="section-heading">
+                <h2 id="source-title">
+                  <FileText size={18} aria-hidden /> Source invoice
+                </h2>
+                <a
+                  className="text-link"
+                  href={page ? `${sourceUrl}#page=${page}` : sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Open PDF
+                  <ArrowUpRight size={16} aria-hidden="true" />
+                  <span className="sr-only"> (new tab)</span>
+                </a>
+              </div>
+              <iframe
+                title="Original invoice PDF"
+                src={`${sourceUrl}#${page ? `page=${page}&` : ''}toolbar=0&view=FitH`}
+                loading="lazy"
+              />
+              {invoice && (
+                <a className="document-evidence-link text-link" href="#evidence">
+                  Inspect source evidence
+                </a>
+              )}
+            </section>
+          </div>
           {invoice && (
-            <section className="workspace-section" id="evidence">
-              <h2>Source evidence</h2>
-              <p>Verification describes support in the document, not financial approval.</p>
-              <EvidenceList evidence={invoice.evidence} />
+            <section
+              className="invoice-evidence"
+              id="evidence"
+              tabIndex={-1}
+              aria-labelledby="evidence-title"
+            >
+              <h2 id="evidence-title">Source evidence</h2>
+              <p>Compare extracted fields with their supporting text and page references.</p>
+              <EvidenceList
+                key={run.id}
+                evidence={invoice.evidence}
+                onShowPage={(number) => {
+                  setSourcePage({ runId: run.id, number })
+                  window.location.hash = 'source-document'
+                  document.getElementById('source-document')?.focus({ preventScroll: true })
+                }}
+              />
             </section>
           )}
           {run.decision && (
-            <details className="workspace-audit" open={run.candidates.length > 1}>
-              <summary>All controls & procurement records</summary>
-              <div>
-                <SupportingRecords run={run} />
-              </div>
-            </details>
+            <div className="completed-trace">
+              <DecisionTrace key={run.id} run={run} />
+            </div>
           )}
-        </div>
-        <section className="document-panel" aria-labelledby="source-title">
-          <div className="section-heading">
-            <h2 id="source-title">Source invoice</h2>
-            <a
-              className="text-link"
-              href={api.documentUrl(run.id)}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Open source document
-              <ArrowUpRight size={16} aria-hidden="true" />
-              <span className="sr-only"> (new tab)</span>
-            </a>
-          </div>
-          <p className="document-help">
-            Original persisted PDF. Use the link if your browser cannot display it.
-          </p>
-          <iframe
-            title="Original invoice PDF"
-            src={`${api.documentUrl(run.id)}#toolbar=0&view=FitH`}
-            loading="lazy"
-          />
-          <a
-            className="document-fallback"
-            href={api.documentUrl(run.id)}
-            target="_blank"
-            rel="noopener noreferrer"
+          <section
+            className="invoice-run-details"
+            id="case-details"
+            tabIndex={-1}
+            aria-labelledby="details-title"
           >
-            <FileText size={17} aria-hidden="true" />
-            Open PDF in a new tab
-          </a>
-        </section>
+            <div className="section-heading">
+              <h2 id="details-title">Run details</h2>
+              {run.model_id?.startsWith('TEST_ONLY') && (
+                <span
+                  className="invoice-demo-label"
+                  title="Controlled extraction from a saved reply. No live Gemini request."
+                >
+                  <FlaskConical size={15} aria-hidden /> Demo run
+                  <span className="sr-only">
+                    . Controlled extraction with no live Gemini request.
+                  </span>
+                </span>
+              )}
+            </div>
+            <Diagnostics run={run} />
+            {run.decision && (
+              <details className="workspace-audit" open={run.candidates.length > 1}>
+                <summary>All controls & procurement records</summary>
+                <div>
+                  <SupportingRecords run={run} />
+                </div>
+              </details>
+            )}
+          </section>
+        </div>
       </div>
-      {run.decision && (
-        <div className="completed-trace">
-          <DecisionTrace key={run.id} run={run} />
-        </div>
-      )}
-      {run.decision && (
-        <div id="case-policy">
-          <PolicyImpact key={run.id} run={run} />
-        </div>
-      )}
-      <Diagnostics run={run} />
-    </>
+    </div>
   )
 }
