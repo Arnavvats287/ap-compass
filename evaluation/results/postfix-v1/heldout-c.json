@@ -1,0 +1,374 @@
+{
+  "dataset_version": "heldout-v1",
+  "dataset_sha256": "30e8850f67dec06662d7fc1843ab0600e01ccebb4a4a704db8cbbbca2ae0ca73",
+  "code_commit": "9c2e795a3090f340696e6aaf9be65cde45d3d33f",
+  "layer": "C",
+  "split": "heldout",
+  "attempts": [
+    {
+      "case_id": "H04",
+      "track": "submission",
+      "attempt": 1,
+      "status": "executed",
+      "execution_state": "PROCESSING_FAILED",
+      "decision": null,
+      "target_decision": "REVIEW_REQUIRED",
+      "finding_codes": [],
+      "fields": [],
+      "model_calls": 2,
+      "latency_ms": 23222.544,
+      "required_findings": [
+        "LINE_MAPPING_UNRESOLVED"
+      ],
+      "pdf_sha256": "2bb35df19fd389e57ed70349024a751af914f43d4021dc999d758bdd0fc20999",
+      "owner_match": false,
+      "next_action_match": false,
+      "run_reference": "f60cdc9c367045f0b8acca24da23c3cf",
+      "input_tokens": null,
+      "output_tokens": null,
+      "error_code": "PROVIDER_UNAVAILABLE",
+      "route": null,
+      "model_id": "gemini-3.5-flash-lite",
+      "notes": "generation 1: INVALID_RESPONSE, generation 2: PROVIDER_UNAVAILABLE (HTTP 503)",
+      "classification": "Technical Failure"
+    },
+    {
+      "case_id": "H01",
+      "track": "submission",
+      "attempt": 1,
+      "status": "executed",
+      "execution_state": "COMPLETED",
+      "decision": "REVIEW_REQUIRED",
+      "target_decision": "READY_FOR_AP",
+      "finding_codes": [
+        "PO_MATCH_CONFIRMED",
+        "SOURCE_EVIDENCE_MISSING",
+        "BANK_DETAILS_NOT_PROVIDED"
+      ],
+      "fields": [
+        {
+          "field": "vendor_name_raw",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED"
+        },
+        {
+          "field": "invoice_number",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED"
+        },
+        {
+          "field": "invoice_date",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED"
+        },
+        {
+          "field": "po_reference",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED"
+        },
+        {
+          "field": "currency",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED"
+        },
+        {
+          "field": "net",
+          "comparison": "exact",
+          "evidence": "correct",
+          "actual_evidence_state": "NATIVE_VERIFIED",
+          "expected_decimal": "12000.00",
+          "observed_decimal": "12000.00"
+        },
+        {
+          "field": "tax",
+          "comparison": "exact",
+          "evidence": "correct",
+          "actual_evidence_state": "NATIVE_VERIFIED",
+          "expected_decimal": "2160.00",
+          "observed_decimal": "2160.00"
+        },
+        {
+          "field": "total",
+          "comparison": "exact",
+          "evidence": "correct",
+          "actual_evidence_state": "NATIVE_VERIFIED",
+          "expected_decimal": "14160.00",
+          "observed_decimal": "14160.00"
+        },
+        {
+          "field": "lines[0].description",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED"
+        },
+        {
+          "field": "lines[0].item_code",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED"
+        },
+        {
+          "field": "lines[0].qty",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED",
+          "expected_decimal": "12",
+          "observed_decimal": "12"
+        },
+        {
+          "field": "lines[0].unit_price_net",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED",
+          "expected_decimal": "1000.00",
+          "observed_decimal": "1000.00"
+        },
+        {
+          "field": "lines[0].net",
+          "comparison": "exact",
+          "evidence": "incorrect",
+          "actual_evidence_state": "SOURCE_LOCATED_UNVERIFIED",
+          "expected_decimal": "12000.00",
+          "observed_decimal": "12000.00"
+        },
+        {
+          "field": "bank_instructions.account",
+          "comparison": "correct_absence",
+          "evidence": "correct",
+          "actual_evidence_state": null
+        },
+        {
+          "field": "bank_instructions.ifsc",
+          "comparison": "correct_absence",
+          "evidence": "correct",
+          "actual_evidence_state": null
+        }
+      ],
+      "model_calls": 2,
+      "latency_ms": 57731.669,
+      "required_findings": [],
+      "pdf_sha256": "82262342ed0de702381412f87fcc3333f6099c0dac4cd3eb358b797fa104b330",
+      "run_reference": "b020a6d2a6064eeba4b1ac3df281cbc3",
+      "input_tokens": null,
+      "output_tokens": null,
+      "error_code": null,
+      "route": "native_text",
+      "model_id": "gemini-3.5-flash-lite",
+      "notes": "generation 1: PROVIDER_UNAVAILABLE (HTTP 504), generation 2: valid response",
+      "owner": "AP",
+      "primary_reason": "SOURCE_EVIDENCE_MISSING",
+      "next_action": "Verify the source invoice and request clarification from the vendor.",
+      "classification": "Unnecessary Review"
+    },
+    {
+      "case_id": "H05",
+      "track": "submission",
+      "attempt": 1,
+      "status": "executed",
+      "execution_state": "PROCESSING_FAILED",
+      "decision": null,
+      "target_decision": "REVIEW_REQUIRED",
+      "finding_codes": [],
+      "fields": [],
+      "model_calls": 2,
+      "latency_ms": 29207.501,
+      "required_findings": [
+        "SOURCE_EVIDENCE_MISSING"
+      ],
+      "pdf_sha256": "09c8869740b33d578174da706354f2932ee7b509de37066ada876a615fa031ff",
+      "owner_match": false,
+      "next_action_match": false,
+      "run_reference": "238642723f8243629bd6c0a7dd8bdb30",
+      "input_tokens": null,
+      "output_tokens": null,
+      "error_code": "PROVIDER_UNAVAILABLE",
+      "route": null,
+      "model_id": "gemini-3.5-flash-lite",
+      "notes": "generation 1: PROVIDER_UNAVAILABLE (HTTP 503), generation 2: PROVIDER_UNAVAILABLE (HTTP 503)",
+      "classification": "Technical Failure"
+    },
+    {
+      "case_id": "H03",
+      "track": "submission",
+      "attempt": 1,
+      "status": "not_executed",
+      "execution_state": null,
+      "decision": null,
+      "target_decision": "READY_FOR_AP",
+      "finding_codes": [],
+      "fields": [],
+      "model_calls": null,
+      "latency_ms": null,
+      "required_findings": [],
+      "pdf_sha256": "0ed5a8835288020e0234e62a05b7108238925b5f1c9d4546bcfbbfd198e61865",
+      "notes": "Insufficient remaining budget for a full ordinary retry policy",
+      "classification": "Not Executed"
+    },
+    {
+      "case_id": "H06",
+      "track": "submission",
+      "attempt": 1,
+      "status": "not_executed",
+      "execution_state": null,
+      "decision": null,
+      "target_decision": "REVIEW_REQUIRED",
+      "finding_codes": [],
+      "fields": [],
+      "model_calls": null,
+      "latency_ms": null,
+      "required_findings": [
+        "DOCUMENT_CONTENT_UNVERIFIED"
+      ],
+      "pdf_sha256": "2111f612c15cca25e84c0e3308d216556a1ca769cb809782b0542f2f39b1f2e7",
+      "owner_match": false,
+      "next_action_match": false,
+      "notes": "Insufficient remaining budget for a full ordinary retry policy",
+      "classification": "Not Executed"
+    },
+    {
+      "case_id": "H02",
+      "track": "submission",
+      "attempt": 1,
+      "status": "ineligible",
+      "execution_state": null,
+      "decision": null,
+      "target_decision": "READY_FOR_AP",
+      "finding_codes": [],
+      "fields": [],
+      "model_calls": null,
+      "latency_ms": null,
+      "required_findings": [],
+      "pdf_sha256": "16fcc3764310043973c89a4c117d3b45e5650cb4552a93a847af8bbcb1cc51f5",
+      "notes": "Outside the preselected sample",
+      "classification": "Ineligible"
+    }
+  ],
+  "metrics": {
+    "invoice_count": {
+      "numerator": 5,
+      "denominator": 6
+    },
+    "executed_count": {
+      "numerator": 3,
+      "denominator": 5
+    },
+    "technical_failures": {
+      "numerator": 2,
+      "denominator": 3
+    },
+    "critical_field_exact_matches": {
+      "numerator": 11,
+      "denominator": 11
+    },
+    "missing_fields": {
+      "numerator": 0,
+      "denominator": 13
+    },
+    "hallucinated_fields": {
+      "numerator": 0,
+      "denominator": 2
+    },
+    "evidence_grounding_correct": {
+      "numerator": 5,
+      "denominator": 15
+    },
+    "exact_decisions": {
+      "numerator": 0,
+      "denominator": 3
+    },
+    "false_ready": {
+      "numerator": 0,
+      "denominator": 2
+    },
+    "unnecessary_review": {
+      "numerator": 1,
+      "denominator": 1
+    },
+    "required_finding_recall": {
+      "numerator": 0,
+      "denominator": 2
+    },
+    "owner_matches": {
+      "numerator": 0,
+      "denominator": 2
+    },
+    "next_action_matches": {
+      "numerator": 0,
+      "denominator": 2
+    },
+    "model_calls": {
+      "numerator": 6,
+      "denominator": 3
+    },
+    "input_tokens": {
+      "numerator": 0,
+      "denominator": 0
+    },
+    "output_tokens": {
+      "numerator": 0,
+      "denominator": 0
+    },
+    "latency_ms": {
+      "numerator": 110161.714,
+      "denominator": 3
+    }
+  },
+  "provenance": {
+    "label": "POST-REMEDIATION REGRESSION COMPARISON — NOT A NEW UNSEEN BASELINE",
+    "harness_git_head": "4a526ace7caed981917c57d1aafed280c25b7f95",
+    "started_utc": "2026-11-19T15:30:46.964461+00:00",
+    "authority_fingerprint": "f6e95512f3e71d59bf512c1afc861e69587c3bbf40a9400c0f6c04739d02bf31",
+    "seed_sha256": "66be24c67f8869e05b997273659fd9ba59d23000ea08a0ed17afda520bffcbed",
+    "policy": {
+      "version": "policy-v1",
+      "effective_at": "2026-11-19T00:00:00Z",
+      "price_tolerance_pct": "0.02",
+      "require_explicit_po": true,
+      "amount_rounding_allowance": "1.00",
+      "commitment_overrun_allowance": "0.00"
+    },
+    "registry_sha256": "100534567bcecdacf2303fbe87b8db260fb6c9138aa693fc586b34c4540e5255",
+    "annotation_sha256": "358c92130fc959d4e6372758dfaf7aa87e0ec48c04bfe64514f788c15de1e369",
+    "archive_sha256": "f3467c2ab7cdf687b1a646d4ae21668d6f88808b1c5ee4911c4dc1f2329880b7",
+    "latency_scope": "ASGI POST start through terminal persisted GET response",
+    "selection": [
+      [
+        "heldout",
+        "H04"
+      ],
+      [
+        "development",
+        "OVERBILLED_PARTIAL"
+      ],
+      [
+        "heldout",
+        "H01"
+      ],
+      [
+        "heldout",
+        "H05"
+      ],
+      [
+        "heldout",
+        "H03"
+      ],
+      [
+        "heldout",
+        "H06"
+      ]
+    ],
+    "sealed_offline_sha256": {
+      "development": "abff41ff7fded28ad445d41bf23fc4d6e937295ca487ecdc2162db63d32d66d2",
+      "heldout": "092f73cc7a9cef06c38ded348a44e3a391c7b21f4798a1b98a82f34ffce9596b"
+    },
+    "shared_generation_budget": 8,
+    "finished_utc": "2026-11-19T15:33:08.897085+00:00",
+    "restart_verified": true,
+    "actual_generations_in_split": 6
+  }
+}

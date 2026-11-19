@@ -1,0 +1,316 @@
+{
+  "label": "POST-REMEDIATION REGRESSION COMPARISON — NOT A NEW UNSEEN BASELINE",
+  "layer": "C",
+  "observations": [
+    {
+      "case_id": "H04",
+      "fields": [],
+      "findings": [],
+      "trust_regressions": [],
+      "integrity_flags": [],
+      "generations": [
+        {
+          "attempt": 1,
+          "http_status": null,
+          "error_code": "INVALID_RESPONSE",
+          "elapsed_ms": 11634,
+          "usage": {
+            "input_tokens": 613,
+            "output_tokens": 1507,
+            "thinking_tokens": null,
+            "total_tokens": 2120
+          }
+        },
+        {
+          "attempt": 2,
+          "http_status": 503,
+          "error_code": "PROVIDER_UNAVAILABLE",
+          "elapsed_ms": 10497,
+          "usage": {
+            "input_tokens": null,
+            "output_tokens": null,
+            "thinking_tokens": null,
+            "total_tokens": null
+          }
+        }
+      ],
+      "split": "heldout"
+    },
+    {
+      "case_id": "OVERBILLED_PARTIAL",
+      "fields": [],
+      "findings": [],
+      "trust_regressions": [],
+      "integrity_flags": [],
+      "generations": [
+        {
+          "attempt": 1,
+          "http_status": 504,
+          "error_code": "PROVIDER_UNAVAILABLE",
+          "elapsed_ms": 27803,
+          "usage": {
+            "input_tokens": null,
+            "output_tokens": null,
+            "thinking_tokens": null,
+            "total_tokens": null
+          }
+        },
+        {
+          "attempt": 2,
+          "http_status": 503,
+          "error_code": "PROVIDER_UNAVAILABLE",
+          "elapsed_ms": 1455,
+          "usage": {
+            "input_tokens": null,
+            "output_tokens": null,
+            "thinking_tokens": null,
+            "total_tokens": null
+          }
+        }
+      ],
+      "split": "development"
+    },
+    {
+      "case_id": "H01",
+      "fields": [
+        {
+          "field": "vendor_name_raw",
+          "page": 1,
+          "route": "native_text",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "field_label_value_association_unsupported"
+          ]
+        },
+        {
+          "field": "invoice_number",
+          "page": 1,
+          "route": "native_text",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "strict_v1_quote_span_differs",
+            "field_label_value_association_unsupported"
+          ]
+        },
+        {
+          "field": "invoice_date",
+          "page": 1,
+          "route": "native_text",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "strict_v1_quote_span_differs",
+            "field_label_value_association_unsupported"
+          ]
+        },
+        {
+          "field": "po_reference",
+          "page": 1,
+          "route": "native_text",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "strict_v1_quote_span_differs",
+            "field_label_value_association_unsupported"
+          ]
+        },
+        {
+          "field": "currency",
+          "page": 1,
+          "route": "native_text",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "strict_v1_quote_span_differs",
+            "field_label_value_association_unsupported"
+          ]
+        },
+        {
+          "field": "net",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "tax",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "total",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "lines[0].description",
+          "page": 1,
+          "route": "native_text",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "lines[0].item_code",
+          "page": 1,
+          "route": "native_text",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "lines[0].qty",
+          "page": 1,
+          "route": "native_text",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "lines[0].unit_price_net",
+          "page": 1,
+          "route": "native_text",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "lines[0].net",
+          "page": 1,
+          "route": "native_text",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "bank_instructions.account",
+          "page": null,
+          "route": null,
+          "state": null,
+          "comparison": "correct_absence",
+          "diagnostic": [
+            "printed_source_absent"
+          ]
+        },
+        {
+          "field": "bank_instructions.ifsc",
+          "page": null,
+          "route": null,
+          "state": null,
+          "comparison": "correct_absence",
+          "diagnostic": [
+            "printed_source_absent"
+          ]
+        }
+      ],
+      "findings": [
+        {
+          "code": "PO_MATCH_CONFIRMED",
+          "severity": "PASS",
+          "owner": null,
+          "next_action": null
+        },
+        {
+          "code": "SOURCE_EVIDENCE_MISSING",
+          "severity": "REVIEW",
+          "owner": "AP",
+          "next_action": "Verify the source invoice and request clarification from the vendor."
+        },
+        {
+          "code": "BANK_DETAILS_NOT_PROVIDED",
+          "severity": "INFO",
+          "owner": null,
+          "next_action": null
+        }
+      ],
+      "trust_regressions": [],
+      "integrity_flags": [],
+      "generations": [
+        {
+          "attempt": 1,
+          "http_status": 504,
+          "error_code": "PROVIDER_UNAVAILABLE",
+          "elapsed_ms": 29243,
+          "usage": {
+            "input_tokens": null,
+            "output_tokens": null,
+            "thinking_tokens": null,
+            "total_tokens": null
+          }
+        },
+        {
+          "attempt": 2,
+          "http_status": null,
+          "error_code": null,
+          "elapsed_ms": 27474,
+          "usage": {
+            "input_tokens": 562,
+            "output_tokens": 1112,
+            "thinking_tokens": null,
+            "total_tokens": 1674
+          }
+        }
+      ],
+      "split": "heldout"
+    },
+    {
+      "case_id": "H05",
+      "fields": [],
+      "findings": [],
+      "trust_regressions": [],
+      "integrity_flags": [],
+      "generations": [
+        {
+          "attempt": 1,
+          "http_status": 503,
+          "error_code": "PROVIDER_UNAVAILABLE",
+          "elapsed_ms": 3679,
+          "usage": {
+            "input_tokens": null,
+            "output_tokens": null,
+            "thinking_tokens": null,
+            "total_tokens": null
+          }
+        },
+        {
+          "attempt": 2,
+          "http_status": 503,
+          "error_code": "PROVIDER_UNAVAILABLE",
+          "elapsed_ms": 24364,
+          "usage": {
+            "input_tokens": null,
+            "output_tokens": null,
+            "thinking_tokens": null,
+            "total_tokens": null
+          }
+        }
+      ],
+      "split": "heldout"
+    }
+  ]
+}

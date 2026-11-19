@@ -1,12 +1,16 @@
 # AP Compass — Project Memory (living handoff)
 
 **Last reviewed:** 2026-11-19 (IST)
-**Repository status:** Source grounding and scope review remediation passed local verification, pending post-fix validation review.
-**Current authorized segment:** `06B.2C.3 SOURCE GROUNDING AND BUSINESS WORKFLOW REMEDIATION` only.
+**Repository status:** Post-remediation validation complete for release review.
+**Current authorized segment:** `06B.2C.4 POST-REMEDIATION INDEPENDENT VALIDATION` only.
 **Deadline:** Saturday 2026-11-21 (IST); target Friday evening feature freeze.
 **Maintainers:** Builder owns product decisions; Codex implements one authorized phase; architectural review gates further work.
 
 > Repo-local continuity. Status is evidence, not completion by assertion. Latest user acceptance/routing adjustment is recorded in ADR-016 and the handoff below.
+
+## Phase 6B.2C.4 handoff
+
+Production at `9c2e795a3090f340696e6aaf9be65cde45d3d33f` stayed byte-identical. The original archive, oracles, source annotations, scorer and four published reports kept their hashes. Post-fix Layer B evidence improved from 122/135 to 123/135 development and 37/100 to 54/100 held-out. Exact decisions stayed 9/10 and 3/6. Development scope routes to Procurement; held-out H04 remains AP due to unsupported item-code evidence. Live used eight attempts. H01 completed with 11/11 exact critical fields and unnecessary Review. H04, OVERBILLED_PARTIAL and H05 failed technically. H03 and H06 skipped at the cap. No completed live non-Ready target. No observed false Ready or unsafe attestation. See `evaluation/results/postfix-v1/`, `docs/POSTFIX_V1_OFFLINE_COMPARISON.md`, and `docs/PHASE_06B2C4_POSTFIX_VALIDATION.md`. Stop for release review.
 
 ## Phase 6B.2C.3 handoff
 
