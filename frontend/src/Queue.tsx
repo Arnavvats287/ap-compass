@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { Search } from 'lucide-react'
+import { Search, Upload } from 'lucide-react'
 import { useRuns, active } from './queries'
 import { Empty, ErrorState, Loading, RunTable, UploadPanel } from './components'
 import type { ExecutionState, Outcome, RunSummary } from './types'
 import { isAttention, sortChoices, sortRuns } from './worklist'
+import ExportInvoices from './ExportInvoices'
 
 export const filters = [
   ['all', 'All'],
@@ -76,9 +77,12 @@ export default function Queue() {
           <h1>Invoice Operations</h1>
           <p>Review the exception. Find the evidence. Move the invoice forward.</p>
         </div>
-        <Link className="button primary" to={{ search: params.toString(), hash: '#upload' }}>
-          Process an invoice
-        </Link>
+        <div className="ops-heading-actions">
+          <Link className="button primary" to="/runs/upload">
+            <Upload size={17} aria-hidden="true" /> Process invoices
+          </Link>
+          <ExportInvoices />
+        </div>
       </div>
       <section className="panel queue-panel" aria-labelledby="queue-title">
         <div className="queue-toolbar">

@@ -1,0 +1,128 @@
+.ops-heading-actions,
+.batch-actions,
+.batch-heading,
+.batch-drop {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+}
+.ops-heading-actions {
+  align-items: flex-start;
+}
+.export-invoices {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-2xs);
+}
+.export-invoices small {
+  color: var(--color-muted);
+  font-size: var(--text-xs);
+}
+.export-invoices > p {
+  max-width: 28ch;
+}
+.batch-page {
+  max-width: 1010px;
+  margin-inline: auto;
+}
+.batch-back {
+  margin-bottom: var(--space-lg);
+  min-height: var(--control-height);
+}
+.batch-heading {
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+}
+.batch-heading p {
+  color: var(--color-accent);
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+.batch-drop {
+  justify-content: space-between;
+  padding: var(--space-md);
+  border: 1px dashed var(--color-strong-rule);
+  border-radius: var(--radius-nested);
+  background: var(--surface-canvas);
+  transition:
+    background-color var(--dur-short),
+    border-color var(--dur-short);
+}
+.batch-drop p,
+.batch-file small,
+.batch-actions p {
+  color: var(--color-ink-2);
+  font-size: var(--text-xs);
+}
+.batch-drop.dragging {
+  background: var(--surface-sage);
+  border-color: var(--color-focus);
+}
+.batch-list {
+  list-style: none;
+  margin: var(--space-md) 0;
+  padding: 0;
+}
+.batch-list li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-sm);
+  min-width: 0;
+  padding: var(--space-sm) 0;
+  border-bottom: 1px solid var(--color-rule);
+}
+.batch-list li > svg {
+  color: var(--color-accent);
+}
+.batch-list li > .icon-button {
+  inline-size: var(--control-height);
+  block-size: var(--control-height);
+}
+.batch-file {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.batch-file strong,
+.batch-file small {
+  display: block;
+}
+.batch-state {
+  display: grid;
+  justify-items: end;
+  gap: var(--space-2xs);
+}
+.batch-state .text-link {
+  min-height: var(--control-height);
+}
+.batch-actions {
+  margin-top: var(--space-md);
+}
+.batch-item-error {
+  color: var(--color-blocked);
+  margin-top: var(--space-2xs);
+  font-size: var(--text-xs);
+}
+.batch-errors {
+  padding-inline-start: var(--space-lg);
+  margin-block: var(--space-md);
+  overflow-wrap: anywhere;
+}
+@media (max-width: 480px) {
+  .batch-list li:has(.batch-state) {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+  .batch-state {
+    grid-column: 2;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .batch-drop {
+    transition: none;
+  }
+}

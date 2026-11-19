@@ -125,7 +125,8 @@ try {
     ['none', '0s'],
   )
   await page.click('.ops-heading a')
-  await page.waitForFunction(() => document.activeElement.closest('#upload'))
+  await page.waitForFunction(() => location.pathname === '/runs/upload')
+  await page.waitForSelector('.batch-drop button')
   await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'no-preference' }])
   await page.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true })
   await page.goto(base, { waitUntil: 'networkidle0' })

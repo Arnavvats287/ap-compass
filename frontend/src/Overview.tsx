@@ -17,8 +17,8 @@ export default function Overview() {
           </h1>
           <p>See what’s ready, what needs attention, and what happens next.</p>
         </div>
-        <Link className="button primary" to="#upload">
-          <Upload size={17} aria-hidden="true" /> Process an invoice
+        <Link className="button primary" to="/runs/upload">
+          <Upload size={17} aria-hidden="true" /> Process invoices
         </Link>
       </div>
       {dashboard.isPending ? (

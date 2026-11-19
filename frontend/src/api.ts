@@ -40,6 +40,24 @@ export const api = {
       body: form,
     })
   },
+  exportInvoices: async () => {
+    const response = await fetch('/api/exports/invoices.xlsx', { cache: 'no-store' })
+    if (!response.ok) throw new ApiError(response.status)
+    if (
+      response.headers.get('content-type') !==
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+      throw new Error('Unexpected export format')
+    const blob = await response.blob()
+    const signature = new Uint8Array(await blob.slice(0, 4).arrayBuffer())
+    if (signature.join(',') !== '80,75,3,4') throw new Error('Invalid workbook')
+    const filename =
+      response.headers
+        .get('content-disposition')
+        ?.match(/filename="(ap-compass-invoice-register-\d{4}-\d{2}-\d{2}\.xlsx)"/)?.[1] ??
+      'ap-compass-invoice-register.xlsx'
+    return { blob, filename }
+  },
   documentUrl: (id: string) => `/api/runs/${encodeURIComponent(id)}/document`,
   preview: (id: string, tolerance: PriceTolerance) =>
     request<PolicyPreview>(`/runs/${encodeURIComponent(id)}/policy-preview`, {

@@ -13,7 +13,8 @@ import {
   Upload,
   X,
 } from 'lucide-react'
-import { api, ApiError } from './api'
+import { api } from './api'
+import { uploadError, validatePdf } from './uploadValidation'
 import { active } from './queries'
 import { date, money, relative, reasonLabel, fileSize } from './format'
 import type { ExecutionState, Outcome, RunSummary } from './types'
@@ -110,20 +111,7 @@ export function UploadPanel({ compact = false }: { compact?: boolean }) {
       void client.invalidateQueries({ queryKey: ['dashboard'] })
       navigate(`/runs/${encodeURIComponent(created.run_id)}`)
     },
-    onError: (caught) =>
-      setError(
-        caught instanceof ApiError
-          ? ({
-              413: 'This file exceeds 8 MiB. Choose a smaller PDF.',
-              415: 'Choose a PDF with the application/pdf file type.',
-              400: 'The upload was rejected. Choose one readable PDF.',
-              403: 'New invoice uploads are disabled or unavailable from this page. Existing runs are still available.',
-              408: 'The upload timed out. Choose the PDF and try again.',
-              429: 'The demo is at invoice capacity. Wait for an active run to finish before uploading.',
-            }[caught.status] ??
-              'The invoice could not be uploaded. Try again; no run was confirmed.')
-          : 'The upload could not reach the server. Check the connection and try again.',
-      ),
+    onError: (caught) => setError(uploadError(caught)),
   })
   useEffect(() => {
     if (error) errorRef.current?.focus()
@@ -138,16 +126,9 @@ export function UploadPanel({ compact = false }: { compact?: boolean }) {
       return
     }
     const selected = files[0]
-    if (selected.type !== 'application/pdf') {
-      setError('Choose a PDF with the application/pdf file type.')
-      return
-    }
-    if (!selected.size) {
-      setError('This PDF is empty. Choose a readable invoice.')
-      return
-    }
-    if (selected.size > 8 * 1024 * 1024) {
-      setError('This file exceeds 8 MiB. Choose a smaller PDF.')
+    const problem = validatePdf(selected)
+    if (problem) {
+      setError(problem)
       return
     }
     setFile(selected)
@@ -259,8 +240,8 @@ export function RunTable({ runs }: { runs: RunSummary[] }) {
     <div className="table-scroll">
       <table>
         <caption className="sr-only">
-          Invoice operations. Amounts are invoice totals including tax. Recorded
-          automated outcomes and current reviewed assessments are labelled separately.
+          Invoice operations. Amounts are invoice totals including tax. Recorded automated outcomes
+          and current reviewed assessments are labelled separately.
         </caption>
         <thead>
           <tr>

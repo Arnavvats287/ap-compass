@@ -1,5 +1,5 @@
 :root {
-  --color-paper: #f7f6f1;
+  --color-paper: #f8f7ef;
   --color-surface: #ffffff;
   --color-paper-2: #eeefe9;
   --color-paper-3: #e5e9e2;
@@ -45,8 +45,12 @@
   --bento-gap: var(--space-md);
   --shadow-bento: 0 1px 3px #172f2a06, 0 8px 28px #172f2a08;
   --shadow-bento-hover: 0 12px 30px #172f2a17;
-  --surface-sage: #eaf2e9;
-  --surface-canvas: #f5f5ed;
+  --surface-sage: #edf3e4;
+  --surface-canvas: #f3f2e8;
+  --surface-spotlight: #e6eedb;
+  --surface-spotlight-inset: #f8faef;
+  --surface-spotlight-signal: #dbe7cd;
+  --color-spotlight-rule: #b8c7aa;
   --signal-ready: #518769;
   --signal-review: #d6a24e;
   --signal-blocked: #bf6a5c;

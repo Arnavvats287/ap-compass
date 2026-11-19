@@ -1,12 +1,16 @@
 # AP Compass — Project Memory (living handoff)
 
 **Last reviewed:** 2026-11-20 (IST)
-**Repository status:** Premium dashboard and invoice queue refinement verified in the F.1 worktree.
-**Current authorized segment:** `06B.2F.1 PREMIUM DASHBOARD` only.
+**Repository status:** Batch upload and workbook export verified in the separate F.2 worktree.
+**Current authorized segment:** `06B.2F.2 BATCH UPLOAD AND EXCEL EXPORT` only.
 **Deadline:** Saturday 2026-11-21 (IST); target Friday evening feature freeze.
 **Maintainers:** Builder owns product decisions; Codex implements one authorized phase; architectural review gates further work.
 
 > Repo-local continuity. Status is evidence, not completion by assertion. Latest user acceptance/routing adjustment is recorded in ADR-016 and the handoff below.
+
+## Phase 6B.2F.2 handoff
+
+Base `4e1946490e278072bef2ef0b27a344ec14972835`. Batched browser uploads use the original single-file POST and wait for each terminal run. The read-only XLSX export uses the latest 100 snapshots and persisted reviewed outcomes. Five actual development PDFs passed in Chrome on isolated loopback 8022 with a controlled provider. The download matched five invoice rows, 15 recorded findings, and five evidence rows. 67 frontend and 77 scoped backend tests passed. Port 8005, original checkouts, protected data, and inference and financial rules stayed untouched. Zero Gemini calls. See `docs/PHASE_06B2F2_BATCH_EXCEL_REPORT.md`. Stop before F.3.
 
 ## Phase 6B.2F.1 handoff
 

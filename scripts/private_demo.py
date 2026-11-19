@@ -22,10 +22,10 @@ class DemoProvider(ControlledProvider):
     model_id = "TEST_ONLY-controlled-demo"
 
 
-def demo_inputs():
+def demo_inputs(names=DEMO_CASES):
     cases = {case["case_id"]: case for case in read_json(ROOT / "data/golden_dataset_v1.json")["cases"]
-             if case["case_id"] in DEMO_CASES}
-    for name in DEMO_CASES:
+             if case["case_id"] in names}
+    for name in names:
         case = cases[name]
         asset = case["pdf"]
         path = safe_path(ROOT, asset["path"])
@@ -43,7 +43,7 @@ def require_loopback(origin):
 def create_demo():
     require_loopback(OperatingSettings.from_environment().origin)
     replies = {digest(raw): DemoProvider(case, claims_for(case, raw, {}))
-               for case, _, raw in demo_inputs()}
+               for case, _, raw in demo_inputs((*DEMO_CASES, "HAPPY_PARTIAL"))}
 
     async def controlled(raw):
         provider = replies.get(digest(raw))

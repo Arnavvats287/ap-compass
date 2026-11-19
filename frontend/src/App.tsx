@@ -4,13 +4,19 @@ import { Compass, Files, LayoutDashboard, ShieldCheck } from 'lucide-react'
 import Overview from './Overview'
 import Queue from './Queue'
 import Workspace from './Workspace'
+import BatchUpload, { BatchUploadProvider } from './BatchUpload'
 
 export default function App() {
   const location = useLocation()
   const heading = useRef<HTMLElement>(null)
   const previous = useRef(location.pathname)
   useEffect(() => {
-    document.title = `${location.pathname === '/' ? 'Operations overview' : location.pathname === '/runs' ? 'Invoice Operations' : 'Invoice decision'} | AP Compass`
+    const titles: Record<string, string> = {
+      '/': 'Operations overview',
+      '/runs': 'Invoice Operations',
+      '/runs/upload': 'Process invoices',
+    }
+    document.title = (titles[location.pathname] ?? 'Invoice decision') + ' | AP Compass'
     if (previous.current !== location.pathname) {
       heading.current?.focus()
       window.scrollTo(0, 0)
@@ -51,23 +57,26 @@ export default function App() {
         </div>
       </header>
       <main id="main" className="main-content" tabIndex={-1} ref={heading}>
-        <Routes>
-          <Route path="/" element={<Overview />} />
-          <Route path="/runs" element={<Queue />} />
-          <Route path="/runs/:runId" element={<Workspace />} />
-          <Route
-            path="*"
-            element={
-              <section className="empty-state">
-                <h1>Page not found</h1>
-                <p>Return to Invoice Operations to find your invoice.</p>
-                <Link className="button secondary" to="/runs">
-                  Open invoice queue
-                </Link>
-              </section>
-            }
-          />
-        </Routes>
+        <BatchUploadProvider>
+          <Routes>
+            <Route path="/" element={<Overview />} />
+            <Route path="/runs" element={<Queue />} />
+            <Route path="/runs/upload" element={<BatchUpload />} />
+            <Route path="/runs/:runId" element={<Workspace />} />
+            <Route
+              path="*"
+              element={
+                <section className="empty-state">
+                  <h1>Page not found</h1>
+                  <p>Return to Invoice Operations to find your invoice.</p>
+                  <Link className="button secondary" to="/runs">
+                    Open invoice queue
+                  </Link>
+                </section>
+              }
+            />
+          </Routes>
+        </BatchUploadProvider>
       </main>
       <footer className="app-footer">
         <span>

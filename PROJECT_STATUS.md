@@ -1,10 +1,10 @@
 # AP Compass — Project Status / Gate Register
 
 **Updated:** 2026-11-20 IST.
-**Current gate:** Phase 6B.2F.1 Premium dashboard. Review before F.2.
-**Base:** 05e9c9382c76e169132fa6c093c2b133e2ce3ce1.
-**Branch:** codex/phase-06b2f1-premium-dashboard. **Checkpoint:** phase-06b2f1-premium-dashboard.
-Final exact SHA and remote publication/clean-tree verification accompany the checkpoint handoff.
+**Current gate:** Phase 6B.2F.2 Batch upload and Excel export. Review before F.3.
+**Base:** 4e1946490e278072bef2ef0b27a344ec14972835.
+**Branch:** codex/phase-06b2f2-batch-excel. **Checkpoint:** phase-06b2f2-batch-excel.
+Final exact SHA and local checkpoint verification accompany the handoff.
 No prior-tag/default-branch alteration. Deadline remains Saturday 2026-11-21 IST.
 
 | Phase | State | Evidence |
@@ -27,6 +27,7 @@ No prior-tag/default-branch alteration. Deadline remains Saturday 2026-11-21 IST
 | 06B.2D.2 Private demo release hardening | Verified for controlled demonstration | 488 backend and 58 frontend tests passed. Real private Docker and Chrome acceptance, persistent PDF and audit restart checks, and four controlled demo scenarios. Zero Gemini requests. See [release report](docs/RELEASE_HARDENING_REPORT.md). |
 | 06B.2E.1 Source generalization and completeness | Verified for independent evaluation | 508 backend and 58 frontend tests passed. Bounded field and full-row quote forms, recognized omitted-line Review, private Docker and restart verified. Frozen evidence matched. No held-out PDF access or Gemini requests. See [source report](docs/PHASE_06B2E1_SOURCE_GENERALIZATION_REPORT.md). |
 | 06B.2F.1 Premium dashboard | Locally verified for review | Needs Attention spotlight, recorded outcomes, recent vendor ranking and queue sort. 63 frontend and 17 private-demo tests passed, with scoped Chrome QA. No backend or frozen evaluation changes. See [dashboard report](docs/PHASE_06B2F1_PREMIUM_DASHBOARD_REPORT.md). |
+| 06B.2F.2 Batch upload and Excel export | Locally verified for review | Five Chrome uploads completed serially using disposable private storage and controlled extraction. XLSX matched five records and 15 findings. 67 frontend and 77 relevant backend tests passed. Zero Gemini calls. See [batch and Excel report](docs/PHASE_06B2F2_BATCH_EXCEL_REPORT.md). |
 | 07 Release | LOCKED | Remote/public hosting and paid deployment await explicit authorization |
 
 ## Verified Phase 6A evidence

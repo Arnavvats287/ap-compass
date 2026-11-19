@@ -8,6 +8,7 @@ from .db.seed import seed
 from .api.runs import router as runs_router
 from .api.policy_preview import router as policy_preview_router
 from .api.reviews import router as reviews_router
+from .api.exports import router as exports_router
 from .api.spa import AppStaticFiles
 from .ai.gemini import extract_runtime_pdf
 from .orchestration.documents import DocumentStore
@@ -46,6 +47,7 @@ def create_app(db_path=None, *, document_dir=None, extractor=None):
     application.include_router(runs_router)
     application.include_router(policy_preview_router)
     application.include_router(reviews_router)
+    application.include_router(exports_router)
     static = ROOT / "frontend/dist"
     if static.is_dir():
         application.mount("/", AppStaticFiles(directory=static, html=True), name="frontend")
