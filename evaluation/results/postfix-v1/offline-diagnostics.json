@@ -1,0 +1,3093 @@
+{
+  "label": "POST-REMEDIATION REGRESSION COMPARISON — NOT A NEW UNSEEN BASELINE",
+  "layer": "B",
+  "observations": [
+    {
+      "case_id": "HAPPY_CLEAN",
+      "fields": [
+        {
+          "field": "vendor_name_raw",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "invoice_number",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "invoice_date",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "po_reference",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "currency",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "net",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "tax",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "total",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "lines[0].description",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "lines[0].item_code",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "lines[0].qty",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "lines[0].unit_price_net",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "lines[0].net",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "bank_instructions.account",
+          "page": null,
+          "route": null,
+          "state": null,
+          "comparison": "unlabelled",
+          "diagnostic": [
+            "outside_frozen_field_judgment"
+          ]
+        },
+        {
+          "field": "bank_instructions.ifsc",
+          "page": null,
+          "route": null,
+          "state": null,
+          "comparison": "unlabelled",
+          "diagnostic": [
+            "outside_frozen_field_judgment"
+          ]
+        }
+      ],
+      "findings": [
+        {
+          "code": "PO_MATCH_CONFIRMED",
+          "severity": "PASS",
+          "owner": null,
+          "next_action": null
+        },
+        {
+          "code": "BANK_DETAILS_NOT_PROVIDED",
+          "severity": "INFO",
+          "owner": null,
+          "next_action": null
+        }
+      ],
+      "trust_regressions": [],
+      "integrity_flags": [],
+      "split": "development"
+    },
+    {
+      "case_id": "HAPPY_PARTIAL",
+      "fields": [
+        {
+          "field": "vendor_name_raw",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "invoice_number",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "invoice_date",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "po_reference",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "currency",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "net",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "tax",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "total",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "lines[0].description",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "lines[0].item_code",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "lines[0].qty",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "lines[0].unit_price_net",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "lines[0].net",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "bank_instructions.account",
+          "page": null,
+          "route": null,
+          "state": null,
+          "comparison": "unlabelled",
+          "diagnostic": [
+            "outside_frozen_field_judgment"
+          ]
+        },
+        {
+          "field": "bank_instructions.ifsc",
+          "page": null,
+          "route": null,
+          "state": null,
+          "comparison": "unlabelled",
+          "diagnostic": [
+            "outside_frozen_field_judgment"
+          ]
+        }
+      ],
+      "findings": [
+        {
+          "code": "PO_MATCH_CONFIRMED",
+          "severity": "PASS",
+          "owner": null,
+          "next_action": null
+        },
+        {
+          "code": "BANK_DETAILS_NOT_PROVIDED",
+          "severity": "INFO",
+          "owner": null,
+          "next_action": null
+        }
+      ],
+      "trust_regressions": [],
+      "integrity_flags": [],
+      "split": "development"
+    },
+    {
+      "case_id": "AMBIGUOUS_PO",
+      "fields": [
+        {
+          "field": "vendor_name_raw",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "invoice_number",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "invoice_date",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "po_reference",
+          "page": null,
+          "route": null,
+          "state": "MISSING",
+          "comparison": "correct_absence",
+          "diagnostic": [
+            "printed_source_absent"
+          ]
+        },
+        {
+          "field": "currency",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "net",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "tax",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "total",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "lines[0].description",
+          "page": 1,
+          "route": "native_text",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "lines[0].item_code",
+          "page": null,
+          "route": null,
+          "state": "MISSING",
+          "comparison": "correct_absence",
+          "diagnostic": [
+            "printed_source_absent"
+          ]
+        },
+        {
+          "field": "lines[0].qty",
+          "page": null,
+          "route": null,
+          "state": "MISSING",
+          "comparison": "correct_absence",
+          "diagnostic": [
+            "printed_source_absent"
+          ]
+        },
+        {
+          "field": "lines[0].unit_price_net",
+          "page": null,
+          "route": null,
+          "state": "MISSING",
+          "comparison": "correct_absence",
+          "diagnostic": [
+            "printed_source_absent"
+          ]
+        },
+        {
+          "field": "lines[0].net",
+          "page": null,
+          "route": null,
+          "state": "MISSING",
+          "comparison": "correct_absence",
+          "diagnostic": [
+            "printed_source_absent"
+          ]
+        },
+        {
+          "field": "bank_instructions.account",
+          "page": null,
+          "route": null,
+          "state": null,
+          "comparison": "unlabelled",
+          "diagnostic": [
+            "outside_frozen_field_judgment"
+          ]
+        },
+        {
+          "field": "bank_instructions.ifsc",
+          "page": null,
+          "route": null,
+          "state": null,
+          "comparison": "unlabelled",
+          "diagnostic": [
+            "outside_frozen_field_judgment"
+          ]
+        }
+      ],
+      "findings": [
+        {
+          "code": "PO_REFERENCE_MISSING",
+          "severity": "REVIEW",
+          "owner": "AP",
+          "next_action": "Ask the vendor for the correct PO reference and verify it."
+        },
+        {
+          "code": "PO_AMBIGUOUS",
+          "severity": "REVIEW",
+          "owner": "AP",
+          "next_action": "Confirm the intended PO with Procurement and the vendor."
+        },
+        {
+          "code": "CRITICAL_FIELD_MISSING",
+          "severity": "REVIEW",
+          "owner": "AP",
+          "next_action": "Verify the source invoice and request clarification from the vendor."
+        },
+        {
+          "code": "LINE_MAPPING_UNRESOLVED",
+          "severity": "REVIEW",
+          "owner": "AP",
+          "next_action": "Obtain missing item codes or itemized source information and verify against the intended PO."
+        },
+        {
+          "code": "BANK_DETAILS_NOT_PROVIDED",
+          "severity": "INFO",
+          "owner": null,
+          "next_action": null
+        }
+      ],
+      "trust_regressions": [],
+      "integrity_flags": [],
+      "split": "development"
+    },
+    {
+      "case_id": "OVERBILLED_PARTIAL",
+      "fields": [
+        {
+          "field": "vendor_name_raw",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "invoice_number",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "invoice_date",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "po_reference",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "currency",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "net",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "tax",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "total",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "lines[0].description",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "lines[0].item_code",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "lines[0].qty",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "lines[0].unit_price_net",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "lines[0].net",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "bank_instructions.account",
+          "page": null,
+          "route": null,
+          "state": null,
+          "comparison": "unlabelled",
+          "diagnostic": [
+            "outside_frozen_field_judgment"
+          ]
+        },
+        {
+          "field": "bank_instructions.ifsc",
+          "page": null,
+          "route": null,
+          "state": null,
+          "comparison": "unlabelled",
+          "diagnostic": [
+            "outside_frozen_field_judgment"
+          ]
+        }
+      ],
+      "findings": [
+        {
+          "code": "PO_MATCH_CONFIRMED",
+          "severity": "PASS",
+          "owner": null,
+          "next_action": null
+        },
+        {
+          "code": "PO_BALANCE_EXCEEDED",
+          "severity": "BLOCK",
+          "owner": "Procurement",
+          "next_action": "Request a corrected invoice or have Procurement approve an authorized PO amendment; re-evaluate afterward.",
+          "financial_values": {
+            "authorized_net": "200000",
+            "prior_billed_net": "175000",
+            "remaining_net": "25000",
+            "requested_net": "30000",
+            "excess_net": "5000"
+          }
+        },
+        {
+          "code": "PO_QUANTITY_EXCEEDED",
+          "severity": "BLOCK",
+          "owner": "Procurement",
+          "next_action": "Request a corrected item quantity or an authorized PO amendment; re-evaluate afterward.",
+          "financial_values": {
+            "remaining_qty": "5",
+            "requested_qty": "6",
+            "excess_qty": "1"
+          }
+        },
+        {
+          "code": "PO_LINE_BALANCE_EXCEEDED",
+          "severity": "BLOCK",
+          "owner": "Procurement",
+          "next_action": "Correct the item amount or obtain an authorized PO line amendment; re-evaluate afterward.",
+          "financial_values": {
+            "remaining_net": "25000",
+            "requested_net": "30000",
+            "excess_net": "5000"
+          }
+        },
+        {
+          "code": "BANK_DETAILS_NOT_PROVIDED",
+          "severity": "INFO",
+          "owner": null,
+          "next_action": null
+        }
+      ],
+      "trust_regressions": [],
+      "integrity_flags": [],
+      "split": "development"
+    },
+    {
+      "case_id": "DUPLICATE_REISSUED",
+      "fields": [
+        {
+          "field": "vendor_name_raw",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "invoice_number",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "invoice_date",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "po_reference",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "currency",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "net",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "tax",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "total",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "lines[0].description",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "lines[0].item_code",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "lines[0].qty",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "lines[0].unit_price_net",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "lines[0].net",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "bank_instructions.account",
+          "page": null,
+          "route": null,
+          "state": null,
+          "comparison": "unlabelled",
+          "diagnostic": [
+            "outside_frozen_field_judgment"
+          ]
+        },
+        {
+          "field": "bank_instructions.ifsc",
+          "page": null,
+          "route": null,
+          "state": null,
+          "comparison": "unlabelled",
+          "diagnostic": [
+            "outside_frozen_field_judgment"
+          ]
+        }
+      ],
+      "findings": [
+        {
+          "code": "PO_MATCH_CONFIRMED",
+          "severity": "PASS",
+          "owner": null,
+          "next_action": null
+        },
+        {
+          "code": "EXACT_DUPLICATE",
+          "severity": "BLOCK",
+          "owner": "AP",
+          "next_action": "Hold processing and reconcile this reissued invoice with the original billed record."
+        },
+        {
+          "code": "BANK_DETAILS_NOT_PROVIDED",
+          "severity": "INFO",
+          "owner": null,
+          "next_action": null
+        }
+      ],
+      "trust_regressions": [],
+      "integrity_flags": [],
+      "split": "development"
+    },
+    {
+      "case_id": "SCAN_CONFLICT",
+      "fields": [
+        {
+          "field": "vendor_name_raw",
+          "page": 1,
+          "route": "image_only",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "unsupported_document_route"
+          ]
+        },
+        {
+          "field": "invoice_number",
+          "page": 1,
+          "route": "image_only",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "unsupported_document_route"
+          ]
+        },
+        {
+          "field": "invoice_date",
+          "page": 1,
+          "route": "image_only",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "unsupported_document_route"
+          ]
+        },
+        {
+          "field": "po_reference",
+          "page": 1,
+          "route": "image_only",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "unsupported_document_route"
+          ]
+        },
+        {
+          "field": "currency",
+          "page": 1,
+          "route": "image_only",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "unsupported_document_route"
+          ]
+        },
+        {
+          "field": "net",
+          "page": 1,
+          "route": "image_only",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "unsupported_document_route"
+          ]
+        },
+        {
+          "field": "tax",
+          "page": 1,
+          "route": "image_only",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "unsupported_document_route"
+          ]
+        },
+        {
+          "field": "total",
+          "page": 1,
+          "route": "image_only",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "unsupported_document_route"
+          ]
+        },
+        {
+          "field": "lines[0].description",
+          "page": 1,
+          "route": "image_only",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "unsupported_document_route"
+          ]
+        },
+        {
+          "field": "lines[0].item_code",
+          "page": 1,
+          "route": "image_only",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "unsupported_document_route"
+          ]
+        },
+        {
+          "field": "lines[0].qty",
+          "page": 1,
+          "route": "image_only",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "unsupported_document_route"
+          ]
+        },
+        {
+          "field": "lines[0].unit_price_net",
+          "page": 1,
+          "route": "image_only",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "unsupported_document_route"
+          ]
+        },
+        {
+          "field": "lines[0].net",
+          "page": null,
+          "route": null,
+          "state": "MISSING",
+          "comparison": "correct_absence",
+          "diagnostic": [
+            "printed_source_absent"
+          ]
+        },
+        {
+          "field": "bank_instructions.account",
+          "page": null,
+          "route": null,
+          "state": null,
+          "comparison": "unlabelled",
+          "diagnostic": [
+            "outside_frozen_field_judgment"
+          ]
+        },
+        {
+          "field": "bank_instructions.ifsc",
+          "page": null,
+          "route": null,
+          "state": null,
+          "comparison": "unlabelled",
+          "diagnostic": [
+            "outside_frozen_field_judgment"
+          ]
+        }
+      ],
+      "findings": [
+        {
+          "code": "PO_MATCH_CONFIRMED",
+          "severity": "PASS",
+          "owner": null,
+          "next_action": null
+        },
+        {
+          "code": "SOURCE_EVIDENCE_MISSING",
+          "severity": "REVIEW",
+          "owner": "AP",
+          "next_action": "Compare the scan with the purchase order and billed history. Verify uncertain amounts and request a clearer copy or a supplier-issued native PDF if needed."
+        },
+        {
+          "code": "TOTAL_RECONCILIATION_FAILED",
+          "severity": "REVIEW",
+          "owner": "Vendor",
+          "next_action": "Request an invoice with reconciled stated amounts; do not invent a corrected total.",
+          "financial_values": {
+            "difference": "3600"
+          }
+        },
+        {
+          "code": "BANK_DETAILS_NOT_PROVIDED",
+          "severity": "INFO",
+          "owner": null,
+          "next_action": null
+        }
+      ],
+      "trust_regressions": [],
+      "integrity_flags": [],
+      "split": "development"
+    },
+    {
+      "case_id": "PRICE_3PCT",
+      "fields": [
+        {
+          "field": "vendor_name_raw",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "invoice_number",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "invoice_date",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "po_reference",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "currency",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "net",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "tax",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "total",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "lines[0].description",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "lines[0].item_code",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "lines[0].qty",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "lines[0].unit_price_net",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "lines[0].net",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "bank_instructions.account",
+          "page": null,
+          "route": null,
+          "state": null,
+          "comparison": "unlabelled",
+          "diagnostic": [
+            "outside_frozen_field_judgment"
+          ]
+        },
+        {
+          "field": "bank_instructions.ifsc",
+          "page": null,
+          "route": null,
+          "state": null,
+          "comparison": "unlabelled",
+          "diagnostic": [
+            "outside_frozen_field_judgment"
+          ]
+        }
+      ],
+      "findings": [
+        {
+          "code": "PO_MATCH_CONFIRMED",
+          "severity": "PASS",
+          "owner": null,
+          "next_action": null
+        },
+        {
+          "code": "PRICE_VARIANCE",
+          "severity": "REVIEW",
+          "owner": "Procurement",
+          "next_action": "Confirm the agreed unit price or request a corrected invoice."
+        },
+        {
+          "code": "BANK_DETAILS_NOT_PROVIDED",
+          "severity": "INFO",
+          "owner": null,
+          "next_action": null
+        }
+      ],
+      "trust_regressions": [],
+      "integrity_flags": [],
+      "split": "development"
+    },
+    {
+      "case_id": "MISSING_PO_VALID",
+      "fields": [
+        {
+          "field": "vendor_name_raw",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "invoice_number",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "invoice_date",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "po_reference",
+          "page": null,
+          "route": null,
+          "state": "MISSING",
+          "comparison": "correct_absence",
+          "diagnostic": [
+            "printed_source_absent"
+          ]
+        },
+        {
+          "field": "currency",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "net",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "tax",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "total",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "lines[0].description",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "lines[0].item_code",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "lines[0].qty",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "lines[0].unit_price_net",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "lines[0].net",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "bank_instructions.account",
+          "page": null,
+          "route": null,
+          "state": null,
+          "comparison": "unlabelled",
+          "diagnostic": [
+            "outside_frozen_field_judgment"
+          ]
+        },
+        {
+          "field": "bank_instructions.ifsc",
+          "page": null,
+          "route": null,
+          "state": null,
+          "comparison": "unlabelled",
+          "diagnostic": [
+            "outside_frozen_field_judgment"
+          ]
+        }
+      ],
+      "findings": [
+        {
+          "code": "PO_REFERENCE_MISSING",
+          "severity": "REVIEW",
+          "owner": "AP",
+          "next_action": "Ask the vendor for the correct PO reference and verify it."
+        },
+        {
+          "code": "PO_MATCH_CONFIRMED",
+          "severity": "PASS",
+          "owner": null,
+          "next_action": null
+        },
+        {
+          "code": "BANK_DETAILS_NOT_PROVIDED",
+          "severity": "INFO",
+          "owner": null,
+          "next_action": null
+        }
+      ],
+      "trust_regressions": [],
+      "integrity_flags": [],
+      "split": "development"
+    },
+    {
+      "case_id": "SCOPE_UNAUTHORIZED_LINE",
+      "fields": [
+        {
+          "field": "vendor_name_raw",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "invoice_number",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "invoice_date",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "po_reference",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "currency",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "net",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "tax",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "total",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "lines[0].description",
+          "page": 1,
+          "route": "native_text",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "lines[0].item_code",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "lines[0].qty",
+          "page": 1,
+          "route": "native_text",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "lines[0].unit_price_net",
+          "page": 1,
+          "route": "native_text",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "lines[0].net",
+          "page": 1,
+          "route": "native_text",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "lines[1].description",
+          "page": 1,
+          "route": "native_text",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "lines[1].item_code",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "lines[1].qty",
+          "page": 1,
+          "route": "native_text",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "lines[1].unit_price_net",
+          "page": 1,
+          "route": "native_text",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "lines[1].net",
+          "page": 1,
+          "route": "native_text",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "bank_instructions.account",
+          "page": null,
+          "route": null,
+          "state": null,
+          "comparison": "unlabelled",
+          "diagnostic": [
+            "outside_frozen_field_judgment"
+          ]
+        },
+        {
+          "field": "bank_instructions.ifsc",
+          "page": null,
+          "route": null,
+          "state": null,
+          "comparison": "unlabelled",
+          "diagnostic": [
+            "outside_frozen_field_judgment"
+          ]
+        }
+      ],
+      "findings": [
+        {
+          "code": "PO_MATCH_CONFIRMED",
+          "severity": "PASS",
+          "owner": null,
+          "next_action": null
+        },
+        {
+          "code": "SOURCE_EVIDENCE_MISSING",
+          "severity": "REVIEW",
+          "owner": "AP",
+          "next_action": "Verify the source invoice and request clarification from the vendor."
+        },
+        {
+          "code": "LINE_MAPPING_UNRESOLVED",
+          "severity": "REVIEW",
+          "owner": "Procurement",
+          "next_action": "Verify authorization of the additional item or service. Obtain an authorized PO amendment or corrected supplier invoice as appropriate, then re-evaluate."
+        },
+        {
+          "code": "BANK_DETAILS_NOT_PROVIDED",
+          "severity": "INFO",
+          "owner": null,
+          "next_action": null
+        }
+      ],
+      "trust_regressions": [],
+      "integrity_flags": [],
+      "split": "development"
+    },
+    {
+      "case_id": "STATEMENT_PRIOR_BALANCE",
+      "fields": [
+        {
+          "field": "vendor_name_raw",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "invoice_number",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "invoice_date",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "po_reference",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "currency",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "net",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "tax",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "total",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "lines[0].description",
+          "page": 1,
+          "route": "native_text",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "lines[0].item_code",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "lines[0].qty",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "lines[0].unit_price_net",
+          "page": 1,
+          "route": "native_text",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "lines[0].net",
+          "page": 1,
+          "route": "native_text",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "bank_instructions.account",
+          "page": null,
+          "route": null,
+          "state": null,
+          "comparison": "unlabelled",
+          "diagnostic": [
+            "outside_frozen_field_judgment"
+          ]
+        },
+        {
+          "field": "bank_instructions.ifsc",
+          "page": null,
+          "route": null,
+          "state": null,
+          "comparison": "unlabelled",
+          "diagnostic": [
+            "outside_frozen_field_judgment"
+          ]
+        }
+      ],
+      "findings": [
+        {
+          "code": "PO_MATCH_CONFIRMED",
+          "severity": "PASS",
+          "owner": null,
+          "next_action": null
+        },
+        {
+          "code": "SOURCE_EVIDENCE_MISSING",
+          "severity": "REVIEW",
+          "owner": "AP",
+          "next_action": "Verify the source invoice and request clarification from the vendor."
+        },
+        {
+          "code": "BANK_DETAILS_NOT_PROVIDED",
+          "severity": "INFO",
+          "owner": null,
+          "next_action": null
+        }
+      ],
+      "trust_regressions": [],
+      "integrity_flags": [],
+      "split": "development"
+    },
+    {
+      "case_id": "H01",
+      "fields": [
+        {
+          "field": "vendor_name_raw",
+          "page": 1,
+          "route": "native_text",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "field_label_value_association_unsupported"
+          ]
+        },
+        {
+          "field": "invoice_number",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "invoice_date",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "po_reference",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "currency",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "net",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "tax",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "total",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "lines[0].description",
+          "page": 1,
+          "route": "native_text",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "lines[0].item_code",
+          "page": 1,
+          "route": "native_text",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "lines[0].qty",
+          "page": 1,
+          "route": "native_text",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "lines[0].unit_price_net",
+          "page": 1,
+          "route": "native_text",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "lines[0].net",
+          "page": 1,
+          "route": "native_text",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "bank_instructions.account",
+          "page": null,
+          "route": null,
+          "state": null,
+          "comparison": "correct_absence",
+          "diagnostic": [
+            "printed_source_absent"
+          ]
+        },
+        {
+          "field": "bank_instructions.ifsc",
+          "page": null,
+          "route": null,
+          "state": null,
+          "comparison": "correct_absence",
+          "diagnostic": [
+            "printed_source_absent"
+          ]
+        }
+      ],
+      "findings": [
+        {
+          "code": "PO_MATCH_CONFIRMED",
+          "severity": "PASS",
+          "owner": null,
+          "next_action": null
+        },
+        {
+          "code": "SOURCE_EVIDENCE_MISSING",
+          "severity": "REVIEW",
+          "owner": "AP",
+          "next_action": "Verify the source invoice and request clarification from the vendor."
+        },
+        {
+          "code": "BANK_DETAILS_NOT_PROVIDED",
+          "severity": "INFO",
+          "owner": null,
+          "next_action": null
+        }
+      ],
+      "trust_regressions": [],
+      "integrity_flags": [],
+      "split": "heldout"
+    },
+    {
+      "case_id": "H02",
+      "fields": [
+        {
+          "field": "vendor_name_raw",
+          "page": 1,
+          "route": "native_text",
+          "state": "MISSING",
+          "comparison": "exact",
+          "diagnostic": [
+            "quote_not_locatable_in_application_reading_order",
+            "field_label_value_association_unsupported"
+          ]
+        },
+        {
+          "field": "invoice_number",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "invoice_date",
+          "page": 1,
+          "route": "native_text",
+          "state": "MISSING",
+          "comparison": "exact",
+          "diagnostic": [
+            "quote_not_locatable_in_application_reading_order",
+            "field_label_value_association_unsupported"
+          ]
+        },
+        {
+          "field": "po_reference",
+          "page": 1,
+          "route": "native_text",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "field_label_value_association_unsupported"
+          ]
+        },
+        {
+          "field": "currency",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "net",
+          "page": 1,
+          "route": "native_text",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "field_label_value_association_unsupported"
+          ]
+        },
+        {
+          "field": "tax",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "total",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "lines[0].description",
+          "page": 1,
+          "route": "native_text",
+          "state": "MISSING",
+          "comparison": "exact",
+          "diagnostic": [
+            "quote_not_locatable_in_application_reading_order",
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "lines[0].item_code",
+          "page": 1,
+          "route": "native_text",
+          "state": "MISSING",
+          "comparison": "exact",
+          "diagnostic": [
+            "quote_not_locatable_in_application_reading_order",
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "lines[0].qty",
+          "page": 1,
+          "route": "native_text",
+          "state": "MISSING",
+          "comparison": "exact",
+          "diagnostic": [
+            "quote_not_locatable_in_application_reading_order",
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "lines[0].unit_price_net",
+          "page": 1,
+          "route": "native_text",
+          "state": "MISSING",
+          "comparison": "exact",
+          "diagnostic": [
+            "quote_not_locatable_in_application_reading_order",
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "lines[0].net",
+          "page": 1,
+          "route": "native_text",
+          "state": "MISSING",
+          "comparison": "exact",
+          "diagnostic": [
+            "quote_not_locatable_in_application_reading_order",
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "lines[1].description",
+          "page": 1,
+          "route": "native_text",
+          "state": "MISSING",
+          "comparison": "exact",
+          "diagnostic": [
+            "quote_not_locatable_in_application_reading_order",
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "lines[1].item_code",
+          "page": 1,
+          "route": "native_text",
+          "state": "MISSING",
+          "comparison": "exact",
+          "diagnostic": [
+            "quote_not_locatable_in_application_reading_order",
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "lines[1].qty",
+          "page": 1,
+          "route": "native_text",
+          "state": "MISSING",
+          "comparison": "exact",
+          "diagnostic": [
+            "quote_not_locatable_in_application_reading_order",
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "lines[1].unit_price_net",
+          "page": 1,
+          "route": "native_text",
+          "state": "MISSING",
+          "comparison": "exact",
+          "diagnostic": [
+            "quote_not_locatable_in_application_reading_order",
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "lines[1].net",
+          "page": 1,
+          "route": "native_text",
+          "state": "MISSING",
+          "comparison": "exact",
+          "diagnostic": [
+            "quote_not_locatable_in_application_reading_order",
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "bank_instructions.account",
+          "page": null,
+          "route": null,
+          "state": null,
+          "comparison": "correct_absence",
+          "diagnostic": [
+            "printed_source_absent"
+          ]
+        },
+        {
+          "field": "bank_instructions.ifsc",
+          "page": null,
+          "route": null,
+          "state": null,
+          "comparison": "correct_absence",
+          "diagnostic": [
+            "printed_source_absent"
+          ]
+        }
+      ],
+      "findings": [
+        {
+          "code": "PO_MATCH_CONFIRMED",
+          "severity": "PASS",
+          "owner": null,
+          "next_action": null
+        },
+        {
+          "code": "SOURCE_EVIDENCE_MISSING",
+          "severity": "REVIEW",
+          "owner": "AP",
+          "next_action": "Verify the source invoice and request clarification from the vendor."
+        },
+        {
+          "code": "BANK_DETAILS_NOT_PROVIDED",
+          "severity": "INFO",
+          "owner": null,
+          "next_action": null
+        }
+      ],
+      "trust_regressions": [],
+      "integrity_flags": [],
+      "split": "heldout"
+    },
+    {
+      "case_id": "H03",
+      "fields": [
+        {
+          "field": "vendor_name_raw",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "invoice_number",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "invoice_date",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "po_reference",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "currency",
+          "page": 1,
+          "route": "native_text",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "field_label_value_association_unsupported"
+          ]
+        },
+        {
+          "field": "net",
+          "page": 1,
+          "route": "native_text",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "field_label_value_association_unsupported"
+          ]
+        },
+        {
+          "field": "tax",
+          "page": 1,
+          "route": "native_text",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "field_label_value_association_unsupported"
+          ]
+        },
+        {
+          "field": "total",
+          "page": 1,
+          "route": "native_text",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "field_label_value_association_unsupported"
+          ]
+        },
+        {
+          "field": "lines[0].description",
+          "page": 1,
+          "route": "native_text",
+          "state": "MISSING",
+          "comparison": "exact",
+          "diagnostic": [
+            "quote_not_locatable_in_application_reading_order",
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "lines[0].item_code",
+          "page": 1,
+          "route": "native_text",
+          "state": "MISSING",
+          "comparison": "exact",
+          "diagnostic": [
+            "quote_not_locatable_in_application_reading_order",
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "lines[0].qty",
+          "page": 1,
+          "route": "native_text",
+          "state": "MISSING",
+          "comparison": "exact",
+          "diagnostic": [
+            "quote_not_locatable_in_application_reading_order",
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "lines[0].unit_price_net",
+          "page": 1,
+          "route": "native_text",
+          "state": "MISSING",
+          "comparison": "exact",
+          "diagnostic": [
+            "quote_not_locatable_in_application_reading_order",
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "lines[0].net",
+          "page": 1,
+          "route": "native_text",
+          "state": "MISSING",
+          "comparison": "exact",
+          "diagnostic": [
+            "quote_not_locatable_in_application_reading_order",
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "bank_instructions.account",
+          "page": null,
+          "route": null,
+          "state": null,
+          "comparison": "correct_absence",
+          "diagnostic": [
+            "printed_source_absent"
+          ]
+        },
+        {
+          "field": "bank_instructions.ifsc",
+          "page": null,
+          "route": null,
+          "state": null,
+          "comparison": "correct_absence",
+          "diagnostic": [
+            "printed_source_absent"
+          ]
+        }
+      ],
+      "findings": [
+        {
+          "code": "PO_MATCH_CONFIRMED",
+          "severity": "PASS",
+          "owner": null,
+          "next_action": null
+        },
+        {
+          "code": "SOURCE_EVIDENCE_MISSING",
+          "severity": "REVIEW",
+          "owner": "AP",
+          "next_action": "Verify the source invoice and request clarification from the vendor."
+        },
+        {
+          "code": "BANK_DETAILS_NOT_PROVIDED",
+          "severity": "INFO",
+          "owner": null,
+          "next_action": null
+        }
+      ],
+      "trust_regressions": [],
+      "integrity_flags": [],
+      "split": "heldout"
+    },
+    {
+      "case_id": "H04",
+      "fields": [
+        {
+          "field": "vendor_name_raw",
+          "page": 1,
+          "route": "native_text",
+          "state": "MISSING",
+          "comparison": "exact",
+          "diagnostic": [
+            "quote_not_locatable_in_application_reading_order",
+            "field_label_value_association_unsupported"
+          ]
+        },
+        {
+          "field": "invoice_number",
+          "page": 1,
+          "route": "native_text",
+          "state": "MISSING",
+          "comparison": "exact",
+          "diagnostic": [
+            "quote_not_locatable_in_application_reading_order",
+            "field_label_value_association_unsupported"
+          ]
+        },
+        {
+          "field": "invoice_date",
+          "page": 1,
+          "route": "native_text",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "field_label_value_association_unsupported"
+          ]
+        },
+        {
+          "field": "po_reference",
+          "page": 1,
+          "route": "native_text",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "field_label_value_association_unsupported"
+          ]
+        },
+        {
+          "field": "currency",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "net",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "tax",
+          "page": 1,
+          "route": "native_text",
+          "state": "NATIVE_VERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "application_verified"
+          ]
+        },
+        {
+          "field": "total",
+          "page": 1,
+          "route": "native_text",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "field_label_value_association_unsupported"
+          ]
+        },
+        {
+          "field": "lines[0].description",
+          "page": 1,
+          "route": "native_text",
+          "state": "MISSING",
+          "comparison": "exact",
+          "diagnostic": [
+            "quote_not_locatable_in_application_reading_order",
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "lines[0].item_code",
+          "page": 1,
+          "route": "native_text",
+          "state": "MISSING",
+          "comparison": "exact",
+          "diagnostic": [
+            "quote_not_locatable_in_application_reading_order",
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "lines[0].qty",
+          "page": 1,
+          "route": "native_text",
+          "state": "MISSING",
+          "comparison": "exact",
+          "diagnostic": [
+            "quote_not_locatable_in_application_reading_order",
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "lines[0].unit_price_net",
+          "page": 1,
+          "route": "native_text",
+          "state": "MISSING",
+          "comparison": "exact",
+          "diagnostic": [
+            "quote_not_locatable_in_application_reading_order",
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "lines[0].net",
+          "page": 1,
+          "route": "native_text",
+          "state": "MISSING",
+          "comparison": "exact",
+          "diagnostic": [
+            "quote_not_locatable_in_application_reading_order",
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "lines[1].description",
+          "page": 1,
+          "route": "native_text",
+          "state": "MISSING",
+          "comparison": "exact",
+          "diagnostic": [
+            "quote_not_locatable_in_application_reading_order",
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "lines[1].item_code",
+          "page": 1,
+          "route": "native_text",
+          "state": "MISSING",
+          "comparison": "exact",
+          "diagnostic": [
+            "quote_not_locatable_in_application_reading_order",
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "lines[1].qty",
+          "page": 1,
+          "route": "native_text",
+          "state": "MISSING",
+          "comparison": "exact",
+          "diagnostic": [
+            "quote_not_locatable_in_application_reading_order",
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "lines[1].unit_price_net",
+          "page": 1,
+          "route": "native_text",
+          "state": "MISSING",
+          "comparison": "exact",
+          "diagnostic": [
+            "quote_not_locatable_in_application_reading_order",
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "lines[1].net",
+          "page": 1,
+          "route": "native_text",
+          "state": "MISSING",
+          "comparison": "exact",
+          "diagnostic": [
+            "quote_not_locatable_in_application_reading_order",
+            "row_or_cell_association_unsupported"
+          ]
+        },
+        {
+          "field": "bank_instructions.account",
+          "page": null,
+          "route": null,
+          "state": null,
+          "comparison": "correct_absence",
+          "diagnostic": [
+            "printed_source_absent"
+          ]
+        },
+        {
+          "field": "bank_instructions.ifsc",
+          "page": null,
+          "route": null,
+          "state": null,
+          "comparison": "correct_absence",
+          "diagnostic": [
+            "printed_source_absent"
+          ]
+        }
+      ],
+      "findings": [
+        {
+          "code": "PO_MATCH_CONFIRMED",
+          "severity": "PASS",
+          "owner": null,
+          "next_action": null
+        },
+        {
+          "code": "SOURCE_EVIDENCE_MISSING",
+          "severity": "REVIEW",
+          "owner": "AP",
+          "next_action": "Verify the source invoice and request clarification from the vendor."
+        },
+        {
+          "code": "LINE_MAPPING_UNRESOLVED",
+          "severity": "REVIEW",
+          "owner": "AP",
+          "next_action": "Obtain missing item codes or itemized source information and verify against the intended PO."
+        },
+        {
+          "code": "BANK_DETAILS_NOT_PROVIDED",
+          "severity": "INFO",
+          "owner": null,
+          "next_action": null
+        }
+      ],
+      "trust_regressions": [],
+      "integrity_flags": [],
+      "split": "heldout"
+    },
+    {
+      "case_id": "H05",
+      "fields": [
+        {
+          "field": "vendor_name_raw",
+          "page": 1,
+          "route": "image_only",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "unsupported_document_route"
+          ]
+        },
+        {
+          "field": "invoice_number",
+          "page": 1,
+          "route": "image_only",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "unsupported_document_route"
+          ]
+        },
+        {
+          "field": "invoice_date",
+          "page": 1,
+          "route": "image_only",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "unsupported_document_route"
+          ]
+        },
+        {
+          "field": "po_reference",
+          "page": 1,
+          "route": "image_only",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "unsupported_document_route"
+          ]
+        },
+        {
+          "field": "currency",
+          "page": 1,
+          "route": "image_only",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "unsupported_document_route"
+          ]
+        },
+        {
+          "field": "net",
+          "page": 1,
+          "route": "image_only",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "unsupported_document_route"
+          ]
+        },
+        {
+          "field": "tax",
+          "page": 1,
+          "route": "image_only",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "unsupported_document_route"
+          ]
+        },
+        {
+          "field": "total",
+          "page": 1,
+          "route": "image_only",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "unsupported_document_route"
+          ]
+        },
+        {
+          "field": "lines[0].description",
+          "page": 1,
+          "route": "image_only",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "unsupported_document_route"
+          ]
+        },
+        {
+          "field": "lines[0].item_code",
+          "page": 1,
+          "route": "image_only",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "unsupported_document_route"
+          ]
+        },
+        {
+          "field": "lines[0].qty",
+          "page": 1,
+          "route": "image_only",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "unsupported_document_route"
+          ]
+        },
+        {
+          "field": "lines[0].unit_price_net",
+          "page": 1,
+          "route": "image_only",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "unsupported_document_route"
+          ]
+        },
+        {
+          "field": "lines[0].net",
+          "page": 1,
+          "route": "image_only",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "missing",
+          "diagnostic": [
+            "unsupported_document_route",
+            "unverified_optional_amount_withheld"
+          ]
+        },
+        {
+          "field": "bank_instructions.account",
+          "page": null,
+          "route": null,
+          "state": null,
+          "comparison": "correct_absence",
+          "diagnostic": [
+            "printed_source_absent"
+          ]
+        },
+        {
+          "field": "bank_instructions.ifsc",
+          "page": null,
+          "route": null,
+          "state": null,
+          "comparison": "correct_absence",
+          "diagnostic": [
+            "printed_source_absent"
+          ]
+        }
+      ],
+      "findings": [
+        {
+          "code": "PO_MATCH_CONFIRMED",
+          "severity": "PASS",
+          "owner": null,
+          "next_action": null
+        },
+        {
+          "code": "SOURCE_EVIDENCE_MISSING",
+          "severity": "REVIEW",
+          "owner": "AP",
+          "next_action": "Compare the scan with the purchase order and billed history. Verify uncertain amounts and request a clearer copy or a supplier-issued native PDF if needed."
+        },
+        {
+          "code": "BANK_DETAILS_NOT_PROVIDED",
+          "severity": "INFO",
+          "owner": null,
+          "next_action": null
+        }
+      ],
+      "trust_regressions": [],
+      "integrity_flags": [],
+      "split": "heldout"
+    },
+    {
+      "case_id": "H06",
+      "fields": [
+        {
+          "field": "vendor_name_raw",
+          "page": 1,
+          "route": "mixed",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "unsupported_document_route"
+          ]
+        },
+        {
+          "field": "invoice_number",
+          "page": 1,
+          "route": "mixed",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "unsupported_document_route"
+          ]
+        },
+        {
+          "field": "invoice_date",
+          "page": 1,
+          "route": "mixed",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "unsupported_document_route"
+          ]
+        },
+        {
+          "field": "po_reference",
+          "page": 1,
+          "route": "mixed",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "unsupported_document_route"
+          ]
+        },
+        {
+          "field": "currency",
+          "page": 1,
+          "route": "mixed",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "unsupported_document_route"
+          ]
+        },
+        {
+          "field": "net",
+          "page": 1,
+          "route": "mixed",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "unsupported_document_route"
+          ]
+        },
+        {
+          "field": "tax",
+          "page": 1,
+          "route": "mixed",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "unsupported_document_route"
+          ]
+        },
+        {
+          "field": "total",
+          "page": 1,
+          "route": "mixed",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "unsupported_document_route"
+          ]
+        },
+        {
+          "field": "lines[0].description",
+          "page": 1,
+          "route": "mixed",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "unsupported_document_route"
+          ]
+        },
+        {
+          "field": "lines[0].item_code",
+          "page": 1,
+          "route": "mixed",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "unsupported_document_route"
+          ]
+        },
+        {
+          "field": "lines[0].qty",
+          "page": 1,
+          "route": "mixed",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "unsupported_document_route"
+          ]
+        },
+        {
+          "field": "lines[0].unit_price_net",
+          "page": 1,
+          "route": "mixed",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "exact",
+          "diagnostic": [
+            "unsupported_document_route"
+          ]
+        },
+        {
+          "field": "lines[0].net",
+          "page": 1,
+          "route": "mixed",
+          "state": "SOURCE_LOCATED_UNVERIFIED",
+          "comparison": "missing",
+          "diagnostic": [
+            "unsupported_document_route",
+            "unverified_optional_amount_withheld"
+          ]
+        },
+        {
+          "field": "bank_instructions.account",
+          "page": null,
+          "route": null,
+          "state": null,
+          "comparison": "correct_absence",
+          "diagnostic": [
+            "printed_source_absent"
+          ]
+        },
+        {
+          "field": "bank_instructions.ifsc",
+          "page": null,
+          "route": null,
+          "state": null,
+          "comparison": "correct_absence",
+          "diagnostic": [
+            "printed_source_absent"
+          ]
+        }
+      ],
+      "findings": [
+        {
+          "code": "PO_MATCH_CONFIRMED",
+          "severity": "PASS",
+          "owner": null,
+          "next_action": null
+        },
+        {
+          "code": "DOCUMENT_CONTENT_UNVERIFIED",
+          "severity": "REVIEW",
+          "owner": "Accounts Payable",
+          "next_action": "Inspect the complete rendered invoice and independently confirm any relevant charges or payment instructions before proceeding."
+        },
+        {
+          "code": "SOURCE_EVIDENCE_MISSING",
+          "severity": "REVIEW",
+          "owner": "AP",
+          "next_action": "Verify the source invoice and request clarification from the vendor."
+        },
+        {
+          "code": "BANK_DETAILS_NOT_PROVIDED",
+          "severity": "INFO",
+          "owner": null,
+          "next_action": null
+        }
+      ],
+      "trust_regressions": [],
+      "integrity_flags": [
+        "RASTER_CONTENT_UNRESOLVED"
+      ],
+      "split": "heldout"
+    }
+  ]
+}
