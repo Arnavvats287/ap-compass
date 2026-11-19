@@ -259,7 +259,7 @@ export function RunTable({ runs }: { runs: RunSummary[] }) {
     <div className="table-scroll">
       <table>
         <caption className="sr-only">
-          Invoice operations, newest first. Amounts are invoice totals including tax. Recorded
+          Invoice operations. Amounts are invoice totals including tax. Recorded
           automated outcomes and current reviewed assessments are labelled separately.
         </caption>
         <thead>

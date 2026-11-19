@@ -40,6 +40,16 @@
   --text-editorial: 2.75rem;
   --text-attention: 4rem;
   --radius-signature: 12px;
+  --radius-bento: 24px;
+  --radius-nested: 16px;
+  --bento-gap: var(--space-md);
+  --shadow-bento: 0 1px 3px #172f2a06, 0 8px 28px #172f2a08;
+  --shadow-bento-hover: 0 12px 30px #172f2a17;
+  --surface-sage: #eaf2e9;
+  --surface-canvas: #f5f5ed;
+  --signal-ready: #518769;
+  --signal-review: #d6a24e;
+  --signal-blocked: #bf6a5c;
   --shadow-interactive: 0 6px 18px #193a2914;
   --font-body: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
   --font-display: var(--font-body);

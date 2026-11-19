@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { ArrowUpRight, ShieldCheck } from 'lucide-react'
+import { ArrowUpRight, Upload } from 'lucide-react'
 import { useDashboard, useRuns } from './queries'
 import { Empty, ErrorState, Loading, RunTable } from './components'
 import OperationsBento from './OperationsBento'
@@ -7,33 +7,46 @@ import OperationsBento from './OperationsBento'
 export default function Overview() {
   const dashboard = useDashboard()
   const runs = useRuns()
-  const metrics = dashboard.data
+  const retry = () => void runs.refetch()
   return (
-    <>
-      <div className="page-heading">
+    <div className="ops-page ops-overview">
+      <div className="page-heading ops-heading">
         <div>
-          <h1>Operations overview</h1>
-          <p>Turn messy vendor invoices into clear, controlled, actionable AP decisions.</p>
+          <h1>
+            Invoice operations <em>at a glance</em>
+          </h1>
+          <p>See what’s ready, what needs attention, and what happens next.</p>
         </div>
-        <a className="button secondary overview-upload-link" href="#upload">
-          Process an invoice
-        </a>
-        <span className="quiet-label">
-          <ShieldCheck size={16} aria-hidden="true" />
-          Two-way AP controls
-        </span>
+        <Link className="button primary" to="#upload">
+          <Upload size={17} aria-hidden="true" /> Process an invoice
+        </Link>
       </div>
+      {dashboard.isPending ? (
+        <div className="ops-loading" role="status">
+          <p>Loading operations overview…</p>
+          <div className="ops-metrics" aria-hidden="true">
+            {[0, 1, 2, 3].map((slot) => (
+              <div key={slot} className="ops-card ops-metric" />
+            ))}
+          </div>
+          <div className="ops-loading-grid" aria-hidden="true">
+            <div className="ops-card" />
+            <div className="ops-card" />
+          </div>
+        </div>
+      ) : dashboard.isError ? (
+        <ErrorState retry={() => void dashboard.refetch()} />
+      ) : null}
+      <OperationsBento
+        metrics={dashboard.data}
+        runs={runs.data ?? []}
+        listState={runs.status}
+        retry={retry}
+      />
       <p className="queue-basis">
         Counts reflect recorded automated decisions. Human-reviewed assessments are labelled
         separately in the queue.
       </p>
-      {dashboard.isPending ? (
-        <Loading label="Loading operations overview…" />
-      ) : dashboard.isError ? (
-        <ErrorState retry={() => void dashboard.refetch()} />
-      ) : (
-        metrics && <OperationsBento metrics={metrics} />
-      )}
       <section className="panel queue-panel">
         <div className="section-heading">
           <div>
@@ -55,6 +68,6 @@ export default function Overview() {
           <Empty />
         )}
       </section>
-    </>
+    </div>
   )
 }

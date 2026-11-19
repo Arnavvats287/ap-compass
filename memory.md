@@ -1,12 +1,16 @@
 # AP Compass — Project Memory (living handoff)
 
-**Last reviewed:** 2026-11-19 (IST)
-**Repository status:** Native source association and recognized table completeness verified on development-only fixtures.
-**Current authorized segment:** `06B.2E.1 NATIVE SOURCE GENERALIZATION & INVOICE COMPLETENESS` only.
+**Last reviewed:** 2026-11-20 (IST)
+**Repository status:** Premium dashboard and invoice queue refinement verified in the F.1 worktree.
+**Current authorized segment:** `06B.2F.1 PREMIUM DASHBOARD` only.
 **Deadline:** Saturday 2026-11-21 (IST); target Friday evening feature freeze.
 **Maintainers:** Builder owns product decisions; Codex implements one authorized phase; architectural review gates further work.
 
 > Repo-local continuity. Status is evidence, not completion by assertion. Latest user acceptance/routing adjustment is recorded in ADR-016 and the handoff below.
+
+## Phase 6B.2F.1 handoff
+
+Base `05e9c9382c76e169132fa6c093c2b133e2ce3ce1`. Overview uses the recorded projection for totals/decision distribution, one detail read for the prioritized exception, and the latest 100 runs for the vendor ranking. The queue keeps original and reviewed assessments distinct and adds URL-backed sorting and supplier filtering. Chrome verified four responsive widths using controlled persisted runs and separately flagged test-only intercepts. Frontend 63 tests and private-demo 17 tests passed. Zero Gemini requests. The separate worktree leaves the payable experiment, evaluation reports, and port 8005 untouched. See `docs/PHASE_06B2F1_PREMIUM_DASHBOARD_REPORT.md`. Stop before F.2.
 
 ## Phase 6B.2E.1 handoff
 

@@ -1,175 +1,331 @@
+import { useQuery } from '@tanstack/react-query'
+import { ArrowDownToLine, ArrowUpRight, Check, CircleAlert, Files, ShieldAlert } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { ArrowUpRight } from 'lucide-react'
-import { UploadPanel } from './components'
-import { money } from './format'
-import type { Dashboard } from './types'
+import { api } from './api'
+import { ErrorState, UploadPanel } from './components'
+import { money, reasonLabel } from './format'
+import type { Dashboard, RunSummary } from './types'
+import { attentionRuns, invoiceUrl, rankVendors } from './worklist'
 
-function Metric({
-  label,
-  count,
-  filter,
-  tone,
+const scope = 'Among the latest 100 invoices'
+
+function Spotlight({
+  metrics,
+  runs,
+  listState,
+  retry,
 }: {
-  label: string
-  count: number
-  filter: string
-  tone: string
+  metrics: Dashboard
+  runs: RunSummary[]
+  listState: 'pending' | 'error' | 'success'
+  retry: () => void
 }) {
+  const count = metrics.blocked + metrics.review_required
+  const [priority, ...other] = attentionRuns(runs)
+  const id = priority?.id ?? ''
+  const detail = useQuery({
+    queryKey: ['run', id],
+    queryFn: ({ signal }) => api.run(id, signal),
+    enabled: !!id,
+    retry: false,
+    refetchOnWindowFocus: false,
+  })
+  const decision = detail.data?.decision
+  const finding = decision?.findings.find((entry) => entry.code === priority?.primary_reason_code)
   return (
-    <Link className={`metric ${tone}`} to={`/runs${filter === 'all' ? '' : `?status=${filter}`}`}>
-      <span>{label}</span>
-      <strong>{count}</strong>
-      <ArrowUpRight size={17} aria-hidden="true" />
-    </Link>
+    <section
+      className="ops-spotlight ops-card"
+      aria-labelledby="attention-title"
+      data-empty={!priority && listState === 'success'}
+    >
+      <div className="ops-spotlight-intro">
+        <div>
+          <span className="ops-kicker">
+            <CircleAlert size={15} aria-hidden="true" /> Exceptions
+          </span>
+          <h2 id="attention-title">Needs attention</h2>
+          <p>Recorded Review and Blocked invoices</p>
+        </div>
+        <span className="ops-signal" aria-label={count + ' invoices need attention'}>
+          {count}
+        </span>
+      </div>
+      {priority ? (
+        <div className="ops-priority">
+          <div className="ops-priority-meta">
+            <span
+              className={
+                'ops-flag ' + (priority.outcome === 'BLOCKED' ? 'is-blocked' : 'is-review')
+              }
+            >
+              {priority.outcome === 'BLOCKED' ? (
+                <ShieldAlert size={14} aria-hidden="true" />
+              ) : (
+                <CircleAlert size={14} aria-hidden="true" />
+              )}
+              {priority.outcome === 'BLOCKED' ? 'Blocked' : 'Needs review'}
+            </span>
+            <span className="amount">
+              {money(priority.total, priority.currency)}
+              {priority.total != null && priority.currency && (
+                <small>{priority.currency} gross</small>
+              )}
+            </span>
+          </div>
+          <h3>{finding?.title ?? reasonLabel(priority.primary_reason_code)}</h3>
+          <p>
+            {priority.vendor_name ?? 'Supplier unavailable'}
+            {priority.invoice_number && ' · ' + priority.invoice_number}
+          </p>
+          <dl>
+            <div>
+              <dt>Owner</dt>
+              <dd>{priority.owner ?? 'Unassigned'}</dd>
+            </div>
+            <div>
+              <dt>Next action</dt>
+              <dd aria-live="polite">
+                {decision?.next_action ??
+                  (detail.isPending
+                    ? 'Loading recorded action…'
+                    : 'Open the invoice for its assessment.')}
+              </dd>
+            </div>
+          </dl>
+          {priority.reviewed_outcome && <p>A human reassessment is available in the workspace.</p>}
+          <Link className="ops-spotlight-action" to={invoiceUrl(priority.id)}>
+            Review invoice <ArrowUpRight size={17} aria-hidden="true" />
+          </Link>
+        </div>
+      ) : (
+        <div className="ops-priority ops-priority-empty">
+          {listState === 'pending' && <p role="status">Loading recent exceptions…</p>}
+          {listState === 'error' && (
+            <>
+              <p role="status">Recent exceptions are unavailable.</p>
+              <button className="ops-spotlight-action" onClick={retry}>
+                Try again
+              </button>
+            </>
+          )}
+          {listState === 'success' && (
+            <>
+              {count ? (
+                <CircleAlert size={24} aria-hidden="true" />
+              ) : (
+                <Check size={24} aria-hidden="true" />
+              )}
+              <h3>{count ? 'No exceptions in the recent list' : 'No recorded exceptions'}</h3>
+              <p>
+                {count
+                  ? 'There are recorded exceptions outside the latest 100 invoices.'
+                  : 'Invoices needing review or blocked by a control will appear here.'}
+              </p>
+            </>
+          )}
+        </div>
+      )}
+      <div className="ops-spotlight-footer">
+        {other.length > 0 && (
+          <ul aria-label="Other recent exceptions">
+            {other.slice(0, 2).map((run) => (
+              <li key={run.id}>
+                <Link to={invoiceUrl(run.id)}>
+                  <span>
+                    <strong>{run.vendor_name ?? run.invoice_number ?? 'Invoice'}</strong>
+                    <small>
+                      {run.outcome === 'BLOCKED' ? 'Blocked' : 'Needs review'} ·{' '}
+                      {reasonLabel(run.primary_reason_code)}
+                    </small>
+                  </span>
+                  <ArrowUpRight size={16} aria-hidden="true" />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+        <span>{scope} · Blocked first, then newest updated</span>
+      </div>
+    </section>
   )
 }
 
-/** Real projections only. Layout priority never changes metric definitions or outcomes. */
-export default function OperationsBento({ metrics }: { metrics: Dashboard }) {
+function Distribution({ metrics }: { metrics: Dashboard }) {
   const outcomes = [
-    ['ready', metrics.ready],
-    ['review', metrics.review_required],
-    ['blocked', metrics.blocked],
+    ['ready', 'Ready', metrics.ready],
+    ['review', 'Needs review', metrics.review_required],
+    ['blocked', 'Blocked', metrics.blocked],
   ] as const
-  let offset = 0
   return (
-    <section className="metric-strip overview-bento" aria-label="Invoice operations counts">
-      <div className="attention-hub">
-        <div className="attention-heading">
-          <h2>Invoice attention</h2>
-          <span>Review & resolution</span>
+    <section
+      className="ops-card ops-distribution"
+      aria-labelledby="distribution-title"
+      data-empty={metrics.completed === 0}
+    >
+      <h2 id="distribution-title">Decision distribution</h2>
+      <p>Recorded automated outcomes</p>
+      <strong className="ops-figure">{metrics.completed}</strong>
+      <span className="ops-figure-label">Completed decisions</span>
+      {metrics.completed > 0 ? (
+        <div className="ops-outcome-bar" aria-hidden="true">
+          {outcomes
+            .filter(([, , count]) => count > 0)
+            .map(([key, , count]) => (
+              <span key={key} className={key} style={{ flexGrow: count }} />
+            ))}
         </div>
-        <div className="attention-workload">
-          <Metric
-            label="Needs review"
-            count={metrics.review_required}
-            filter="review"
-            tone="review"
-          />
-          <Metric label="Blocked" count={metrics.blocked} filter="blocked" tone="blocked" />
-        </div>
-        <div
-          className="outcome-orbit"
-          role="img"
-          aria-label={`Decision distribution: ${metrics.ready} ready, ${metrics.review_required} need review, ${metrics.blocked} blocked; ${metrics.completed} completed decisions`}
-        >
-          <svg viewBox="0 0 200 200" aria-hidden="true">
-            <circle className="orbit-track" cx="100" cy="100" r="82" />
-            {outcomes.map(([tone, count]) => {
-              const length = metrics.completed ? (count / metrics.completed) * 100 : 0
-              const start = offset
-              offset += length
-              return (
-                <circle
-                  key={tone}
-                  className={`orbit-${tone}`}
-                  cx="100"
-                  cy="100"
-                  r="82"
-                  pathLength="100"
-                  strokeDasharray={`${length} ${100 - length}`}
-                  strokeDashoffset={-start}
-                />
-              )
-            })}
-          </svg>
-          <div>
-            <strong>{metrics.completed}</strong>
+      ) : (
+        <p className="ops-chart-empty">No completed decisions yet.</p>
+      )}
+      <ul className="ops-outcome-list">
+        {outcomes.map(([key, label, count]) => (
+          <li key={key}>
             <span>
-              Completed
-              <br />
-              decisions
+              <i className={key} aria-hidden="true" />
+              {label}
             </span>
-          </div>
-        </div>
-        {metrics.flagged_invoice_net_by_currency && (
-          <section className="attention-value" aria-label="Flagged invoice net value">
-            <div>
-              <h2>Invoice value requiring attention</h2>
-              <p>
-                Known invoice net for completed review or blocked runs. Each analysis is counted;
-                this is not unique payable exposure.
-              </p>
-            </div>
-            <div className="flagged-amounts">
-              {Object.entries(metrics.flagged_invoice_net_by_currency).length ? (
-                Object.entries(metrics.flagged_invoice_net_by_currency).map(([currency, value]) => (
-                  <strong className="amount" key={currency}>
-                    {money(value, currency)}
-                    <small>{currency} net</small>
-                  </strong>
-                ))
-              ) : (
-                <span>No flagged invoice value</span>
-              )}
-            </div>
-            <small>
-              Grouped by currency.{' '}
-              {metrics.flagged_invoice_net_missing_count
-                ? `${metrics.flagged_invoice_net_missing_count} run(s) with unknown net or currency excluded.`
-                : 'Unknown amounts are excluded.'}
-            </small>
-          </section>
+            <strong>{count}</strong>
+          </li>
+        ))}
+      </ul>
+      <div className="ops-execution">
+        <h3>Processing activity</h3>
+        {(
+          [
+            ['processing', 'In progress', metrics.in_progress],
+            ['failed', 'Processing failed', metrics.processing_failed],
+            ['interrupted', 'Interrupted', metrics.interrupted],
+          ] as const
+        ).map(([key, label, count]) => (
+          <Link key={key} to={'/runs?status=' + key}>
+            {label} <strong>{count}</strong>
+          </Link>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+function Vendors({
+  runs,
+  listState,
+  retry,
+}: {
+  runs: RunSummary[]
+  listState: 'pending' | 'error' | 'success'
+  retry: () => void
+}) {
+  const vendors = rankVendors(runs)
+  return (
+    <section className="ops-card ops-vendors" aria-labelledby="vendors-title">
+      <h2 id="vendors-title">Top 10 vendors needing attention</h2>
+      <p>{scope} · Recorded Review and Blocked</p>
+      {listState === 'pending' ? (
+        <p role="status">Loading vendor activity…</p>
+      ) : listState === 'error' ? (
+        <ErrorState retry={retry} />
+      ) : vendors.length === 0 ? (
+        <p className="ops-chart-empty">No named vendors have recent recorded exceptions.</p>
+      ) : (
+        <ol>
+          {vendors.map(({ name, count }) => (
+            <li key={name}>
+              <Link to={'/runs?' + new URLSearchParams({ status: 'attention', vendor: name })}>
+                <span>{name}</span>
+                <strong aria-label={count + ' invoices'}>{count}</strong>
+                <span className="ops-vendor-bar" aria-hidden="true">
+                  <i style={{ width: (count / vendors[0].count) * 100 + '%' }} />
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ol>
+      )}
+    </section>
+  )
+}
+
+export default function OperationsBento({
+  metrics,
+  runs,
+  listState,
+  retry,
+}: {
+  metrics?: Dashboard
+  runs: RunSummary[]
+  listState: 'pending' | 'error' | 'success'
+  retry: () => void
+}) {
+  const counts =
+    metrics &&
+    ([
+      ['all', 'Total invoices', metrics.total_runs, Files],
+      ['ready', 'Ready to process', metrics.ready, Check],
+      ['review', 'Needs review', metrics.review_required, CircleAlert],
+      ['blocked', 'Blocked', metrics.blocked, ShieldAlert],
+    ] as const)
+  const values = Object.entries(metrics?.flagged_invoice_net_by_currency ?? {})
+  return (
+    <>
+      {counts && (
+        <section className="ops-metrics" aria-label="Invoice operations counts">
+          {counts.map(([key, label, count, Icon]) => (
+            <Link
+              key={key}
+              className={'ops-card ops-metric ' + key}
+              to={key === 'all' ? '/runs' : '/runs?status=' + key}
+            >
+              <span className="ops-metric-icon">
+                <Icon size={18} aria-hidden="true" />
+              </span>
+              <ArrowUpRight className="ops-metric-arrow" size={17} aria-hidden="true" />
+              <strong>{count}</strong>
+              <span>{label}</span>
+            </Link>
+          ))}
+        </section>
+      )}
+      <div className={metrics ? 'ops-grid' : 'ops-grid ops-grid-fallback'}>
+        {metrics && (
+          <>
+            <Spotlight metrics={metrics} runs={runs} listState={listState} retry={retry} />
+            <Distribution metrics={metrics} />
+            <Vendors runs={runs} listState={listState} retry={retry} />
+          </>
         )}
-      </div>
-      <UploadPanel />
-      <div className="supporting-metrics">
-        <Metric label="Ready to process" count={metrics.ready} filter="ready" tone="ready" />
-        <Metric label="Total invoices" count={metrics.total_runs} filter="all" tone="total" />
-        <Metric
-          label="In progress"
-          count={metrics.in_progress}
-          filter="processing"
-          tone="processing"
-        />
-      </div>
-      <section className="distribution" aria-labelledby="distribution-title">
-        <div className="distribution-main">
-          <div className="section-heading">
-            <h2 id="distribution-title">Decision distribution</h2>
-            <span className="muted">{metrics.completed} completed</span>
-          </div>
-          {metrics.completed > 0 ? (
-            <>
-              <div className="distribution-bar" aria-hidden="true">
-                {(
-                  [
-                    ['ready', metrics.ready],
-                    ['review', metrics.review_required],
-                    ['blocked', metrics.blocked],
-                  ] as const
-                ).map(([tone, count]) => (
-                  <span key={tone} className={tone} style={{ flexGrow: count }} />
-                ))}
-              </div>
-              <ul className="distribution-legend">
-                <li>
-                  <span className="legend-line ready" />
-                  Ready <strong>{metrics.ready}</strong>
-                </li>
-                <li>
-                  <span className="legend-line review" />
-                  Needs review <strong>{metrics.review_required}</strong>
-                </li>
-                <li>
-                  <span className="legend-line blocked" />
-                  Blocked <strong>{metrics.blocked}</strong>
-                </li>
-              </ul>
-            </>
-          ) : (
-            <p>No completed decisions yet. Outcomes will appear after your first analysis.</p>
+        <div className="ops-support">
+          <UploadPanel compact={!metrics} />
+          {metrics?.flagged_invoice_net_by_currency && (
+            <section className="ops-card ops-flagged" aria-label="Flagged invoice net value">
+              <h2>
+                <ArrowDownToLine size={18} aria-hidden="true" /> Flagged invoice net
+              </h2>
+              <p>
+                Known net from recorded Review and Blocked runs, grouped by currency. Each analysis
+                is counted separately.
+              </p>
+              {values.length ? (
+                <dl>
+                  {values.map(([currency, value]) => (
+                    <div key={currency}>
+                      <dt>{currency} net</dt>
+                      <dd className="amount">{money(value, currency)}</dd>
+                    </div>
+                  ))}
+                </dl>
+              ) : (
+                <p>No flagged invoice value</p>
+              )}
+              {!!metrics.flagged_invoice_net_missing_count && (
+                <small>
+                  {metrics.flagged_invoice_net_missing_count} run(s) excluded because net or
+                  currency is unknown.
+                </small>
+              )}
+            </section>
           )}
         </div>
-        <div className="technical-counts">
-          <Link to="/runs?status=failed">
-            Processing failed <strong>{metrics.processing_failed}</strong>
-          </Link>
-          <Link to="/runs?status=interrupted">
-            Interrupted <strong>{metrics.interrupted}</strong>
-          </Link>
-        </div>
-      </section>
-    </section>
+      </div>
+    </>
   )
 }

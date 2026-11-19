@@ -13,6 +13,7 @@ import { detailInterval, useRun } from './queries'
 import { date, decimal, elapsed, money } from './format'
 import { dashboard, finding, run, summary } from './test/fixtures'
 import type { Run } from './types'
+import { rankVendors } from './worklist'
 
 function renderPage(element: React.ReactNode, path = '/') {
   const client = new QueryClient({
@@ -62,6 +63,65 @@ describe('connected operations views', () => {
     expect(screen.getByText('Loading operations overview…')).toBeInTheDocument()
     expect(await screen.findByText('Your invoice queue starts here')).toBeInTheDocument()
     expect(screen.getByText(/No completed decisions yet/)).toBeInTheDocument()
+    expect(screen.getByText('No recorded exceptions')).toBeInTheDocument()
+    expect(api.runs).toHaveBeenCalledTimes(1)
+  })
+  it('loads only the prioritized blocked record for its actual next action', async () => {
+    defaults()
+    vi.spyOn(api, 'runs').mockResolvedValue([
+      { ...summary, id: 'failure', outcome: null, execution_state: 'PROCESSING_FAILED' },
+      {
+        ...summary,
+        id: 'newer-review',
+        outcome: 'REVIEW_REQUIRED',
+        updated_at: '2026-11-20T10:00:00Z',
+      },
+      summary,
+      { ...summary, id: 'older-block', updated_at: '2026-11-17T10:00:00Z' },
+    ])
+    renderPage(<Overview />)
+    const spotlight = await screen.findByRole('region', { name: 'Needs attention' })
+    expect(await within(spotlight).findByText(finding.next_action!)).toBeInTheDocument()
+    expect(within(spotlight).getByRole('link', { name: 'Review invoice' })).toHaveAttribute(
+      'href',
+      '/runs/test-run',
+    )
+    expect(api.run).toHaveBeenCalledExactlyOnceWith(summary.id, expect.anything())
+    expect(within(spotlight).queryByText('Processing failed')).not.toBeInTheDocument()
+  })
+  it('ranks only named recorded exceptions with deterministic ties and a ten-vendor cap', () => {
+    const entries = Array.from({ length: 12 }, (_, index) => ({
+      ...summary,
+      id: String(index),
+      vendor_name: 'Vendor ' + index,
+      outcome: 'REVIEW_REQUIRED' as const,
+    }))
+    const ranked = rankVendors([
+      ...entries,
+      { ...entries[11], id: 'repeat', currency: 'USD', reviewed_outcome: 'READY_FOR_AP' },
+      { ...summary, id: 'ready', outcome: 'READY_FOR_AP' },
+      { ...summary, id: 'failed', outcome: null, execution_state: 'PROCESSING_FAILED' },
+      { ...summary, id: 'unnamed', vendor_name: null },
+    ])
+    expect(ranked).toHaveLength(10)
+    expect(ranked.slice(0, 3)).toEqual([
+      { name: 'Vendor 11', count: 2 },
+      { name: 'Vendor 0', count: 1 },
+      { name: 'Vendor 1', count: 1 },
+    ])
+  })
+  it('preserves separate flagged-net currency amounts', async () => {
+    defaults()
+    vi.spyOn(api, 'dashboard').mockResolvedValue({
+      ...dashboard,
+      flagged_invoice_net_by_currency: { INR: '1000.10', USD: '21.45' },
+    })
+    renderPage(<Overview />)
+    const flagged = await screen.findByRole('region', { name: 'Flagged invoice net value' })
+    expect(within(flagged).getByText('INR net')).toBeInTheDocument()
+    expect(within(flagged).getByText(/1,000\.1/)).toBeInTheDocument()
+    expect(within(flagged).getByText('USD net')).toBeInTheDocument()
+    expect(within(flagged).getByText(/21\.45/)).toBeInTheDocument()
   })
   it('renders API error and a real retry action', async () => {
     vi.spyOn(api, 'dashboard').mockRejectedValue(new ApiError(503))
@@ -69,6 +129,23 @@ describe('connected operations views', () => {
     renderPage(<Overview />)
     expect(await screen.findByRole('alert')).toHaveTextContent('Invoice data is unavailable')
     expect(screen.getByRole('button', { name: 'Try again' })).toBeEnabled()
+  })
+  it('keeps a selected PDF when the dashboard finishes loading', async () => {
+    defaults()
+    let resolveDashboard!: (metrics: typeof dashboard) => void
+    vi.spyOn(api, 'dashboard').mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolveDashboard = resolve
+        }),
+    )
+    renderPage(<Overview />)
+    const file = new File(['%PDF-test'], 'invoice.pdf', { type: 'application/pdf' })
+    await userEvent.upload(screen.getByLabelText('Invoice PDF'), file)
+    expect(screen.getByText(file.name)).toBeInTheDocument()
+    resolveDashboard(dashboard)
+    await screen.findByRole('region', { name: 'Invoice operations counts' })
+    expect(screen.getByText(file.name)).toBeInTheDocument()
   })
   it('renders READY, REVIEW and BLOCK statuses without computing a decision', async () => {
     vi.spyOn(api, 'runs').mockResolvedValue([
@@ -94,6 +171,22 @@ describe('connected operations views', () => {
     expect(screen.getByRole('button', { name: 'Ready' })).toHaveAttribute('aria-pressed', 'true')
     await userEvent.click(screen.getByRole('button', { name: 'Clear filters' }))
     expect(await screen.findByRole('link', { name: 'OVERBILLED_PARTIAL-2026' })).toBeInTheDocument()
+  })
+  it('applies exact supplier filters and accessible sort choices to the loaded queue', async () => {
+    vi.spyOn(api, 'runs').mockResolvedValue([
+      summary,
+      { ...summary, id: 'older', invoice_number: 'OLDER', updated_at: '2026-11-01T10:00:00Z' },
+      { ...summary, id: 'other-vendor', vendor_name: summary.vendor_name + ' East' },
+    ])
+    renderPage(<Queue />, '/runs?status=attention&vendor=Aster+Systems')
+    const table = await screen.findByRole('table')
+    const firstRow = () => within(table).getAllByRole('row')[1]
+    expect(firstRow()).toHaveTextContent(summary.invoice_number!)
+    await userEvent.selectOptions(screen.getByLabelText('Sort by'), 'oldest')
+    expect(firstRow()).toHaveTextContent('OLDER')
+    expect(within(table).getAllByRole('row')).toHaveLength(3)
+    await userEvent.click(screen.getByRole('button', { name: 'Clear supplier' }))
+    expect(within(table).getAllByRole('row')).toHaveLength(4)
   })
   it('uploads one PDF and navigates immediately to the returned workspace', async () => {
     vi.spyOn(api, 'upload').mockResolvedValue({ run_id: 'new-run', execution_state: 'QUEUED' })

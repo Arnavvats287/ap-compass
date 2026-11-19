@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { Search } from 'lucide-react'
 import { useRuns, active } from './queries'
 import { Empty, ErrorState, Loading, RunTable, UploadPanel } from './components'
-import type { RunSummary } from './types'
+import type { ExecutionState, Outcome, RunSummary } from './types'
+import { isAttention, sortChoices, sortRuns } from './worklist'
 
 export const filters = [
   ['all', 'All'],
+  ['attention', 'Needs attention'],
   ['ready', 'Ready'],
   ['review', 'Needs review'],
   ['blocked', 'Blocked'],
@@ -14,23 +16,26 @@ export const filters = [
   ['failed', 'Failed'],
   ['interrupted', 'Interrupted'],
 ] as const
+const outcomeFilters: Record<string, Outcome> = {
+  ready: 'READY_FOR_AP',
+  review: 'REVIEW_REQUIRED',
+  blocked: 'BLOCKED',
+}
+const executionFilters: Record<string, ExecutionState> = {
+  failed: 'PROCESSING_FAILED',
+  interrupted: 'INTERRUPTED',
+}
+function matchesFilter(run: RunSummary, filter: string) {
+  if (filter === 'attention') return isAttention(run)
+  if (filter === 'processing') return active(run.execution_state)
+  if (Object.hasOwn(outcomeFilters, filter)) return run.outcome === outcomeFilters[filter]
+  if (Object.hasOwn(executionFilters, filter))
+    return run.execution_state === executionFilters[filter]
+  return true
+}
 export function matches(run: RunSummary, filter: string, search: string) {
-  const stateMatch =
-    filter === 'ready'
-      ? run.outcome === 'READY_FOR_AP'
-      : filter === 'review'
-        ? run.outcome === 'REVIEW_REQUIRED'
-        : filter === 'blocked'
-          ? run.outcome === 'BLOCKED'
-          : filter === 'processing'
-            ? active(run.execution_state)
-            : filter === 'failed'
-              ? run.execution_state === 'PROCESSING_FAILED'
-              : filter === 'interrupted'
-                ? run.execution_state === 'INTERRUPTED'
-                : true
   return (
-    stateMatch &&
+    matchesFilter(run, filter) &&
     `${run.invoice_number ?? ''} ${run.vendor_name ?? ''}`
       .toLocaleLowerCase()
       .includes(search.trim().toLocaleLowerCase())
@@ -55,17 +60,25 @@ export default function Queue() {
       },
       { replace: true },
     )
-  const rows = query.data?.filter((run) => matches(run, status, search)) ?? []
+  const vendor = params.get('vendor')
+  const requestedSort = params.get('sort')
+  const sort = sortChoices.find(([key]) => key === requestedSort)?.[0] ?? 'latest'
+  const rows = sortRuns(
+    query.data?.filter(
+      (run) => (!vendor || run.vendor_name === vendor) && matches(run, status, search),
+    ) ?? [],
+    sort,
+  )
   return (
-    <>
-      <div className="page-heading">
+    <div className="ops-page ops-queue">
+      <div className="page-heading ops-heading">
         <div>
           <h1>Invoice Operations</h1>
           <p>Review the exception. Find the evidence. Move the invoice forward.</p>
         </div>
-        <a className="button secondary" href="#upload">
+        <Link className="button primary" to={{ search: params.toString(), hash: '#upload' }}>
           Process an invoice
-        </a>
+        </Link>
       </div>
       <section className="panel queue-panel" aria-labelledby="queue-title">
         <div className="queue-toolbar">
@@ -75,29 +88,50 @@ export default function Queue() {
               {query.data ? `${rows.length} of ${query.data.length}` : '—'}
             </span>
           </h2>
-          <div className="search-input">
-            <Search size={18} aria-hidden="true" />
-            <label className="sr-only" htmlFor="invoice-search">
-              Search invoice or supplier
+          <div className="ops-queue-controls">
+            <div className="search-input">
+              <Search size={18} aria-hidden="true" />
+              <label className="sr-only" htmlFor="invoice-search">
+                Search invoice or supplier
+              </label>
+              <input
+                id="invoice-search"
+                name="q"
+                type="search"
+                autoComplete="off"
+                placeholder="Search invoice or supplier…"
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value)
+                  update('q', e.target.value)
+                }}
+              />
+            </div>
+            <label className="ops-sort">
+              <span>Sort by</span>
+              <select value={sort} onChange={(event) => update('sort', event.target.value)}>
+                {sortChoices.map(([key, label]) => (
+                  <option key={key} value={key}>
+                    {label}
+                  </option>
+                ))}
+              </select>
             </label>
-            <input
-              id="invoice-search"
-              name="q"
-              type="search"
-              autoComplete="off"
-              placeholder="Search invoice or supplier…"
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value)
-                update('q', e.target.value)
-              }}
-            />
           </div>
         </div>
+        {vendor && (
+          <div className="ops-vendor-filter">
+            <span>Supplier: {vendor}</span>
+            <button type="button" className="button secondary" onClick={() => update('vendor', '')}>
+              Clear supplier
+            </button>
+          </div>
+        )}
         <div className="filters" aria-label="Filter invoices">
           {filters.map(([key, label]) => (
             <button
               key={key}
+              data-status={key}
               className={status === key ? 'filter selected' : 'filter'}
               aria-pressed={status === key}
               onClick={() => update('status', key)}
@@ -125,6 +159,6 @@ export default function Queue() {
         </p>
       </section>
       <UploadPanel compact />
-    </>
+    </div>
   )
 }

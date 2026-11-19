@@ -72,7 +72,7 @@ try {
   })
   page.on('pageerror', (error) => errors.push(error.message))
   const routes = [
-    ['overview', '/', '.metric-strip .metric'],
+    ['overview', '/', '.ops-metrics .ops-metric'],
     ['queue', '/runs', 'tbody tr'],
     ['ready', '/runs/' + selected.READY_FOR_AP.id, '.ready-brief'],
     ['blocked', '/runs/' + selected.BLOCKED.id, '.blocked-brief'],
@@ -138,7 +138,7 @@ try {
   await page.keyboard.type('Aster')
   await page.waitForFunction(() => location.search.includes('q=Aster'))
   assert.equal(await page.$eval('#invoice-search', (input) => input.value), 'Aster')
-  const filter = await page.$('button.filter:nth-child(4)')
+  const filter = await page.$('button.filter[data-status="blocked"]')
   await filter.focus()
   await page.keyboard.press('Enter')
   await page.waitForFunction(() => location.search.includes('status=blocked'))

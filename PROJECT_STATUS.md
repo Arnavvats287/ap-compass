@@ -1,9 +1,9 @@
 # AP Compass — Project Status / Gate Register
 
-**Updated:** 2026-11-19 IST.
-**Current gate:** Phase 6B.2E.1 source generalization. Development-only verification passed.
-**Base:** 4bac08cd84226703cdcef2b76089f72f4e920cbe.
-**Branch:** codex/phase-06b2e1-source-generalization. **Checkpoint:** phase-06b2e1-source-generalization.
+**Updated:** 2026-11-20 IST.
+**Current gate:** Phase 6B.2F.1 Premium dashboard. Review before F.2.
+**Base:** 05e9c9382c76e169132fa6c093c2b133e2ce3ce1.
+**Branch:** codex/phase-06b2f1-premium-dashboard. **Checkpoint:** phase-06b2f1-premium-dashboard.
 Final exact SHA and remote publication/clean-tree verification accompany the checkpoint handoff.
 No prior-tag/default-branch alteration. Deadline remains Saturday 2026-11-21 IST.
 
@@ -26,6 +26,7 @@ No prior-tag/default-branch alteration. Deadline remains Saturday 2026-11-21 IST
 | 06B.2D.1 Financial evidence integrity | Backend and frontend verification passed | Shared native source-currency invariant. 471 backend and 58 frontend tests passed, including 49 dedicated tests and controlled persisted reload without historical/audit changes. |
 | 06B.2D.2 Private demo release hardening | Verified for controlled demonstration | 488 backend and 58 frontend tests passed. Real private Docker and Chrome acceptance, persistent PDF and audit restart checks, and four controlled demo scenarios. Zero Gemini requests. See [release report](docs/RELEASE_HARDENING_REPORT.md). |
 | 06B.2E.1 Source generalization and completeness | Verified for independent evaluation | 508 backend and 58 frontend tests passed. Bounded field and full-row quote forms, recognized omitted-line Review, private Docker and restart verified. Frozen evidence matched. No held-out PDF access or Gemini requests. See [source report](docs/PHASE_06B2E1_SOURCE_GENERALIZATION_REPORT.md). |
+| 06B.2F.1 Premium dashboard | Locally verified for review | Needs Attention spotlight, recorded outcomes, recent vendor ranking and queue sort. 63 frontend and 17 private-demo tests passed, with scoped Chrome QA. No backend or frozen evaluation changes. See [dashboard report](docs/PHASE_06B2F1_PREMIUM_DASHBOARD_REPORT.md). |
 | 07 Release | LOCKED | Remote/public hosting and paid deployment await explicit authorization |
 
 ## Verified Phase 6A evidence
