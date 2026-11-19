@@ -334,8 +334,14 @@ function BusinessDecision({ run }: { run: Run }) {
           </section>
         </>
       )}
-      <PolicyImpact key={run.id} run={run} />
-      <DecisionTrace run={run} />
+    </>
+  )
+}
+function SupportingRecords({ run }: { run: Run }) {
+  const decision = run.decision!
+  const invoice = run.extracted_invoice
+  return (
+    <>
       <section className="workspace-section">
         <h2>Findings & controls</h2>
         {(
@@ -537,7 +543,19 @@ export default function Workspace() {
         </section>
       )}
       {failed && <DecisionTrace run={run} />}
-      <div className="workspace-grid">
+      <nav className="case-nav" aria-label="Invoice workspace sections">
+        <a href="#case-decision">{run.decision ? 'Decision' : 'Source invoice'}</a>
+        {invoice && <a href="#evidence">Source evidence</a>}
+        <a href="#case-trace">Decision trace</a>
+        {run.decision && <a href="#case-policy">Policy impact</a>}
+        {run.decision && (
+          <span className="case-recorded">
+            <small>Recorded</small>
+            <Status state={run.execution_state} outcome={run.decision.outcome} />
+          </span>
+        )}
+      </nav>
+      <div className="workspace-grid" id="case-decision">
         <div className="decision-column">
           {run.decision && <BusinessDecision run={run} />}
           {invoice && (
@@ -547,7 +565,14 @@ export default function Workspace() {
               <EvidenceList evidence={invoice.evidence} />
             </section>
           )}
-          <Diagnostics run={run} />
+          {run.decision && (
+            <details className="workspace-audit" open={run.candidates.length > 1}>
+              <summary>All controls & procurement records</summary>
+              <div>
+                <SupportingRecords run={run} />
+              </div>
+            </details>
+          )}
         </div>
         <section className="document-panel" aria-labelledby="source-title">
           <div className="section-heading">
@@ -582,6 +607,17 @@ export default function Workspace() {
           </a>
         </section>
       </div>
+      {run.decision && (
+        <div className="completed-trace">
+          <DecisionTrace run={run} />
+        </div>
+      )}
+      {run.decision && (
+        <div id="case-policy">
+          <PolicyImpact key={run.id} run={run} />
+        </div>
+      )}
+      <Diagnostics run={run} />
     </>
   )
 }

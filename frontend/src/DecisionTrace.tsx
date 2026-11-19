@@ -5,6 +5,8 @@ import {
   FileText,
   LoaderCircle,
   Search,
+  ScanText,
+  Stamp,
   ShieldCheck,
   TriangleAlert,
   X,
@@ -45,7 +47,7 @@ const states = {
   FAILED: 'Failed',
   SKIPPED: 'Skipped',
 }
-const icons = [FileText, FileText, Search, ShieldCheck, Check]
+const icons = [FileText, ScanText, Search, ShieldCheck, Stamp]
 const timingNames: Record<string, string> = {
   extracting_invoice: 'extraction',
   matching_records: 'matching',
@@ -75,13 +77,11 @@ export function StageTimeline({
         const Icon =
           stage.state === 'RUNNING'
             ? LoaderCircle
-            : stage.state === 'PASSED'
-              ? Check
-              : stage.state === 'FAILED'
-                ? X
-                : stage.state === 'WARNING'
-                  ? TriangleAlert
-                  : (icons[index] ?? CirclePause)
+            : stage.state === 'FAILED'
+              ? X
+              : stage.state === 'WARNING'
+                ? TriangleAlert
+                : (icons[index] ?? CirclePause)
         return (
           <li
             key={stage.name}
@@ -95,10 +95,13 @@ export function StageTimeline({
               <summary>
                 <span className="trace-icon">
                   <Icon
-                    size={17}
+                    size={23}
                     className={stage.state === 'RUNNING' ? 'spin' : ''}
                     aria-hidden="true"
                   />
+                  {stage.state === 'PASSED' && (
+                    <Check className="trace-complete-mark" size={12} aria-hidden="true" />
+                  )}
                 </span>
                 <strong>
                   <span>
@@ -141,6 +144,7 @@ export default function DecisionTrace({ run }: { run: Run }) {
   return (
     <section
       className={`decision-trace ${active ? 'trace-live' : 'trace-terminal'}`}
+      id="case-trace"
       aria-label="Decision trace"
     >
       <div className="section-heading">
@@ -153,14 +157,32 @@ export default function DecisionTrace({ run }: { run: Run }) {
             'Your invoice is stored and waiting for processing capacity.'}
         </p>
       )}
-      <StageTimeline stages={run.stages} timings={run.timings} />
-      {!active && (
-        <div className="trace-outcome">
-          <span>{run.decision ? 'Recorded business outcome' : 'No AP decision produced'}</span>
-          <Status state={run.execution_state} outcome={run.decision?.outcome} />
-          {run.decision && <small>Successful execution does not imply financial readiness.</small>}
-        </div>
-      )}
+      <div className="trace-map">
+        <StageTimeline stages={run.stages} timings={run.timings} />
+        {active && (
+          <aside className="trace-destination">
+            <span>Execution in progress</span>
+            <h3>
+              {stageLabels[run.stages.find((stage) => stage.state === 'RUNNING')?.name ?? ''] ??
+                'Waiting for capacity'}
+            </h3>
+            <p>
+              Only persisted backend work advances this path. A business outcome appears after
+              evaluation.
+            </p>
+          </aside>
+        )}
+        {!active && (
+          <div className="trace-outcome">
+            <span>{run.decision ? 'Recorded business outcome' : 'No AP decision produced'}</span>
+            <h3>{run.decision ? 'Execution complete.' : 'Execution stopped.'}</h3>
+            <Status state={run.execution_state} outcome={run.decision?.outcome} />
+            {run.decision && (
+              <small>Successful execution does not imply financial readiness.</small>
+            )}
+          </div>
+        )}
+      </div>
     </section>
   )
 }

@@ -1,8 +1,8 @@
 # AP Compass — Project Memory (living handoff)
 
 **Last reviewed:** 2026-11-19 (IST)
-**Repository status:** Phase 5.1 accepted. Phase 6A policy/decision-trace gate PASS; architectural/visual review pending.
-**Current authorized segment:** `06A POLICY IMPACT + DECISION TRACE` only; complete and stop for review.
+**Repository status:** Phase 6A functionally accepted; Phase 6A.1 signature frontend refinement locally verified; user visual review pending.
+**Current authorized segment:** `06A.1 SIGNATURE UI` only; stop for review before Phase 6B.
 **Deadline:** Saturday 2026-11-21 (IST); target Friday evening feature freeze.
 **Maintainers:** Builder owns product decisions; Codex implements one authorized phase; architectural review gates further work.
 
@@ -113,3 +113,26 @@ in tmp/phase06a-design-before,iteration1,after (policy subdirectories). No giant
 confirmation/approval/reevaluation/action history/new creative fixtures/deployment. Native mobile/headless PDF
 can be blank; source-open fallback works. Single-process/in-process queue and bounded worklist remain.
 **Next:** Review only; do not start Phase6B.
+
+
+## Phase 6A.1 handoff — 2026-11-19
+
+Base95e6e66ea6c9ce7d48f10466f40d9aa4af0e89d1; branch codex/phase-06a1-signature-ui;
+checkpoint phase-06a1-signature-ui. Complete SHA/remote proof accompany final publication handoff.
+User accepted6A functionality but rejected visual quality; this is a frontend-only repair, not6B.
+Baseline + two fresh rendered iterations: tmp/phase06a1-before,iteration1,after. Actual app8006 and existing
+five live analyses reused. No upload/new inference; generation guard still contains only the prior6A call.
+Attention outcome orbit uses real counts, flagged NET retains repeated-analysis/currency caveats. Compact
+source/decision spread top323px vs414px baseline. Evidence precedes optional audit; ambiguousPO alternatives
+stay initially visible. Full-width process spine and independent outcome destination; actual-only motion.
+Policy comparison full width, original recorded badge retained in desktop rail; semantics/API unchanged.
+299 backend PASS52.90s (one existing warning),48 frontend PASS5.72s,typecheck/build/manifests/hygiene/pip
+PASS,npm audit0. JS319.50kB/gzip100.13,CSS70.59kB/gzip12.23; no dependency additions. Core15 actual views
++7 controlled states; policy12 recorded/preview +3 labelled TEST_ONLY active traces. Additional keyboard
+anchor/source-alignment checks and actual Chrome frame recording; results/screenshots in ignoredtmp.
+PRICE recorded2% remains REVIEW,5% previewREADY; overbilling remainsBLOCKED. All persisted snapshots and
+active policy unchanged. Authority SHA256 remains7fb54a84f32bd0bf75a29396bb50c450878503dd70515b33bafcc330e2a54398.
+Protected backend/data/fixtures/client/types unchanged. Hallmark0FAIL/0WARN/1chart waiver/3answered;
+Vercel and Taste review documented. No full assistive-technology certification or speed benchmark claimed.
+Remaining limits: mobile/native PDF may be blank (source-open fallback); many evidence references still
+lengthen mobile cases; original backend explanation prose deliberately unchanged. Review only; no6B.

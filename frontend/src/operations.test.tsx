@@ -172,6 +172,25 @@ describe('connected operations views', () => {
       '/api/runs/test-run/document#toolbar=0&view=FitH',
     )
   })
+  it('keeps the primary resolution and evidence outside the optional audit disclosure', async () => {
+    defaults()
+    renderPage(
+      <Routes>
+        <Route path="/runs/:runId" element={<Workspace />} />
+      </Routes>,
+      '/runs/test-run',
+    )
+    await screen.findByRole('heading', { name: 'Aster Systems' })
+    const audit = document.querySelector('.workspace-audit')!
+    expect(audit).not.toHaveAttribute('open')
+    expect(audit.contains(screen.getByRole('region', { name: finding.title }))).toBe(false)
+    expect(audit.contains(document.querySelector('#evidence'))).toBe(false)
+    expect(
+      screen.getByRole('navigation', { name: 'Invoice workspace sections' }),
+    ).toHaveTextContent('Recorded')
+    expect(document.querySelector('#case-trace')).not.toBeNull()
+    expect(document.querySelector('#case-policy')).not.toBeNull()
+  })
   it('renders unknown future findings using supplied business content', () => {
     renderPage(
       <FindingDetails

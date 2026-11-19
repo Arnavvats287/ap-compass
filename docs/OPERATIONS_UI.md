@@ -138,3 +138,23 @@ The user's creative override adds an attention-focused asymmetric overview and e
 with original native-control/CSS patterns and no new design dependency. All metrics remain real with existing
 NET/currency/repeated-analysis caveats. Read PHASE_06A_DESIGN.md,POLICY_PREVIEW.md and PHASE_06A_REPORT.md.
 The verified6A local server is8006,reusing existing persisted data; older8005 remains a prior server. No hosting.
+
+
+## Phase 6A.1 — signature workbench
+
+The overview uses an accessible real-count outcome orbit beside review/blocked links and a separate flagged
+net ledger band. Same API metrics and currency/repeated-analysis definitions; no new metric or financial rule.
+A compact case header and section anchors lead to an aligned PDF/primary-decision spread. Reason, financial
+comparison, owner and next action stay exposed. Source evidence precedes optional audit detail; all findings
+and procurement records remain available through one native disclosure, open initially for ambiguous POs.
+
+The full-width trace now uses a readable vertical execution spine beside a separate business-outcome
+surface, stacking on mobile. Distinct operation icons carry completion marks. Returned state owns emphasis;
+only RUNNING has moving connector/spinner, disabled under reduced motion. Existing measured/timestamp
+logic is unchanged. The trace anchor works for completed, active and failed executions.
+
+Policy comparison occupies the full width after evidence and trace, with paper recorded/forest hypothetical
+columns. A desktop sticky rail retains the recorded outcome. Selection and async preview behavior are unchanged.
+Mobile rail is static, decision-first ordering remains, native PDF fallback stays available. Secondary working
+text is14px; small body16px; original cream/forest/mint/citrus semantic tokens, Georgia/system-sans pairing.
+See PHASE_06A1_DESIGN.md and PHASE_06A1_REPORT.md for rendered iterations, audits and actual checks.

@@ -135,7 +135,7 @@ describe('read-only policy impact', () => {
       '/runs/test-run',
     )
     await screen.findByRole('heading', { name: 'Aster Systems' })
-    fireEvent.click(screen.getByText('Policy impact'))
+    fireEvent.click(document.querySelector('.policy-impact > summary')!)
     await userEvent.click(screen.getByRole('radio', { name: '5%' }))
     expect(spy).toHaveBeenCalledExactlyOnceWith('test-run', '0.05')
     expect(
@@ -158,7 +158,7 @@ describe('read-only policy impact', () => {
         }),
     )
     mount(<PolicyImpact run={recorded} />)
-    fireEvent.click(screen.getByText('Policy impact'))
+    fireEvent.click(document.querySelector('.policy-impact > summary')!)
     await userEvent.click(screen.getByRole('radio', { name: '5%' }))
     expect(screen.getByText('Evaluating stored facts…')).toBeInTheDocument()
     expect(screen.getByRole('radio', { name: '2%' })).toBeDisabled()
@@ -168,7 +168,7 @@ describe('read-only policy impact', () => {
   })
   it('presents protected controls as information, never toggles', () => {
     mount(<PolicyImpact run={recorded} />)
-    fireEvent.click(screen.getByText('Policy impact'))
+    fireEvent.click(document.querySelector('.policy-impact > summary')!)
     expect(screen.getAllByRole('radio')).toHaveLength(2)
     expect(screen.queryByRole('switch')).not.toBeInTheDocument()
     expect(
@@ -179,7 +179,7 @@ describe('read-only policy impact', () => {
   it('reports preview error and preserves the current evaluation', async () => {
     vi.spyOn(api, 'preview').mockRejectedValue(new ApiError(503))
     mount(<PolicyImpact run={recorded} />)
-    fireEvent.click(screen.getByText('Policy impact'))
+    fireEvent.click(document.querySelector('.policy-impact > summary')!)
     await userEvent.click(screen.getByRole('radio', { name: '5%' }))
     expect(await screen.findByRole('alert')).toHaveTextContent('recorded decision is unchanged')
     expect(
@@ -189,12 +189,12 @@ describe('read-only policy impact', () => {
   it('does not preview on mount or by merely disclosing the panel', () => {
     const spy = vi.spyOn(api, 'preview')
     mount(<PolicyImpact run={recorded} />)
-    fireEvent.click(screen.getByText('Policy impact'))
+    fireEvent.click(document.querySelector('.policy-impact > summary')!)
     expect(spy).not.toHaveBeenCalled()
   })
   it('does not fabricate a current tolerance when the historical display field is absent', () => {
     mount(<PolicyImpact run={{ ...recorded, policy_snapshot: { version: 'legacy' } }} />)
-    fireEvent.click(screen.getByText('Policy impact'))
+    fireEvent.click(document.querySelector('.policy-impact > summary')!)
     expect(
       within(screen.getByRole('region', { name: 'Current evaluation' })).getByText('—'),
     ).toBeInTheDocument()
@@ -221,16 +221,14 @@ it('formats backend unit-price and tolerance findings without recomputing a vari
 })
 
 it('can explicitly request the recorded 2% tolerance without first selecting 5%', async () => {
-  const spy = vi
-    .spyOn(api, 'preview')
-    .mockResolvedValue({
-      ...preview,
-      preview_policy: { version: 'TEST-2', price_tolerance_pct: '0.02' },
-      preview_decision: run.decision!,
-      changed: false,
-    })
+  const spy = vi.spyOn(api, 'preview').mockResolvedValue({
+    ...preview,
+    preview_policy: { version: 'TEST-2', price_tolerance_pct: '0.02' },
+    preview_decision: run.decision!,
+    changed: false,
+  })
   mount(<PolicyImpact run={recorded} />)
-  fireEvent.click(screen.getByText('Policy impact'))
+  fireEvent.click(document.querySelector('.policy-impact > summary')!)
   await userEvent.click(screen.getByRole('radio', { name: '2%' }))
   expect(spy).toHaveBeenCalledExactlyOnceWith('test-run', '0.02')
   expect(await screen.findByText('Decision unchanged under this preview.')).toBeInTheDocument()

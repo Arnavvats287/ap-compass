@@ -1,9 +1,9 @@
 # AP Compass — Project Status / Gate Register
 
 **Updated:** 2026-11-19 IST.
-**Current gate:** Phase 6A PASS; architectural and visual review pending. STOP before Phase 6B.
-**Base:** phase-05-1-visual-refinement / 4e9665daac7dda661f19217ab9ba8630c640b839.
-**Branch:** codex/phase-06a-policy-decision-trace. **Checkpoint:** phase-06a-policy-decision-trace.
+**Current gate:** Phase 6A.1 local engineering/design acceptance PASS; user visual review pending. STOP before Phase 6B.
+**Base:** phase-06a-policy-decision-trace / 95e6e66ea6c9ce7d48f10466f40d9aa4af0e89d1.
+**Branch:** codex/phase-06a1-signature-ui. **Checkpoint:** phase-06a1-signature-ui.
 Final exact SHA and remote publication/clean-tree verification accompany the checkpoint handoff.
 No prior-tag/default-branch alteration. Deadline remains Saturday 2026-11-21 IST.
 
@@ -15,7 +15,7 @@ No prior-tag/default-branch alteration. Deadline remains Saturday 2026-11-21 IST
 | 04 API/orchestration | ACCEPTED | User review passed; original workflow/tests unchanged |
 | 05 Operations UI | ACCEPTED | User confirmed functional gate passed; existing checkpoint preserved |
 | 05.1 Visual refinement | ACCEPTED | Two rendered iterations, 280 backend + 32 frontend tests, 15 real-data views + 7 deterministic states; zero model calls |
-| 06A Policy and trace | PASS, review pending | 299 backend +47 frontend tests; one live PRICE extraction, zero-AI previews; two creative browser iterations |
+| 06A Policy and trace | Functionally accepted; visual repair requested | 299 backend +47 frontend tests; one live PRICE extraction, zero-AI previews; two creative browser iterations |
 | 06B Human resolution/scenarios | LOCKED | No PO confirmation, action history or new creative fixtures authorized |
 | 07 Release | LOCKED | No public/paid/Docker deployment |
 
@@ -117,3 +117,20 @@ Current evidence: docs/PHASE_05_REPORT.md, OPERATIONS_UI.md, PHASE_05_DESIGN_NOT
 PHASE_05_UI_QA_RESULTS.json and PHASE_05_LIVE_RESULTS.json. Screenshots stay in ignored tmp/phase05-qa.
 All encountered test/harness failures are documented and resolved. No general accuracy/accessibility certification.
 Next action: architectural review or an explicit repair prompt. Do not start Phase 6 automatically.
+
+
+## Phase 6A.1 verified refinement — 2026-11-19
+
+Frontend-only redesign from exact95e6e66 base. Two fresh rendered iterations against persisted data at8006:
+real-count attention orbit/ledger, compact aligned case spread, earlier evidence and optional audit disclosure,
+full-width execution spine with independent business outcome, full-width hypothetical policy comparison.
+299 backend tests passed in52.90s (one existing Starlette deprecation);48 frontend tests passed in5.72s;
+typecheck/build passed. Final assets JS319.50kB/gzip100.13; CSS70.59kB/gzip12.23. No dependency changes.
+Manifests6vendors/7POs/3billed/10cases; hygiene11exclusions/6PDFs; pip check clean; npm audit0 vulnerabilities.
+Core Chrome15 real views +7 controlled states; focused policy12 recorded/preview views +3 labelled TEST_ONLY
+active traces; keyboard/focus/no-overflow/reduced-motion checks. Additional source alignment/anchor checks and
+actual Chrome interaction recording. Full details and paths in docs/PHASE_06A1_REPORT.md.
+Hallmark0FAIL/0WARN,1 real-data-chart waiver,3 existing answered findings; Vercel/Taste app-scope review.
+Protected backend/contracts/API/client/finance/extraction/orchestration/data/fixtures unchanged. Authority hash
+7fb54a84f32bd0bf75a29396bb50c450878503dd70515b33bafcc330e2a54398 unchanged; all five persisted run snapshots
+unchanged during browser checks. **0 new Gemini calls**. No6B features, release work or deployment.

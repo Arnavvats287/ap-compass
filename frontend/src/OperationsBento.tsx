@@ -26,6 +26,12 @@ function Metric({
 
 /** Real projections only. Layout priority never changes metric definitions or outcomes. */
 export default function OperationsBento({ metrics }: { metrics: Dashboard }) {
+  const outcomes = [
+    ['ready', metrics.ready],
+    ['review', metrics.review_required],
+    ['blocked', metrics.blocked],
+  ] as const
+  let offset = 0
   return (
     <section className="metric-strip overview-bento" aria-label="Invoice operations counts">
       <div className="attention-hub">
@@ -41,6 +47,40 @@ export default function OperationsBento({ metrics }: { metrics: Dashboard }) {
             tone="review"
           />
           <Metric label="Blocked" count={metrics.blocked} filter="blocked" tone="blocked" />
+        </div>
+        <div
+          className="outcome-orbit"
+          role="img"
+          aria-label={`Decision distribution: ${metrics.ready} ready, ${metrics.review_required} need review, ${metrics.blocked} blocked; ${metrics.completed} completed decisions`}
+        >
+          <svg viewBox="0 0 200 200" aria-hidden="true">
+            <circle className="orbit-track" cx="100" cy="100" r="82" />
+            {outcomes.map(([tone, count]) => {
+              const length = metrics.completed ? (count / metrics.completed) * 100 : 0
+              const start = offset
+              offset += length
+              return (
+                <circle
+                  key={tone}
+                  className={`orbit-${tone}`}
+                  cx="100"
+                  cy="100"
+                  r="82"
+                  pathLength="100"
+                  strokeDasharray={`${length} ${100 - length}`}
+                  strokeDashoffset={-start}
+                />
+              )
+            })}
+          </svg>
+          <div>
+            <strong>{metrics.completed}</strong>
+            <span>
+              Completed
+              <br />
+              decisions
+            </span>
+          </div>
         </div>
         {metrics.flagged_invoice_net_by_currency && (
           <section className="attention-value" aria-label="Flagged invoice net value">

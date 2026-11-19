@@ -43,8 +43,8 @@
   --shadow-interactive: 0 6px 18px #193a2914;
   --font-body: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
   --font-display: var(--font-body);
-  --text-xs: 0.8125rem;
-  --text-sm: 0.9375rem;
+  --text-xs: 0.875rem;
+  --text-sm: 1rem;
   --text-md: 1rem;
   --text-lg: 1.125rem;
   --text-xl: 1.25rem;

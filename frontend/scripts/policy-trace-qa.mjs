@@ -234,7 +234,14 @@ try {
       '.trace-nodes',
       (e) => getComputedStyle(e).gridTemplateColumns.split(' ').length,
     )
-    assert.equal(columns, width === 390 ? 1 : 5)
+    assert.equal(columns, 1) // Readable vertical execution spine at every width.
+    assert.equal(
+      await page.$eval(
+        '.trace-map',
+        (e) => getComputedStyle(e).gridTemplateColumns.split(' ').length,
+      ),
+      width === 390 ? 1 : 2,
+    )
     const summary = await page.$('.trace-node summary')
     await summary.focus()
     await page.keyboard.press('Enter')
@@ -243,6 +250,24 @@ try {
       await page.$eval('.trace-node summary', (e) => getComputedStyle(e).outlineStyle),
       'solid',
     )
+    await page.evaluate(() => {
+      const label = document.createElement('div')
+      label.textContent = 'TEST_ONLY · controlled API state · no model execution'
+      label.setAttribute('data-test-only', 'true')
+      Object.assign(label.style, {
+        position: 'fixed',
+        bottom: '0',
+        left: '0',
+        right: '0',
+        padding: '8px',
+        background: '#fff3db',
+        color: '#20352f',
+        zIndex: '100',
+        font: '14px sans-serif',
+        textAlign: 'center',
+      })
+      document.body.append(label)
+    })
     await geometry('running trace', width)
     await page.screenshot({ path: out + `TEST_ONLY-running-${width}.png`, fullPage: true })
     await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }])
@@ -269,7 +294,7 @@ try {
   results.checks.push(
     'Recorded decisions/stages/all persisted snapshots and active policy unchanged by previews',
     'Actual-only connector movement, reduced-motion disables connector and spinner',
-    'Native node keyboard disclosure/focus and responsive horizontal/vertical forms pass',
+    'Native node keyboard disclosure/focus and responsive two-column/stacked process map pass',
     'No uncaught application JavaScript errors',
   )
   await writeFile(out + 'results.json', JSON.stringify(results, null, 2) + '\n')

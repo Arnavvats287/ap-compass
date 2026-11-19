@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import App from './App'
 import './styles.css'
 import './control-room.css'
+import './signature.css'
 
 const client = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 1000 }, mutations: { retry: false } },
