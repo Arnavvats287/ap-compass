@@ -10,6 +10,7 @@
     "code_commit": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
     "layer": {"enum": ["A", "B", "C"]},
     "split": {"enum": ["development", "heldout"]},
+    "provenance": {"type": "object"},
     "attempts": {"type": "array", "items": {"$ref": "#/$defs/attempt"}},
     "metrics": {
       "type": "object",
@@ -28,7 +29,10 @@
         "unnecessary_review": {"$ref": "#/$defs/metric"},
         "required_finding_recall": {"$ref": "#/$defs/metric"},
         "owner_matches": {"$ref": "#/$defs/metric"},
+        "next_action_matches": {"$ref": "#/$defs/metric"},
         "model_calls": {"$ref": "#/$defs/metric"},
+        "input_tokens": {"$ref": "#/$defs/metric"},
+        "output_tokens": {"$ref": "#/$defs/metric"},
         "latency_ms": {"$ref": "#/$defs/metric"}
       }
     }
@@ -52,7 +56,10 @@
       "properties": {
         "field": {"type": "string", "minLength": 1},
         "comparison": {"enum": ["exact", "wrong", "missing", "hallucinated", "correct_absence", "unlabelled", "not_observed"]},
-        "evidence": {"enum": ["correct", "incorrect", "unlabelled", "not_observed"]}
+        "evidence": {"enum": ["correct", "incorrect", "unlabelled", "not_observed"]},
+        "actual_evidence_state": {"enum": ["NATIVE_VERIFIED", "SOURCE_LOCATED_UNVERIFIED", "MISSING", null]},
+        "observed_decimal": {"type": "string", "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$"},
+        "expected_decimal": {"type": "string", "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$"}
       }
     },
     "attempt": {
@@ -75,6 +82,18 @@
         "latency_ms": {"type": ["number", "null"], "minimum": 0},
         "run_reference": {"type": "string"},
         "notes": {"type": "string"}
+        ,"classification": {"enum": ["Correct Ready", "Correct Review", "Correct Block", "Unnecessary Review", "False Ready", "Other Incorrect Decision", "Technical Failure", "Not Executed", "Ineligible", "Inconclusive"]}
+        ,"target_decision": {"$ref": "#/$defs/decision"}
+        ,"required_findings": {"type": "array", "items": {"type": "string"}}
+        ,"error_code": {"type": ["string", "null"]}
+        ,"primary_reason": {"type": ["string", "null"]}
+        ,"input_tokens": {"type": ["integer", "null"], "minimum": 0}
+        ,"output_tokens": {"type": ["integer", "null"], "minimum": 0}
+        ,"controlled_calls": {"type": "integer", "minimum": 0}
+        ,"owner_match": {"type": "boolean"}
+        ,"next_action_match": {"type": "boolean"}
+        ,"next_action": {"type": ["string", "null"]}
+        ,"pdf_sha256": {"$ref": "#/$defs/sha256"}
       },
       "allOf": [
         {

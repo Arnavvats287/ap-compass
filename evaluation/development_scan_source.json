@@ -1,0 +1,18 @@
+{
+  "SCAN_CONFLICT": {
+    "image_text": {"1": [
+      "Kaveri Logistics",
+      "Invoice number: SCAN_CONFLICT-2026",
+      "Invoice date: 2026-11-14",
+      "Purchase order: PO-4002",
+      "Currency: INR",
+      "Freight services",
+      "Item code: KL-FREIGHT-01",
+      "Quantity: 7",
+      "Unit price (net): INR 10000",
+      "Net subtotal: INR 70000",
+      "Tax (synthetic GST): INR 12600",
+      "Invoice total: INR 86200"
+    ]}
+  }
+}
