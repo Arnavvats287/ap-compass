@@ -101,13 +101,14 @@ def trusted_facts(case, policy):
 
 
 class GenerationBudget:
-    def __init__(self, settings):
+    def __init__(self, settings, *, limit=LIVE_BUDGET):
         self.settings = settings
+        self.limit = limit
         self.calls = 0
         self.attempts = []
 
     async def extract(self, raw):
-        remaining = LIVE_BUDGET - self.calls
+        remaining = self.limit - self.calls
         if remaining <= 0:
             raise RuntimeError("Generation budget exhausted")
         client = make_client(self.settings)
@@ -118,7 +119,7 @@ class GenerationBudget:
             model_id = primary.model_id
 
             async def generate(self, document, timeout_seconds):
-                if budget.calls >= LIVE_BUDGET:
+                if budget.calls >= budget.limit:
                     raise RuntimeError("Generation budget exhausted")
                 budget.calls += 1
                 return await primary.generate(document, timeout_seconds)
@@ -135,7 +136,7 @@ class GenerationBudget:
             client.close()
 
 
-def pdf_attempt(case, raw, claims, budget, policy):
+def pdf_attempt(case, raw, claims, budget, policy, *, observe=None, verify_restart=False):
     fake = None if budget else ControlledProvider(case, claims)
 
     async def controlled(data):
@@ -194,10 +195,11 @@ def pdf_attempt(case, raw, claims, budget, policy):
             # Journal the submission before running any separate workflow track.
             if authority_hash(repository.authority()) != seeded_hash:
                 raise RuntimeError("Authoritative records changed")
+            if observe:
+                observe(snapshot, row)
             yield row
-            if budget:
-                return
-            for key, track in (("human_action", "po_confirmation"), ("policy_variant", "policy_variant")):
+            tracks = (("human_action", "po_confirmation"), ("policy_variant", "policy_variant"))
+            for key, track in (() if budget else tracks):
                 if not (target := case.get(key)):
                     continue
                 action = start_row(case, target, track)
@@ -221,6 +223,26 @@ def pdf_attempt(case, raw, claims, budget, policy):
                 if client.get(url).json() != state or authority_hash(repository.authority()) != seeded_hash:
                     raise RuntimeError("Workflow changed source assessment or authority")
                 yield action
+            if verify_restart:
+                history = client.get(url + "/review-history")
+                if history.status_code != 200:
+                    raise RuntimeError("Unable to load review history")
+                review = history.json()
+        if verify_restart:
+            unexpected = []
+
+            async def no_extraction(_raw):
+                unexpected.append(True)
+                raise AssertionError("Reading persisted benchmark data must not trigger extraction")
+
+            reopened = create_app(root / "isolated.sqlite", document_dir=root / "documents", extractor=no_extraction)
+            with TestClient(reopened) as client:
+                if (client.get(url).json() != state or client.get(url + "/review-history").json() != review
+                        or digest(client.get(url + "/document").content) != case["pdf"]["sha256"]
+                        or authority_hash(reopened.state.runs.repository.authority()) != seeded_hash):
+                    raise RuntimeError("Restart changed run, review history, document or authority")
+            if unexpected:
+                raise RuntimeError("Restart unexpectedly invoked extraction")
 
 
 def execute(args):
