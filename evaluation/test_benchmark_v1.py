@@ -8,7 +8,7 @@ import pytest
 
 from benchmark_v1 import EVAL, GOLDEN_PATH, ROOT, classification, execute, json_new
 from benchmark_inputs import digest, read_json, registered_cases, relative_parts, unpack_archive
-from benchmark_source import ControlledProvider, claims_for
+from benchmark_source import ControlledProvider, claims_for, printed_date
 from app.documents.schema import parse_response
 
 
@@ -88,6 +88,11 @@ def test_first_result_cannot_be_overwritten(tmp_path):
     with pytest.raises(FileExistsError):
         json_new(path, {"original": False})
     assert read_json(path) == {"original": True}
+
+
+def test_input_sidecar_can_keep_the_original_printed_date():
+    assert printed_date("ISSUED 07 Nov 2026", "2026-11-07") == "07 Nov 2026"
+    assert printed_date("ISSUED 08 Nov 2026", "2026-11-07") is None
 
 
 def test_typed_results_validate_against_schema(tmp_path):

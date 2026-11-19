@@ -1,4 +1,5 @@
 """Controlled provider replies backed by printed text, with no trust state."""
+from datetime import date
 from decimal import Decimal
 import re
 
@@ -42,6 +43,14 @@ def value_excerpt(text, value, numeric):
     return match.group() if match else None
 
 
+def printed_date(text, value):
+    day = date.fromisoformat(value)
+    for spelling in (value, day.strftime("%d %b %Y"), day.strftime("%d %B %Y")):
+        if match := value_excerpt(text, spelling, False):
+            return match
+    return None
+
+
 def claims_for(case, raw, annotation):
     with pymupdf.open(stream=raw, filetype="pdf") as pdf:
         if len(pdf) != case["pdf"]["page_count"]:
@@ -61,7 +70,7 @@ def claims_for(case, raw, annotation):
         if override := annotation.get("field_sources", {}).get(field):
             page, quote = override["page"], plain(override["quote"])
             # View order can split table cells into successive native lines.
-            raw_value = value_excerpt(quote, value, numeric)
+            raw_value = printed_date(quote, value) if leaf == "invoice_date" else value_excerpt(quote, value, numeric)
             if page not in pages or quote not in plain(" ".join(pages[page])) or raw_value is None:
                 raise ValueError(f"Unsupported source override for {case['case_id']} {field}")
             return SourceClaim(field=field, page=page, raw_value=raw_value, quote=quote)
