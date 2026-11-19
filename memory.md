@@ -1,12 +1,16 @@
 # AP Compass — Project Memory (living handoff)
 
 **Last reviewed:** 2026-11-19 (IST)
-**Repository status:** Phase 6B.2B.1 accepted. Golden dataset preparation submitted for review.
-**Current authorized segment:** `06B.2C.1 FROZEN GOLDEN DATASET AND BUSINESS SCENARIOS` only.
+**Repository status:** Frozen development and held-out benchmark submitted for remediation review.
+**Current authorized segment:** `06B.2C.2 FROZEN BASELINE AND INDEPENDENT PDF BENCHMARK` only.
 **Deadline:** Saturday 2026-11-21 (IST); target Friday evening feature freeze.
 **Maintainers:** Builder owns product decisions; Codex implements one authorized phase; architectural review gates further work.
 
 > Repo-local continuity. Status is evidence, not completion by assertion. Latest user acceptance/routing adjustment is recorded in ADR-016 and the handoff below.
+
+## Phase 6B.2C.2 handoff
+
+From `0e7c421573023ce0c3da2433aed0409d5bedfa7a`, sealed the development runner and first results before opening the independent archive. Development finance 13/13, offline PDF 9/10 exact decisions. Held-out offline 3/6 exact, 0/3 false-ready, 3/3 unnecessary Review. All 72 labelled critical fields matched. Live H01 and H03 completed with four total primary generations, including HTTP 503 and 504 retries. Both decisions were unnecessary source Review on exact critical fields. H04 and H05 skipped at the cap. No production behavior or frozen inputs changed. First results and exact denominators are in `evaluation/results/v1/` and `docs/PHASE_06B2C2_BENCHMARK_REPORT.md`. Private originals remain byte-identical in ignored storage. Benchmark verification passed: 394 backend plus 2 known xfails, 19 runner, 58 frontend. Stop for remediation review.
 
 ## Phase 6B.2C.1 handoff
 

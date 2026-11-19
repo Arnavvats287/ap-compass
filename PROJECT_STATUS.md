@@ -1,9 +1,9 @@
 # AP Compass — Project Status / Gate Register
 
 **Updated:** 2026-11-19 IST.
-**Current gate:** Phase 6B.2C.1 golden dataset preparation.
-**Base:** 64bf8695b34e2125a8a240f8e1f233dbd745ce88.
-**Branch:** codex/phase-06b2c1-golden-dataset. **Checkpoint:** phase-06b2c1-golden-dataset.
+**Current gate:** Phase 6B.2C.2 benchmark completed for remediation review.
+**Base:** 0e7c421573023ce0c3da2433aed0409d5bedfa7a.
+**Branch:** codex/phase-06b2c2-benchmark. **Checkpoint:** phase-06b2c2-benchmark.
 Final exact SHA and remote publication/clean-tree verification accompany the checkpoint handoff.
 No prior-tag/default-branch alteration. Deadline remains Saturday 2026-11-21 IST.
 
@@ -19,8 +19,9 @@ No prior-tag/default-branch alteration. Deadline remains Saturday 2026-11-21 IST
 | 06A.1 Signature UI | ACCEPTED | b8e5ced6e7dcb3774364cfef44f1a0be0f06a5d0 checkpoint preserved |
 | 06B.1 Human PO resolution | Local PASS; review pending |328backend/58frontend tests; append-only action; source/ledger unchanged;0Gemini |
 | 06B.2B.1 Mixed-document review | ACCEPTED | Verified base for golden dataset preparation |
-| 06B.2C.1 Golden dataset preparation | PASS, review pending | 14 entries, 13 unique submissions, ten frozen PDFs and two separate human-action targets. 394 backend passed plus two expected scope finding gaps, 58 frontend passed. Zero live calls. |
-| Golden model evaluation and further scenarios | LOCKED | Await explicit authorization |
+| 06B.2C.1 Golden dataset preparation | ACCEPTED | Frozen as the base for the independent benchmark |
+| 06B.2C.2 Frozen baseline and independent benchmark | Complete for review | Development B 9/10 exact decisions, independent B 3/6. Live used four generations across two completed submissions. Both had exact supported field values and unnecessary source Review. See the benchmark report for coverage and exclusions. |
+| Remediation and further scenarios | LOCKED | Await explicit authorization |
 | 07 Release | LOCKED | No public/paid/Docker deployment |
 
 ## Verified Phase 6A evidence

@@ -81,19 +81,19 @@
         "model_calls": {"type": ["integer", "null"], "minimum": 0},
         "latency_ms": {"type": ["number", "null"], "minimum": 0},
         "run_reference": {"type": "string"},
-        "notes": {"type": "string"}
-        ,"classification": {"enum": ["Correct Ready", "Correct Review", "Correct Block", "Unnecessary Review", "False Ready", "Other Incorrect Decision", "Technical Failure", "Not Executed", "Ineligible", "Inconclusive"]}
-        ,"target_decision": {"$ref": "#/$defs/decision"}
-        ,"required_findings": {"type": "array", "items": {"type": "string"}}
-        ,"error_code": {"type": ["string", "null"]}
-        ,"primary_reason": {"type": ["string", "null"]}
-        ,"input_tokens": {"type": ["integer", "null"], "minimum": 0}
-        ,"output_tokens": {"type": ["integer", "null"], "minimum": 0}
-        ,"controlled_calls": {"type": "integer", "minimum": 0}
-        ,"owner_match": {"type": "boolean"}
-        ,"next_action_match": {"type": "boolean"}
-        ,"next_action": {"type": ["string", "null"]}
-        ,"pdf_sha256": {"$ref": "#/$defs/sha256"}
+        "notes": {"type": "string"},
+        "classification": {"enum": ["Correct Ready", "Correct Review", "Correct Block", "Unnecessary Review", "False Ready", "Other Incorrect Decision", "Technical Failure", "Not Executed", "Ineligible", "Inconclusive"]},
+        "target_decision": {"$ref": "#/$defs/decision"},
+        "required_findings": {"type": "array", "items": {"type": "string"}},
+        "error_code": {"type": ["string", "null"]},
+        "primary_reason": {"type": ["string", "null"]},
+        "input_tokens": {"type": ["integer", "null"], "minimum": 0},
+        "output_tokens": {"type": ["integer", "null"], "minimum": 0},
+        "controlled_calls": {"type": "integer", "minimum": 0},
+        "owner_match": {"type": "boolean"},
+        "next_action_match": {"type": "boolean"},
+        "next_action": {"type": ["string", "null"]},
+        "pdf_sha256": {"$ref": "#/$defs/sha256"}
       },
       "allOf": [
         {
