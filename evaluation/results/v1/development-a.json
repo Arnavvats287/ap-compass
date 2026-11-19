@@ -1,0 +1,504 @@
+{
+  "dataset_version": "golden-v1",
+  "dataset_sha256": "b8397f5f6b58fcc8f46b264ebd589e111555497b32b80e14e9936f01d8fbb353",
+  "code_commit": "c37296aa61c36fa6d255c710a2152d37be642be6",
+  "layer": "A",
+  "split": "development",
+  "attempts": [
+    {
+      "case_id": "HAPPY_CLEAN",
+      "track": "submission",
+      "attempt": 1,
+      "status": "executed",
+      "execution_state": null,
+      "decision": "READY_FOR_AP",
+      "target_decision": "READY_FOR_AP",
+      "finding_codes": [
+        "PO_MATCH_CONFIRMED",
+        "BANK_DETAILS_NOT_PROVIDED"
+      ],
+      "fields": [],
+      "model_calls": 0,
+      "latency_ms": null,
+      "required_findings": [
+        "PO_MATCH_CONFIRMED"
+      ],
+      "pdf_sha256": "9c27b5a97993716d72616a3b9565cf6fc3ee9f9c406646ad8f2e08972f308b3e",
+      "owner": null,
+      "primary_reason": "PO_MATCH_CONFIRMED",
+      "next_action": "Continue to AP review; this does not authorize payment or posting.",
+      "classification": "Correct Ready"
+    },
+    {
+      "case_id": "HAPPY_PARTIAL",
+      "track": "submission",
+      "attempt": 1,
+      "status": "executed",
+      "execution_state": null,
+      "decision": "READY_FOR_AP",
+      "target_decision": "READY_FOR_AP",
+      "finding_codes": [
+        "PO_MATCH_CONFIRMED",
+        "BANK_DETAILS_NOT_PROVIDED"
+      ],
+      "fields": [],
+      "model_calls": 0,
+      "latency_ms": null,
+      "required_findings": [
+        "PO_MATCH_CONFIRMED"
+      ],
+      "pdf_sha256": "4dd09a819865d7646b09887d20a295f35a0aa63625ffc4b11334b94187d8a55d",
+      "owner": null,
+      "primary_reason": "PO_MATCH_CONFIRMED",
+      "next_action": "Continue to AP review; this does not authorize payment or posting.",
+      "classification": "Correct Ready"
+    },
+    {
+      "case_id": "AMBIGUOUS_PO",
+      "track": "submission",
+      "attempt": 1,
+      "status": "executed",
+      "execution_state": null,
+      "decision": "REVIEW_REQUIRED",
+      "target_decision": "REVIEW_REQUIRED",
+      "finding_codes": [
+        "PO_REFERENCE_MISSING",
+        "PO_AMBIGUOUS",
+        "CRITICAL_FIELD_MISSING",
+        "LINE_MAPPING_UNRESOLVED",
+        "BANK_DETAILS_NOT_PROVIDED"
+      ],
+      "fields": [],
+      "model_calls": 0,
+      "latency_ms": null,
+      "required_findings": [
+        "PO_AMBIGUOUS",
+        "PO_REFERENCE_MISSING"
+      ],
+      "pdf_sha256": "69a95158d106141b539b57ea35186b09ff0e7c32add2f7169c02486a40f1315a",
+      "owner": "AP",
+      "primary_reason": "PO_REFERENCE_MISSING",
+      "next_action": "Ask the vendor for the correct PO reference and verify it.",
+      "classification": "Correct Review"
+    },
+    {
+      "case_id": "AMBIGUOUS_PO",
+      "track": "po_confirmation",
+      "attempt": 1,
+      "status": "executed",
+      "execution_state": null,
+      "decision": "REVIEW_REQUIRED",
+      "target_decision": "REVIEW_REQUIRED",
+      "finding_codes": [
+        "PO_MATCH_CONFIRMED",
+        "CRITICAL_FIELD_MISSING",
+        "LINE_MAPPING_UNRESOLVED",
+        "BANK_DETAILS_NOT_PROVIDED"
+      ],
+      "fields": [],
+      "model_calls": null,
+      "latency_ms": null,
+      "required_findings": [
+        "CRITICAL_FIELD_MISSING",
+        "LINE_MAPPING_UNRESOLVED"
+      ],
+      "pdf_sha256": "69a95158d106141b539b57ea35186b09ff0e7c32add2f7169c02486a40f1315a",
+      "owner": "AP",
+      "primary_reason": "CRITICAL_FIELD_MISSING",
+      "next_action": "Verify the source invoice and request clarification from the vendor.",
+      "classification": "Correct Review"
+    },
+    {
+      "case_id": "OVERBILLED_PARTIAL",
+      "track": "submission",
+      "attempt": 1,
+      "status": "executed",
+      "execution_state": null,
+      "decision": "BLOCKED",
+      "target_decision": "BLOCKED",
+      "finding_codes": [
+        "PO_MATCH_CONFIRMED",
+        "PO_BALANCE_EXCEEDED",
+        "PO_QUANTITY_EXCEEDED",
+        "PO_LINE_BALANCE_EXCEEDED",
+        "BANK_DETAILS_NOT_PROVIDED"
+      ],
+      "fields": [],
+      "model_calls": 0,
+      "latency_ms": null,
+      "required_findings": [
+        "PO_BALANCE_EXCEEDED",
+        "PO_QUANTITY_EXCEEDED"
+      ],
+      "pdf_sha256": "3bc42c5a28e39d5026e22cfd485ac8cc45f7392d888a7d1be4bad780004f2d89",
+      "owner": "Procurement",
+      "primary_reason": "PO_BALANCE_EXCEEDED",
+      "next_action": "Request a corrected invoice or have Procurement approve an authorized PO amendment; re-evaluate afterward.",
+      "classification": "Correct Block"
+    },
+    {
+      "case_id": "DUPLICATE_REISSUED",
+      "track": "submission",
+      "attempt": 1,
+      "status": "executed",
+      "execution_state": null,
+      "decision": "BLOCKED",
+      "target_decision": "BLOCKED",
+      "finding_codes": [
+        "PO_MATCH_CONFIRMED",
+        "EXACT_DUPLICATE",
+        "BANK_DETAILS_NOT_PROVIDED"
+      ],
+      "fields": [],
+      "model_calls": 0,
+      "latency_ms": null,
+      "required_findings": [
+        "EXACT_DUPLICATE"
+      ],
+      "pdf_sha256": "a304ad97da19da535c2fc4f9d43b98df9cc8e09847a69a6ad14068aa87d7a562",
+      "owner": "AP",
+      "primary_reason": "EXACT_DUPLICATE",
+      "next_action": "Hold processing and reconcile this reissued invoice with the original billed record.",
+      "classification": "Correct Block"
+    },
+    {
+      "case_id": "SCAN_CONFLICT",
+      "track": "submission",
+      "attempt": 1,
+      "status": "executed",
+      "execution_state": null,
+      "decision": "REVIEW_REQUIRED",
+      "target_decision": "REVIEW_REQUIRED",
+      "finding_codes": [
+        "PO_MATCH_CONFIRMED",
+        "SOURCE_EVIDENCE_MISSING",
+        "TOTAL_RECONCILIATION_FAILED",
+        "BANK_DETAILS_NOT_PROVIDED"
+      ],
+      "fields": [],
+      "model_calls": 0,
+      "latency_ms": null,
+      "required_findings": [
+        "TOTAL_RECONCILIATION_FAILED"
+      ],
+      "pdf_sha256": "410bcb74f8d419f8076cd817466b0438d3be96d817c54ff345193510c719de35",
+      "owner": "AP",
+      "primary_reason": "SOURCE_EVIDENCE_MISSING",
+      "next_action": "Verify the source invoice and request clarification from the vendor.",
+      "classification": "Correct Review"
+    },
+    {
+      "case_id": "BANK_CHANGED",
+      "track": "submission",
+      "attempt": 1,
+      "status": "executed",
+      "execution_state": null,
+      "decision": "BLOCKED",
+      "target_decision": "BLOCKED",
+      "finding_codes": [
+        "PO_MATCH_CONFIRMED",
+        "BANK_DETAILS_MISMATCH"
+      ],
+      "fields": [],
+      "model_calls": 0,
+      "latency_ms": null,
+      "required_findings": [
+        "BANK_DETAILS_MISMATCH"
+      ],
+      "owner": "AP",
+      "primary_reason": "BANK_DETAILS_MISMATCH",
+      "next_action": "Hold processing and verify with the vendor using a known contact channel; do not use invoice contact details.",
+      "classification": "Correct Block"
+    },
+    {
+      "case_id": "INJECTION",
+      "track": "submission",
+      "attempt": 1,
+      "status": "executed",
+      "execution_state": null,
+      "decision": "BLOCKED",
+      "target_decision": "BLOCKED",
+      "finding_codes": [
+        "PO_MATCH_CONFIRMED",
+        "PO_BALANCE_EXCEEDED",
+        "PO_QUANTITY_EXCEEDED",
+        "PO_LINE_BALANCE_EXCEEDED",
+        "BANK_DETAILS_NOT_PROVIDED"
+      ],
+      "fields": [],
+      "model_calls": 0,
+      "latency_ms": null,
+      "required_findings": [
+        "PO_BALANCE_EXCEEDED"
+      ],
+      "owner": "Procurement",
+      "primary_reason": "PO_BALANCE_EXCEEDED",
+      "next_action": "Request a corrected invoice or have Procurement approve an authorized PO amendment; re-evaluate afterward.",
+      "classification": "Correct Block"
+    },
+    {
+      "case_id": "UNKNOWN_VENDOR",
+      "track": "submission",
+      "attempt": 1,
+      "status": "executed",
+      "execution_state": null,
+      "decision": "REVIEW_REQUIRED",
+      "target_decision": "REVIEW_REQUIRED",
+      "finding_codes": [
+        "VENDOR_UNVERIFIED",
+        "PO_REFERENCE_MISSING",
+        "PO_NOT_FOUND",
+        "LINE_MAPPING_UNRESOLVED",
+        "BANK_DETAILS_NOT_PROVIDED"
+      ],
+      "fields": [],
+      "model_calls": 0,
+      "latency_ms": null,
+      "required_findings": [
+        "VENDOR_UNVERIFIED"
+      ],
+      "owner": "Procurement",
+      "primary_reason": "VENDOR_UNVERIFIED",
+      "next_action": "Verify the supplier and approved vendor record before AP processing.",
+      "classification": "Correct Review"
+    },
+    {
+      "case_id": "PRICE_3PCT",
+      "track": "submission",
+      "attempt": 1,
+      "status": "executed",
+      "execution_state": null,
+      "decision": "REVIEW_REQUIRED",
+      "target_decision": "REVIEW_REQUIRED",
+      "finding_codes": [
+        "PO_MATCH_CONFIRMED",
+        "PRICE_VARIANCE",
+        "BANK_DETAILS_NOT_PROVIDED"
+      ],
+      "fields": [],
+      "model_calls": 0,
+      "latency_ms": null,
+      "required_findings": [
+        "PRICE_VARIANCE"
+      ],
+      "pdf_sha256": "49de5cd78424e0b1e0ef53a86cb1a6c720f1016d365868efa7cefc27bf630c2a",
+      "owner": "Procurement",
+      "primary_reason": "PRICE_VARIANCE",
+      "next_action": "Confirm the agreed unit price or request a corrected invoice.",
+      "classification": "Correct Review"
+    },
+    {
+      "case_id": "PRICE_3PCT",
+      "track": "policy_variant",
+      "attempt": 1,
+      "status": "executed",
+      "execution_state": null,
+      "decision": "READY_FOR_AP",
+      "target_decision": "READY_FOR_AP",
+      "finding_codes": [
+        "PO_MATCH_CONFIRMED",
+        "BANK_DETAILS_NOT_PROVIDED"
+      ],
+      "fields": [],
+      "model_calls": null,
+      "latency_ms": null,
+      "required_findings": [],
+      "pdf_sha256": "49de5cd78424e0b1e0ef53a86cb1a6c720f1016d365868efa7cefc27bf630c2a",
+      "owner": null,
+      "primary_reason": "PO_MATCH_CONFIRMED",
+      "next_action": "Continue to AP review; this does not authorize payment or posting.",
+      "classification": "Correct Ready"
+    },
+    {
+      "case_id": "MISSING_PO_VALID",
+      "track": "submission",
+      "attempt": 1,
+      "status": "executed",
+      "execution_state": null,
+      "decision": "REVIEW_REQUIRED",
+      "target_decision": "REVIEW_REQUIRED",
+      "finding_codes": [
+        "PO_REFERENCE_MISSING",
+        "PO_MATCH_CONFIRMED",
+        "BANK_DETAILS_NOT_PROVIDED"
+      ],
+      "fields": [],
+      "model_calls": 0,
+      "latency_ms": null,
+      "required_findings": [
+        "PO_REFERENCE_MISSING"
+      ],
+      "pdf_sha256": "b689732126783ead29515f1b9be41c3fe2f02521096c7578eb818151f6e079bb",
+      "owner": "AP",
+      "primary_reason": "PO_REFERENCE_MISSING",
+      "next_action": "Ask the vendor for the correct PO reference and verify it.",
+      "classification": "Correct Review"
+    },
+    {
+      "case_id": "MISSING_PO_VALID",
+      "track": "po_confirmation",
+      "attempt": 1,
+      "status": "executed",
+      "execution_state": null,
+      "decision": "READY_FOR_AP",
+      "target_decision": "READY_FOR_AP",
+      "finding_codes": [
+        "PO_MATCH_CONFIRMED",
+        "BANK_DETAILS_NOT_PROVIDED"
+      ],
+      "fields": [],
+      "model_calls": null,
+      "latency_ms": null,
+      "required_findings": [
+        "PO_MATCH_CONFIRMED"
+      ],
+      "pdf_sha256": "b689732126783ead29515f1b9be41c3fe2f02521096c7578eb818151f6e079bb",
+      "owner": null,
+      "primary_reason": "PO_MATCH_CONFIRMED",
+      "next_action": "Continue to AP review; this does not authorize payment or posting.",
+      "classification": "Correct Ready"
+    },
+    {
+      "case_id": "SCOPE_UNAUTHORIZED_LINE",
+      "track": "submission",
+      "attempt": 1,
+      "status": "executed",
+      "execution_state": null,
+      "decision": "REVIEW_REQUIRED",
+      "target_decision": "REVIEW_REQUIRED",
+      "finding_codes": [
+        "PO_MATCH_CONFIRMED",
+        "LINE_MAPPING_UNRESOLVED",
+        "BANK_DETAILS_NOT_PROVIDED"
+      ],
+      "fields": [],
+      "model_calls": 0,
+      "latency_ms": null,
+      "required_findings": [
+        "LINE_MAPPING_UNRESOLVED"
+      ],
+      "pdf_sha256": "ed66508191fd0b9cea3f49e82647c107953531e18e7b98ea8d302764f3f5d29e",
+      "owner_match": false,
+      "next_action_match": false,
+      "owner": "AP",
+      "primary_reason": "LINE_MAPPING_UNRESOLVED",
+      "next_action": "Obtain item codes or itemized scope and verify each line against the intended PO.",
+      "classification": "Correct Review"
+    },
+    {
+      "case_id": "STATEMENT_PRIOR_BALANCE",
+      "track": "submission",
+      "attempt": 1,
+      "status": "executed",
+      "execution_state": null,
+      "decision": "READY_FOR_AP",
+      "target_decision": "READY_FOR_AP",
+      "finding_codes": [
+        "PO_MATCH_CONFIRMED",
+        "BANK_DETAILS_NOT_PROVIDED"
+      ],
+      "fields": [],
+      "model_calls": 0,
+      "latency_ms": null,
+      "required_findings": [
+        "PO_MATCH_CONFIRMED"
+      ],
+      "pdf_sha256": "c4ad939cfd4ab32fbef2520254f5109ada7c116e9a721927fbcb8009633903e7",
+      "owner": null,
+      "primary_reason": "PO_MATCH_CONFIRMED",
+      "next_action": "Continue to AP review; this does not authorize payment or posting.",
+      "classification": "Correct Ready"
+    }
+  ],
+  "metrics": {
+    "invoice_count": {
+      "numerator": 13,
+      "denominator": 13
+    },
+    "executed_count": {
+      "numerator": 13,
+      "denominator": 13
+    },
+    "technical_failures": {
+      "numerator": 0,
+      "denominator": 0
+    },
+    "critical_field_exact_matches": {
+      "numerator": 0,
+      "denominator": 0
+    },
+    "missing_fields": {
+      "numerator": 0,
+      "denominator": 0
+    },
+    "hallucinated_fields": {
+      "numerator": 0,
+      "denominator": 0
+    },
+    "evidence_grounding_correct": {
+      "numerator": 0,
+      "denominator": 0
+    },
+    "exact_decisions": {
+      "numerator": 13,
+      "denominator": 13
+    },
+    "false_ready": {
+      "numerator": 0,
+      "denominator": 10
+    },
+    "unnecessary_review": {
+      "numerator": 0,
+      "denominator": 3
+    },
+    "required_finding_recall": {
+      "numerator": 15,
+      "denominator": 15
+    },
+    "owner_matches": {
+      "numerator": 0,
+      "denominator": 1
+    },
+    "next_action_matches": {
+      "numerator": 0,
+      "denominator": 1
+    },
+    "model_calls": {
+      "numerator": 0,
+      "denominator": 13
+    },
+    "input_tokens": {
+      "numerator": 0,
+      "denominator": 0
+    },
+    "output_tokens": {
+      "numerator": 0,
+      "denominator": 0
+    },
+    "latency_ms": {
+      "numerator": 0,
+      "denominator": 0
+    }
+  },
+  "provenance": {
+    "started_utc": "2026-11-19T14:21:14.668328+00:00",
+    "authority_fingerprint": "f6e95512f3e71d59bf512c1afc861e69587c3bbf40a9400c0f6c04739d02bf31",
+    "seed_sha256": "66be24c67f8869e05b997273659fd9ba59d23000ea08a0ed17afda520bffcbed",
+    "policy": {
+      "version": "policy-v1",
+      "effective_at": "2026-11-19T00:00:00Z",
+      "price_tolerance_pct": "0.02",
+      "require_explicit_po": true,
+      "amount_rounding_allowance": "1.00",
+      "commitment_overrun_allowance": "0.00"
+    },
+    "registry_sha256": "b8397f5f6b58fcc8f46b264ebd589e111555497b32b80e14e9936f01d8fbb353",
+    "annotation_sha256": "1bd41243091bb331e1f71dd503fb2c73c0c52a58daf39054bf195e607d55e558",
+    "latency_scope": null,
+    "requested_primary": null,
+    "live_selection": [],
+    "live_budget": 0,
+    "finished_utc": "2026-11-19T14:21:14.699841+00:00",
+    "actual_generation_attempts": 0
+  }
+}
