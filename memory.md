@@ -1,12 +1,16 @@
 # AP Compass — Project Memory (living handoff)
 
 **Last reviewed:** 2026-11-19 (IST)
-**Repository status:** Phase 6B.2B.1 mixed-document review submitted for review.
-**Current authorized segment:** `06B.2B.1 MIXED-DOCUMENT REVIEW` only.
+**Repository status:** Phase 6B.2B.1 accepted. Golden dataset preparation submitted for review.
+**Current authorized segment:** `06B.2C.1 FROZEN GOLDEN DATASET AND BUSINESS SCENARIOS` only.
 **Deadline:** Saturday 2026-11-21 (IST); target Friday evening feature freeze.
 **Maintainers:** Builder owns product decisions; Codex implements one authorized phase; architectural review gates further work.
 
 > Repo-local continuity. Status is evidence, not completion by assertion. Latest user acceptance/routing adjustment is recorded in ADR-016 and the handoff below.
+
+## Phase 6B.2C.1 handoff
+
+Verified base `64bf8695b34e2125a8a240f8e1f233dbd745ce88`. Frozen development registry `data/golden_dataset_v1.json` contains 14 entries and 13 unique submissions, including ten hash-locked PDFs. `AMBIGUOUS_PO` is shared with human workflow regression and counts once per submission. Both separate PO-action targets passed with trusted facts. F1–F3 remain specification-only historical probes. `SCOPE_UNAUTHORIZED_LINE` correctly reviews only line 2, but the owner and action differ from the frozen Procurement and amendment/correction targets. Both mismatches are recorded as strict expected failures. No production logic changed. `STATEMENT_PRIOR_BALANCE` is Ready on trusted current-invoice facts, with provider extraction and grounding still unmeasured. Both new PDFs reproduce byte-for-byte and were visually inspected. Zero Gemini calls and no held-out data generated or inspected. Detailed commands and gate are in `docs/PHASE_06B2C1_REPORT.md`. Stop for review before executing a dataset-wide integration or live benchmark.
 
 ## North star
 

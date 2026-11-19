@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AP Compass evaluation report v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["dataset_version", "dataset_sha256", "code_commit", "layer", "split", "attempts", "metrics"],
+  "properties": {
+    "dataset_version": {"type": "string", "minLength": 1},
+    "dataset_sha256": {"$ref": "#/$defs/sha256"},
+    "code_commit": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
+    "layer": {"enum": ["A", "B", "C"]},
+    "split": {"enum": ["development", "heldout"]},
+    "attempts": {"type": "array", "items": {"$ref": "#/$defs/attempt"}},
+    "metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["invoice_count", "executed_count", "technical_failures", "critical_field_exact_matches", "missing_fields", "hallucinated_fields", "evidence_grounding_correct", "exact_decisions", "false_ready", "unnecessary_review", "required_finding_recall", "owner_matches", "model_calls", "latency_ms"],
+      "properties": {
+        "invoice_count": {"$ref": "#/$defs/metric"},
+        "executed_count": {"$ref": "#/$defs/metric"},
+        "technical_failures": {"$ref": "#/$defs/metric"},
+        "critical_field_exact_matches": {"$ref": "#/$defs/metric"},
+        "missing_fields": {"$ref": "#/$defs/metric"},
+        "hallucinated_fields": {"$ref": "#/$defs/metric"},
+        "evidence_grounding_correct": {"$ref": "#/$defs/metric"},
+        "exact_decisions": {"$ref": "#/$defs/metric"},
+        "false_ready": {"$ref": "#/$defs/metric"},
+        "unnecessary_review": {"$ref": "#/$defs/metric"},
+        "required_finding_recall": {"$ref": "#/$defs/metric"},
+        "owner_matches": {"$ref": "#/$defs/metric"},
+        "model_calls": {"$ref": "#/$defs/metric"},
+        "latency_ms": {"$ref": "#/$defs/metric"}
+      }
+    }
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "decision": {"enum": ["READY_FOR_AP", "REVIEW_REQUIRED", "BLOCKED", null]},
+    "metric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["numerator", "denominator"],
+      "properties": {
+        "numerator": {"type": "number", "minimum": 0},
+        "denominator": {"type": "integer", "minimum": 0}
+      }
+    },
+    "field": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["field", "comparison", "evidence"],
+      "properties": {
+        "field": {"type": "string", "minLength": 1},
+        "comparison": {"enum": ["exact", "wrong", "missing", "hallucinated", "correct_absence", "unlabelled", "not_observed"]},
+        "evidence": {"enum": ["correct", "incorrect", "unlabelled", "not_observed"]}
+      }
+    },
+    "attempt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["case_id", "track", "attempt", "status", "execution_state", "decision", "finding_codes", "fields", "model_calls", "latency_ms"],
+      "properties": {
+        "case_id": {"type": "string", "minLength": 1},
+        "track": {"enum": ["submission", "po_confirmation", "policy_variant"]},
+        "attempt": {"type": "integer", "minimum": 1},
+        "status": {"enum": ["not_executed", "executed", "ineligible", "inconclusive"]},
+        "execution_state": {"enum": ["COMPLETED", "PROCESSING_FAILED", "INTERRUPTED", null]},
+        "decision": {"$ref": "#/$defs/decision"},
+        "finding_codes": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+        "fields": {"type": "array", "items": {"$ref": "#/$defs/field"}},
+        "owner": {"type": ["string", "null"]},
+        "route": {"enum": ["native_text", "image_only", "mixed", null]},
+        "model_id": {"type": ["string", "null"]},
+        "model_calls": {"type": ["integer", "null"], "minimum": 0},
+        "latency_ms": {"type": ["number", "null"], "minimum": 0},
+        "run_reference": {"type": "string"},
+        "notes": {"type": "string"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"execution_state": {"enum": ["PROCESSING_FAILED", "INTERRUPTED"]}}},
+          "then": {"properties": {"decision": {"type": "null"}, "finding_codes": {"maxItems": 0}}}
+        },
+        {
+          "if": {"properties": {"status": {"enum": ["not_executed", "ineligible"]}}},
+          "then": {"properties": {"execution_state": {"type": "null"}, "decision": {"type": "null"}, "finding_codes": {"maxItems": 0}, "fields": {"maxItems": 0}, "model_calls": {"type": "null"}, "latency_ms": {"type": "null"}}}
+        }
+      ]
+    }
+  }
+}

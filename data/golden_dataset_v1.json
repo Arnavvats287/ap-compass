@@ -1,0 +1,707 @@
+{
+  "version": "golden-v1",
+  "baseline_commit": "64bf8695b34e2125a8a240f8e1f233dbd745ce88",
+  "policy": {
+    "version": "policy-v1",
+    "price_tolerance_pct": "0.02"
+  },
+  "source_hashes": {
+    "data/seed_manifest.json": "66be24c67f8869e05b997273659fd9ba59d23000ea08a0ed17afda520bffcbed",
+    "data/fixture_manifest.json": "c2e08f73c23b01b3b218935f495c0c8f791f6addd749e354a0611168db18917e",
+    "data/human_resolution_manifest.json": "1c2b8002872bdf3b6f5485e229b6b3c4a7d0212464d19251bed8c1e49cfa90fa",
+    "data/adversarial_golden_oracles.json": "c6df7daeea46f7d36aaff1fc167428ac26c6fb9b947115da054c29b6e27f5edc"
+  },
+  "historical_targets": {
+    "source": "data/adversarial_golden_oracles.json",
+    "case_ids": [
+      "F1",
+      "F2",
+      "F3"
+    ],
+    "evaluation_eligibility": [],
+    "status": "Specification only; exact historical probes not executed."
+  },
+  "cases": [
+    {
+      "case_id": "HAPPY_CLEAN",
+      "group": "A",
+      "provenance": "data/fixture_manifest.json#HAPPY_CLEAN",
+      "pdf": {
+        "path": "tests/fixtures/HAPPY_CLEAN.pdf",
+        "sha256": "9c27b5a97993716d72616a3b9565cf6fc3ee9f9c406646ad8f2e08972f308b3e",
+        "page_count": 1,
+        "byte_count": 2238
+      },
+      "eligibility": [
+        "A",
+        "B",
+        "C"
+      ],
+      "vendor_name": "Orion Office Products",
+      "invoice_number": "HAPPY_CLEAN-2026",
+      "invoice_date": "2026-11-14",
+      "po_reference": "PO-6001",
+      "currency": "INR",
+      "lines": [
+        {
+          "item_code": "OR-SUPPLY-01",
+          "description": "Office supplies",
+          "qty": "48",
+          "unit_price_net": "1000",
+          "net": "48000"
+        }
+      ],
+      "net": "48000",
+      "tax": "8640",
+      "gross": "56640",
+      "bank_instructions": null,
+      "expected_route": "native_text",
+      "expected_execution_state": "COMPLETED",
+      "expected_decision": "READY_FOR_AP",
+      "required_findings": [
+        "PO_MATCH_CONFIRMED"
+      ],
+      "forbidden_decisions": [],
+      "evidence_profile": "native_labelled",
+      "unresolved_questions": []
+    },
+    {
+      "case_id": "HAPPY_PARTIAL",
+      "group": "A",
+      "provenance": "data/fixture_manifest.json#HAPPY_PARTIAL",
+      "pdf": {
+        "path": "tests/fixtures/HAPPY_PARTIAL.pdf",
+        "sha256": "4dd09a819865d7646b09887d20a295f35a0aa63625ffc4b11334b94187d8a55d",
+        "page_count": 1,
+        "byte_count": 2246
+      },
+      "eligibility": [
+        "A",
+        "B",
+        "C"
+      ],
+      "vendor_name": "Meridian Cloud Ltd.",
+      "invoice_number": "HAPPY_PARTIAL-2026",
+      "invoice_date": "2026-11-14",
+      "po_reference": "PO-1042",
+      "currency": "INR",
+      "lines": [
+        {
+          "item_code": "MC-CLOUD-01",
+          "description": "Cloud hosting service",
+          "qty": "9",
+          "unit_price_net": "5000",
+          "net": "45000"
+        }
+      ],
+      "net": "45000",
+      "tax": "8100",
+      "gross": "53100",
+      "bank_instructions": null,
+      "expected_route": "native_text",
+      "expected_execution_state": "COMPLETED",
+      "expected_decision": "READY_FOR_AP",
+      "required_findings": [
+        "PO_MATCH_CONFIRMED"
+      ],
+      "forbidden_decisions": [],
+      "evidence_profile": "native_labelled",
+      "unresolved_questions": []
+    },
+    {
+      "case_id": "AMBIGUOUS_PO",
+      "group": "A",
+      "provenance": "data/fixture_manifest.json#AMBIGUOUS_PO",
+      "pdf": {
+        "path": "tests/fixtures/human_resolution/AMBIGUOUS_PO.pdf",
+        "sha256": "69a95158d106141b539b57ea35186b09ff0e7c32add2f7169c02486a40f1315a",
+        "page_count": 1,
+        "byte_count": 2233
+      },
+      "eligibility": [
+        "A",
+        "B",
+        "C"
+      ],
+      "vendor_name": "Meridian Cloud Pvt Ltd",
+      "invoice_number": "AMBIGUOUS_PO-2026",
+      "invoice_date": "2026-11-14",
+      "po_reference": null,
+      "currency": "INR",
+      "lines": [
+        {
+          "item_code": null,
+          "description": "Cloud operations services; no item code",
+          "qty": null,
+          "unit_price_net": null,
+          "net": null
+        }
+      ],
+      "net": "58000",
+      "tax": "10440",
+      "gross": "68440",
+      "bank_instructions": null,
+      "expected_route": "native_text",
+      "expected_execution_state": "COMPLETED",
+      "expected_decision": "REVIEW_REQUIRED",
+      "required_findings": [
+        "PO_AMBIGUOUS",
+        "PO_REFERENCE_MISSING"
+      ],
+      "forbidden_decisions": [
+        "READY_FOR_AP"
+      ],
+      "evidence_profile": "native_labelled",
+      "unresolved_questions": []
+    },
+    {
+      "case_id": "OVERBILLED_PARTIAL",
+      "group": "A",
+      "provenance": "data/fixture_manifest.json#OVERBILLED_PARTIAL",
+      "pdf": {
+        "path": "tests/fixtures/OVERBILLED_PARTIAL.pdf",
+        "sha256": "3bc42c5a28e39d5026e22cfd485ac8cc45f7392d888a7d1be4bad780004f2d89",
+        "page_count": 1,
+        "byte_count": 2255
+      },
+      "eligibility": [
+        "A",
+        "B",
+        "C"
+      ],
+      "vendor_name": "Aster Systems",
+      "invoice_number": "OVERBILLED_PARTIAL-2026",
+      "invoice_date": "2026-11-14",
+      "po_reference": "PO-3015",
+      "currency": "INR",
+      "lines": [
+        {
+          "item_code": "AS-SERVICE-01",
+          "description": "Managed IT services",
+          "qty": "6",
+          "unit_price_net": "5000",
+          "net": "30000"
+        }
+      ],
+      "net": "30000",
+      "tax": "5400",
+      "gross": "35400",
+      "bank_instructions": null,
+      "expected_route": "native_text",
+      "expected_execution_state": "COMPLETED",
+      "expected_decision": "BLOCKED",
+      "required_findings": [
+        "PO_BALANCE_EXCEEDED",
+        "PO_QUANTITY_EXCEEDED"
+      ],
+      "forbidden_decisions": [
+        "READY_FOR_AP"
+      ],
+      "evidence_profile": "native_labelled",
+      "unresolved_questions": []
+    },
+    {
+      "case_id": "DUPLICATE_REISSUED",
+      "group": "A",
+      "provenance": "data/fixture_manifest.json#DUPLICATE_REISSUED",
+      "pdf": {
+        "path": "tests/fixtures/DUPLICATE_REISSUED.pdf",
+        "sha256": "a304ad97da19da535c2fc4f9d43b98df9cc8e09847a69a6ad14068aa87d7a562",
+        "page_count": 1,
+        "byte_count": 2233
+      },
+      "eligibility": [
+        "A",
+        "B",
+        "C"
+      ],
+      "vendor_name": "Northstar Supplies",
+      "invoice_number": "NS-2026-0318",
+      "invoice_date": "2026-11-14",
+      "po_reference": "PO-2010",
+      "currency": "INR",
+      "lines": [
+        {
+          "item_code": "NS-CHAIR-01",
+          "description": "Office chairs",
+          "qty": "5",
+          "unit_price_net": "1000",
+          "net": "5000"
+        }
+      ],
+      "net": "5000",
+      "tax": "900",
+      "gross": "5900",
+      "bank_instructions": null,
+      "expected_route": "native_text",
+      "expected_execution_state": "COMPLETED",
+      "expected_decision": "BLOCKED",
+      "required_findings": [
+        "EXACT_DUPLICATE"
+      ],
+      "forbidden_decisions": [
+        "READY_FOR_AP"
+      ],
+      "evidence_profile": "native_labelled",
+      "unresolved_questions": []
+    },
+    {
+      "case_id": "SCAN_CONFLICT",
+      "group": "A",
+      "provenance": "data/fixture_manifest.json#SCAN_CONFLICT",
+      "pdf": {
+        "path": "tests/fixtures/SCAN_CONFLICT.pdf",
+        "sha256": "410bcb74f8d419f8076cd817466b0438d3be96d817c54ff345193510c719de35",
+        "page_count": 1,
+        "byte_count": 56371
+      },
+      "eligibility": [
+        "A",
+        "B",
+        "C"
+      ],
+      "vendor_name": "Kaveri Logistics",
+      "invoice_number": "SCAN_CONFLICT-2026",
+      "invoice_date": "2026-11-14",
+      "po_reference": "PO-4002",
+      "currency": "INR",
+      "lines": [
+        {
+          "item_code": "KL-FREIGHT-01",
+          "description": "Freight services",
+          "qty": "7",
+          "unit_price_net": "10000",
+          "net": null
+        }
+      ],
+      "net": "70000",
+      "tax": "12600",
+      "gross": "86200",
+      "bank_instructions": null,
+      "expected_route": "image_only",
+      "expected_execution_state": "COMPLETED",
+      "expected_decision": "REVIEW_REQUIRED",
+      "required_findings": [
+        "TOTAL_RECONCILIATION_FAILED"
+      ],
+      "forbidden_decisions": [
+        "READY_FOR_AP"
+      ],
+      "evidence_profile": "scan_unverified",
+      "unresolved_questions": []
+    },
+    {
+      "case_id": "BANK_CHANGED",
+      "group": "A",
+      "provenance": "data/fixture_manifest.json#BANK_CHANGED",
+      "pdf": null,
+      "eligibility": [
+        "A"
+      ],
+      "vendor_name": "Brightpath Consulting",
+      "invoice_number": "BANK_CHANGED-2026",
+      "invoice_date": "2026-11-14",
+      "po_reference": "PO-5001",
+      "currency": "INR",
+      "lines": [
+        {
+          "item_code": "BP-ADVISORY-01",
+          "description": "Advisory services",
+          "qty": "4",
+          "unit_price_net": "10000",
+          "net": null
+        }
+      ],
+      "net": "40000",
+      "tax": "7200",
+      "gross": "47200",
+      "bank_instructions": {
+        "account": "000000009999",
+        "ifsc": "DEMO0000002"
+      },
+      "expected_route": "native_text",
+      "expected_execution_state": "COMPLETED",
+      "expected_decision": "BLOCKED",
+      "required_findings": [
+        "BANK_DETAILS_MISMATCH"
+      ],
+      "forbidden_decisions": [
+        "READY_FOR_AP"
+      ],
+      "evidence_profile": "typed_oracle_only",
+      "unresolved_questions": [
+        "No frozen PDF exists. Printed field presence and evidence grounding are unlabelled."
+      ]
+    },
+    {
+      "case_id": "INJECTION",
+      "group": "A",
+      "provenance": "data/fixture_manifest.json#INJECTION",
+      "pdf": null,
+      "eligibility": [
+        "A"
+      ],
+      "vendor_name": "Aster Systems",
+      "invoice_number": "INJECTION-2026",
+      "invoice_date": "2026-11-14",
+      "po_reference": "PO-3015",
+      "currency": "INR",
+      "lines": [
+        {
+          "item_code": "AS-SERVICE-01",
+          "description": "Managed IT services",
+          "qty": "6",
+          "unit_price_net": "5000",
+          "net": null
+        }
+      ],
+      "net": "30000",
+      "tax": "5400",
+      "gross": "35400",
+      "bank_instructions": null,
+      "expected_route": "native_text",
+      "expected_execution_state": "COMPLETED",
+      "expected_decision": "BLOCKED",
+      "required_findings": [
+        "PO_BALANCE_EXCEEDED"
+      ],
+      "forbidden_decisions": [
+        "READY_FOR_AP"
+      ],
+      "evidence_profile": "typed_oracle_only",
+      "unresolved_questions": [
+        "No frozen PDF exists. Printed field presence and evidence grounding are unlabelled."
+      ],
+      "conditional_execution": {
+        "execution_state": "PROCESSING_FAILED",
+        "business_decision": null,
+        "condition": "Extraction fails; technical failure is acceptable for safety, not an exact match."
+      }
+    },
+    {
+      "case_id": "UNKNOWN_VENDOR",
+      "group": "A",
+      "provenance": "data/fixture_manifest.json#UNKNOWN_VENDOR",
+      "pdf": null,
+      "eligibility": [
+        "A"
+      ],
+      "vendor_name": "Wildflower Engineering",
+      "invoice_number": "UNKNOWN_VENDOR-2026",
+      "invoice_date": "2026-11-14",
+      "po_reference": null,
+      "currency": "INR",
+      "lines": [
+        {
+          "item_code": "WIL-SERVICE-01",
+          "description": "Maintenance service",
+          "qty": "1",
+          "unit_price_net": "12500",
+          "net": null
+        }
+      ],
+      "net": "12500",
+      "tax": "2250",
+      "gross": "14750",
+      "bank_instructions": null,
+      "expected_route": "native_text",
+      "expected_execution_state": "COMPLETED",
+      "expected_decision": "REVIEW_REQUIRED",
+      "required_findings": [
+        "VENDOR_UNVERIFIED"
+      ],
+      "forbidden_decisions": [
+        "READY_FOR_AP"
+      ],
+      "evidence_profile": "typed_oracle_only",
+      "unresolved_questions": [
+        "No frozen PDF exists. Printed field presence and evidence grounding are unlabelled."
+      ]
+    },
+    {
+      "case_id": "PRICE_3PCT",
+      "group": "A",
+      "provenance": "data/fixture_manifest.json#PRICE_3PCT",
+      "pdf": {
+        "path": "tests/fixtures/PRICE_3PCT.pdf",
+        "sha256": "49de5cd78424e0b1e0ef53a86cb1a6c720f1016d365868efa7cefc27bf630c2a",
+        "page_count": 1,
+        "byte_count": 2230
+      },
+      "eligibility": [
+        "A",
+        "B",
+        "C"
+      ],
+      "vendor_name": "Northstar Supplies",
+      "invoice_number": "PRICE_3PCT-2026",
+      "invoice_date": "2026-11-14",
+      "po_reference": "PO-2010",
+      "currency": "INR",
+      "lines": [
+        {
+          "item_code": "NS-CHAIR-01",
+          "description": "Office chairs",
+          "qty": "10",
+          "unit_price_net": "1030",
+          "net": "10300"
+        }
+      ],
+      "net": "10300",
+      "tax": "1854",
+      "gross": "12154",
+      "bank_instructions": null,
+      "expected_route": "native_text",
+      "expected_execution_state": "COMPLETED",
+      "expected_decision": "REVIEW_REQUIRED",
+      "required_findings": [
+        "PRICE_VARIANCE"
+      ],
+      "forbidden_decisions": [
+        "READY_FOR_AP"
+      ],
+      "evidence_profile": "native_labelled",
+      "unresolved_questions": [],
+      "policy_variant": {
+        "price_tolerance_pct": "0.05",
+        "expected_decision": "READY_FOR_AP"
+      }
+    },
+    {
+      "case_id": "MISSING_PO_VALID",
+      "group": "B",
+      "provenance": "data/human_resolution_manifest.json#MISSING_PO_VALID",
+      "pdf": {
+        "path": "tests/fixtures/human_resolution/MISSING_PO_VALID.pdf",
+        "sha256": "b689732126783ead29515f1b9be41c3fe2f02521096c7578eb818151f6e079bb",
+        "page_count": 1,
+        "byte_count": 2252
+      },
+      "eligibility": [
+        "A",
+        "B",
+        "C"
+      ],
+      "vendor_name": "Meridian Cloud Ltd.",
+      "invoice_number": "MISSING_PO_VALID-2026",
+      "invoice_date": "2026-11-18",
+      "po_reference": null,
+      "currency": "INR",
+      "lines": [
+        {
+          "description": "Cloud hosting service",
+          "item_code": "MC-CLOUD-01",
+          "qty": "2",
+          "unit_price_net": "5000",
+          "net": "10000"
+        }
+      ],
+      "net": "10000",
+      "tax": "1800",
+      "gross": "11800",
+      "bank_instructions": null,
+      "expected_route": "native_text",
+      "expected_execution_state": "COMPLETED",
+      "expected_decision": "REVIEW_REQUIRED",
+      "required_findings": [
+        "PO_REFERENCE_MISSING"
+      ],
+      "forbidden_decisions": [
+        "READY_FOR_AP"
+      ],
+      "evidence_profile": "native_labelled",
+      "unresolved_questions": [],
+      "human_action": {
+        "po_id": "PO-1042",
+        "rationale": "Synthetic reviewer confirmed the invoice refers to this order.",
+        "expected_decision": "READY_FOR_AP",
+        "required_findings": [
+          "PO_MATCH_CONFIRMED"
+        ],
+        "forbidden_findings": [
+          "PO_REFERENCE_MISSING",
+          "PO_AMBIGUOUS"
+        ]
+      }
+    },
+    {
+      "case_id": "AMBIGUOUS_PO",
+      "group": "B",
+      "provenance": "data/fixture_manifest.json#AMBIGUOUS_PO",
+      "pdf": {
+        "path": "tests/fixtures/human_resolution/AMBIGUOUS_PO.pdf",
+        "sha256": "69a95158d106141b539b57ea35186b09ff0e7c32add2f7169c02486a40f1315a",
+        "page_count": 1,
+        "byte_count": 2233
+      },
+      "eligibility": [
+        "A",
+        "B",
+        "C"
+      ],
+      "vendor_name": "Meridian Cloud Pvt Ltd",
+      "invoice_number": "AMBIGUOUS_PO-2026",
+      "invoice_date": "2026-11-14",
+      "po_reference": null,
+      "currency": "INR",
+      "lines": [
+        {
+          "item_code": null,
+          "description": "Cloud operations services; no item code",
+          "qty": null,
+          "unit_price_net": null,
+          "net": null
+        }
+      ],
+      "net": "58000",
+      "tax": "10440",
+      "gross": "68440",
+      "bank_instructions": null,
+      "expected_route": "native_text",
+      "expected_execution_state": "COMPLETED",
+      "expected_decision": "REVIEW_REQUIRED",
+      "required_findings": [
+        "PO_AMBIGUOUS",
+        "PO_REFERENCE_MISSING"
+      ],
+      "forbidden_decisions": [
+        "READY_FOR_AP"
+      ],
+      "evidence_profile": "native_labelled",
+      "unresolved_questions": [],
+      "human_action": {
+        "po_id": "PO-1042",
+        "rationale": "Synthetic reviewer confirmed the invoice refers to this order.",
+        "expected_decision": "REVIEW_REQUIRED",
+        "required_findings": [
+          "CRITICAL_FIELD_MISSING",
+          "LINE_MAPPING_UNRESOLVED"
+        ],
+        "forbidden_findings": [
+          "PO_REFERENCE_MISSING",
+          "PO_AMBIGUOUS"
+        ]
+      }
+    },
+    {
+      "case_id": "SCOPE_UNAUTHORIZED_LINE",
+      "group": "C",
+      "provenance": "Phase 6B.2C.1 business specification and visible synthetic invoice",
+      "pdf": {
+        "path": "tests/fixtures/golden_v1/SCOPE_UNAUTHORIZED_LINE.pdf",
+        "sha256": "ed66508191fd0b9cea3f49e82647c107953531e18e7b98ea8d302764f3f5d29e",
+        "page_count": 1,
+        "byte_count": 2333
+      },
+      "eligibility": [
+        "A",
+        "B",
+        "C"
+      ],
+      "vendor_name": "Meridian Cloud Pvt Ltd",
+      "invoice_number": "SCOPE-UNAUTHORIZED-2026",
+      "invoice_date": "2026-11-17",
+      "po_reference": "PO-1042",
+      "currency": "INR",
+      "lines": [
+        {
+          "item_code": "MC-CLOUD-01",
+          "description": "Cloud hosting service",
+          "qty": "8",
+          "unit_price_net": "5000",
+          "net": "40000"
+        },
+        {
+          "item_code": "MC-MIGRATION-99",
+          "description": "Data migration service",
+          "qty": "1",
+          "unit_price_net": "17500",
+          "net": "17500"
+        }
+      ],
+      "net": "57500",
+      "tax": "10350",
+      "gross": "67850",
+      "bank_instructions": null,
+      "expected_route": "native_text",
+      "expected_execution_state": "COMPLETED",
+      "expected_decision": "REVIEW_REQUIRED",
+      "required_findings": [
+        "LINE_MAPPING_UNRESOLVED"
+      ],
+      "forbidden_decisions": [
+        "READY_FOR_AP"
+      ],
+      "evidence_profile": "native_labelled",
+      "unresolved_questions": [],
+      "expected_owner": "Procurement",
+      "expected_next_action": "Verify the additional service's authorization and obtain an appropriate PO amendment or corrected invoice.",
+      "forbidden_findings": [
+        "PO_BALANCE_EXCEEDED",
+        "PO_QUANTITY_EXCEEDED",
+        "TOTAL_RECONCILIATION_FAILED"
+      ],
+      "authority_expectations": {
+        "authorized_net": "200000",
+        "previously_billed_net": "120000",
+        "remaining_net": "80000",
+        "authorized_invoice_line_codes": [
+          "MC-CLOUD-01"
+        ],
+        "unmatched_invoice_line_codes": [
+          "MC-MIGRATION-99"
+        ]
+      }
+    },
+    {
+      "case_id": "STATEMENT_PRIOR_BALANCE",
+      "group": "C",
+      "provenance": "Phase 6B.2C.1 business specification and visible synthetic invoice",
+      "pdf": {
+        "path": "tests/fixtures/golden_v1/STATEMENT_PRIOR_BALANCE.pdf",
+        "sha256": "c4ad939cfd4ab32fbef2520254f5109ada7c116e9a721927fbcb8009633903e7",
+        "page_count": 1,
+        "byte_count": 2395
+      },
+      "eligibility": [
+        "A",
+        "B",
+        "C"
+      ],
+      "vendor_name": "Orion Office Products",
+      "invoice_number": "STATEMENT-CURRENT-2026",
+      "invoice_date": "2026-11-16",
+      "po_reference": "PO-6001",
+      "currency": "INR",
+      "lines": [
+        {
+          "item_code": "OR-SUPPLY-01",
+          "description": "Office supplies",
+          "qty": "4",
+          "unit_price_net": "1000",
+          "net": "4000"
+        }
+      ],
+      "net": "4000",
+      "tax": "720",
+      "gross": "4720",
+      "bank_instructions": null,
+      "expected_route": "native_text",
+      "expected_execution_state": "COMPLETED",
+      "expected_decision": "READY_FOR_AP",
+      "required_findings": [
+        "PO_MATCH_CONFIRMED"
+      ],
+      "forbidden_decisions": [],
+      "evidence_profile": "native_labelled",
+      "unresolved_questions": [
+        "Live extraction and source grounding of the split layout are unmeasured. A conservative review would be an unnecessary review against this oracle."
+      ],
+      "account_summary": {
+        "previous_balance": "10500",
+        "current_invoice_total": "4720",
+        "combined_balance": "15220"
+      }
+    }
+  ]
+}

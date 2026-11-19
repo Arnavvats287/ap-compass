@@ -1,9 +1,9 @@
 # AP Compass — Project Status / Gate Register
 
 **Updated:** 2026-11-19 IST.
-**Current gate:** Phase 6B.2B.1 mixed-document review.
-**Base:** 51b1a7fe07f85b2b32d4ec8c3753cf521b44bda9.
-**Branch:** codex/phase-06b2b1-mixed-review. **Checkpoint:** phase-06b2b1-mixed-review.
+**Current gate:** Phase 6B.2C.1 golden dataset preparation.
+**Base:** 64bf8695b34e2125a8a240f8e1f233dbd745ce88.
+**Branch:** codex/phase-06b2c1-golden-dataset. **Checkpoint:** phase-06b2c1-golden-dataset.
 Final exact SHA and remote publication/clean-tree verification accompany the checkpoint handoff.
 No prior-tag/default-branch alteration. Deadline remains Saturday 2026-11-21 IST.
 
@@ -18,7 +18,9 @@ No prior-tag/default-branch alteration. Deadline remains Saturday 2026-11-21 IST
 | 06A Policy and trace | Functionally accepted; refinement accepted in6A.1 | 299 backend +47 frontend tests; one live PRICE extraction, zero-AI previews; two creative browser iterations |
 | 06A.1 Signature UI | ACCEPTED | b8e5ced6e7dcb3774364cfef44f1a0be0f06a5d0 checkpoint preserved |
 | 06B.1 Human PO resolution | Local PASS; review pending |328backend/58frontend tests; append-only action; source/ledger unchanged;0Gemini |
-| Further6B scenarios | LOCKED | No additional creative case,correction or release scope |
+| 06B.2B.1 Mixed-document review | ACCEPTED | Verified base for golden dataset preparation |
+| 06B.2C.1 Golden dataset preparation | PASS, review pending | 14 entries, 13 unique submissions, ten frozen PDFs and two separate human-action targets. 394 backend passed plus two expected scope finding gaps, 58 frontend passed. Zero live calls. |
+| Golden model evaluation and further scenarios | LOCKED | Await explicit authorization |
 | 07 Release | LOCKED | No public/paid/Docker deployment |
 
 ## Verified Phase 6A evidence
