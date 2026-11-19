@@ -89,32 +89,6 @@ export default function Queue() {
           <ExportInvoices />
         </div>
       </div>
-      <section className="operations-decisions" aria-label="Filter recorded decisions">
-        {decisionTabs.map(({ key, Icon }) => {
-          const label = filters.find(([value]) => value === key)?.[1]
-          const count =
-            !query.isError && comparable?.filter((run) => matchesFilter(run, key)).length
-          return (
-            <button
-              key={key}
-              type="button"
-              aria-label={label}
-              aria-describedby={`operations-count-${key}`}
-              aria-pressed={status === key}
-              className="operations-decision"
-              data-outcome={key}
-              onClick={() => update('status', key)}
-            >
-              <span className="operations-decision-label">
-                <Icon size={18} aria-hidden="true" /> {label}
-              </span>
-              <strong id={`operations-count-${key}`}>
-                {typeof count === 'number' ? count : '—'}
-              </strong>
-            </button>
-          )
-        })}
-      </section>
       <section className="panel queue-panel" aria-labelledby="queue-title">
         <div className="queue-toolbar">
           <div className="operations-queue-heading">
@@ -124,6 +98,32 @@ export default function Queue() {
                 {rows.length} of {query.data.length} invoices shown
               </span>
             )}
+          </div>
+          <div className="operations-decisions" role="group" aria-label="Filter recorded decisions">
+            {decisionTabs.map(({ key, Icon }) => {
+              const label = filters.find(([value]) => value === key)?.[1]
+              const count =
+                !query.isError && comparable?.filter((run) => matchesFilter(run, key)).length
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  aria-label={label}
+                  aria-describedby={`operations-count-${key}`}
+                  aria-pressed={status === key}
+                  className="operations-decision"
+                  data-outcome={key}
+                  onClick={() => update('status', key)}
+                >
+                  <span className="operations-decision-label">
+                    <Icon size={18} aria-hidden="true" /> {label}
+                  </span>
+                  <strong id={`operations-count-${key}`}>
+                    {typeof count === 'number' ? count : '—'}
+                  </strong>
+                </button>
+              )
+            })}
           </div>
           <div className="ops-queue-controls">
             <div className="search-input">
