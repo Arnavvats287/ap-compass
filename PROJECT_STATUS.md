@@ -1,9 +1,10 @@
 # AP Compass — Project Status / Gate Register
 
 **Updated:** 2026-11-20 IST.
-**Current gate:** Phase G.1 invoice workspace redesign verified for local review.
-**Base:** 1d08b34736bcc1ceddbf63473a20fe0353b781df.
-**Branch:** codex/phase-g1-invoice-workspace. **Checkpoint:** phase-g1-invoice-workspace.
+**Current gate:** Phase G.2 operations queue and batch uploader verified for local review.
+**Base:** f786121660650121b69ab5a015bd188c153dab6a.
+**Branch:** codex/phase-g2-invoice-operations. **Checkpoint:** phase-g2-invoice-operations.
+See the [Phase G.2 report](docs/PHASE_G2_OPERATIONS_REDESIGN_REPORT.md) for captures, the eight-file rehearsal and regression results.
 See the [Phase G.1 report](docs/PHASE_G1_WORKSPACE_REDESIGN_REPORT.md) for before and after captures, Chrome checks and frontend regression results.
 See the [final automation quality report](docs/FINAL_AUTOMATION_QUALITY_REPORT.md) for the controlled comparison. Ready increased from 2/12 to 6/12 across the evaluated Ready targets, with 0/14 false Ready outcomes on either side.
 No prior-tag/default-branch alteration. Deadline remains Saturday 2026-11-21 IST.

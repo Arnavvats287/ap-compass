@@ -31,8 +31,8 @@ export function rankVendors(runs: RunSummary[]) {
 }
 
 export const sortChoices = [
-  ['latest', 'Newest updated'],
-  ['oldest', 'Oldest updated'],
+  ['latest', 'Newest first'],
+  ['oldest', 'Oldest first'],
   ['supplier', 'Supplier A–Z'],
 ] as const
 

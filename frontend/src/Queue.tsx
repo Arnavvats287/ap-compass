@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { Search, Upload } from 'lucide-react'
+import { ArrowUpRight, CircleCheck, Search, ShieldAlert, TriangleAlert, Upload } from 'lucide-react'
 import { useRuns, active } from './queries'
 import { Empty, ErrorState, Loading, RunTable, UploadPanel } from './components'
 import type { ExecutionState, Outcome, RunSummary } from './types'
@@ -26,6 +26,13 @@ const executionFilters: Record<string, ExecutionState> = {
   failed: 'PROCESSING_FAILED',
   interrupted: 'INTERRUPTED',
 }
+const decisionTabs = [
+  { key: 'attention', Icon: ArrowUpRight },
+  { key: 'blocked', Icon: ShieldAlert },
+  { key: 'review', Icon: TriangleAlert },
+  { key: 'ready', Icon: CircleCheck },
+] as const
+const utilityFilters = filters.filter(([key]) => !decisionTabs.some((tab) => tab.key === key))
 function matchesFilter(run: RunSummary, filter: string) {
   if (filter === 'attention') return isAttention(run)
   if (filter === 'processing') return active(run.execution_state)
@@ -64,18 +71,16 @@ export default function Queue() {
   const vendor = params.get('vendor')
   const requestedSort = params.get('sort')
   const sort = sortChoices.find(([key]) => key === requestedSort)?.[0] ?? 'latest'
-  const rows = sortRuns(
-    query.data?.filter(
-      (run) => (!vendor || run.vendor_name === vendor) && matches(run, status, search),
-    ) ?? [],
-    sort,
+  const comparable = query.data?.filter(
+    (run) => (!vendor || run.vendor_name === vendor) && matches(run, 'all', search),
   )
+  const rows = sortRuns(comparable?.filter((run) => matchesFilter(run, status)) ?? [], sort)
   return (
     <div className="ops-page ops-queue">
-      <div className="page-heading ops-heading">
+      <div className="page-heading ops-heading operations-heading">
         <div>
           <h1>Invoice Operations</h1>
-          <p>Review the exception. Find the evidence. Move the invoice forward.</p>
+          <p>Review decisions and find the next action.</p>
         </div>
         <div className="ops-heading-actions">
           <Link className="button primary" to="/runs/upload">
@@ -84,14 +89,42 @@ export default function Queue() {
           <ExportInvoices />
         </div>
       </div>
+      <section className="operations-decisions" aria-label="Filter recorded decisions">
+        {decisionTabs.map(({ key, Icon }) => {
+          const label = filters.find(([value]) => value === key)?.[1]
+          const count =
+            !query.isError && comparable?.filter((run) => matchesFilter(run, key)).length
+          return (
+            <button
+              key={key}
+              type="button"
+              aria-label={label}
+              aria-describedby={`operations-count-${key}`}
+              aria-pressed={status === key}
+              className="operations-decision"
+              data-outcome={key}
+              onClick={() => update('status', key)}
+            >
+              <span className="operations-decision-label">
+                <Icon size={18} aria-hidden="true" /> {label}
+              </span>
+              <strong id={`operations-count-${key}`}>
+                {typeof count === 'number' ? count : '—'}
+              </strong>
+            </button>
+          )
+        })}
+      </section>
       <section className="panel queue-panel" aria-labelledby="queue-title">
         <div className="queue-toolbar">
-          <h2 id="queue-title">
-            Invoice queue{' '}
-            <span className="muted">
-              {query.data ? `${rows.length} of ${query.data.length}` : '—'}
-            </span>
-          </h2>
+          <div className="operations-queue-heading">
+            <h2 id="queue-title">Invoice queue</h2>
+            {query.data && (
+              <span role="status">
+                {rows.length} of {query.data.length} invoices shown
+              </span>
+            )}
+          </div>
           <div className="ops-queue-controls">
             <div className="search-input">
               <Search size={18} aria-hidden="true" />
@@ -103,7 +136,7 @@ export default function Queue() {
                 name="q"
                 type="search"
                 autoComplete="off"
-                placeholder="Search invoice or supplier…"
+                placeholder="Search invoices or suppliers…"
                 value={search}
                 onChange={(e) => {
                   setSearch(e.target.value)
@@ -131,8 +164,8 @@ export default function Queue() {
             </button>
           </div>
         )}
-        <div className="filters" aria-label="Filter invoices">
-          {filters.map(([key, label]) => (
+        <div className="filters operations-filters" aria-label="Filter by intake status">
+          {utilityFilters.map(([key, label]) => (
             <button
               key={key}
               data-status={key}
@@ -157,9 +190,8 @@ export default function Queue() {
           />
         )}
         <p className="table-note">
-          Amounts are invoice totals including tax. Showing up to 100 recent runs; filters apply to
-          this list. Filters and overview counts use original automated decisions. Current
-          human-reviewed assessments are labelled separately.
+          Latest 100 runs. Amounts include tax. Decision filters use the recorded automated outcome.
+          Reviewed assessments are labeled separately.
         </p>
       </section>
       <UploadPanel compact />

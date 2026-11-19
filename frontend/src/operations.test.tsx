@@ -187,6 +187,13 @@ describe('connected operations views', () => {
       'href',
       '/runs/test-run',
     )
+    expect(screen.getByRole('button', { name: 'Needs attention' })).toHaveAccessibleDescription('2')
+    await userEvent.click(screen.getByRole('button', { name: 'Needs attention' }))
+    expect(within(table).getAllByRole('row')).toHaveLength(3)
+    expect(screen.getByRole('button', { name: 'Needs attention' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
   })
   it('keeps queue search/filter in URL and shows no matches honestly', async () => {
     defaults()

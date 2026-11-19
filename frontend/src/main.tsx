@@ -11,6 +11,7 @@ import './operations.css'
 import './batch.css'
 import './demo-finish.css'
 import './invoice-workspace.css'
+import './operations-desk.css'
 
 const client = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 1000 }, mutations: { retry: false } },

@@ -1,12 +1,16 @@
 # AP Compass — Project Memory (living handoff)
 
 **Last reviewed:** 2026-11-20 (IST)
-**Repository status:** F.3 and the final-quality release source are preserved. Phase G.1 is isolated in a separate local worktree.
-**Current authorized segment:** Phase G.1 invoice workspace only.
+**Repository status:** The final-quality release and G.1 checkpoints are preserved. Phase G.2 is isolated in a separate local worktree.
+**Current authorized segment:** Phase G.2 Invoice Operations and batch uploader only.
 **Deadline:** Saturday 2026-11-21 (IST); target Friday evening feature freeze.
 **Maintainers:** Builder owns product decisions; Codex implements one authorized phase; architectural review gates further work.
 
 > Repo-local continuity. Status is evidence, not completion by assertion. Latest user acceptance/routing adjustment is recorded in ADR-016 and the handoff below.
+
+## Phase G.2 operations handoff
+
+The queue has a recorded-decision filter strip, compact phone controls and clearer exception rows. Batch intake and results are presented side by side on desktop and stacked on mobile. Chrome verified all eight original PDFs uploaded serially in a disposable TEST_ONLY rehearsal with 3 Ready, 3 Review and 2 Blocked. Workbook data rows were 8/25/8. Zero Gemini requests. The frontend suite passed 70 tests and typecheck/build. See `docs/PHASE_G2_OPERATIONS_REDESIGN_REPORT.md`. Stop after G.2.
 
 ## Phase G.1 workspace handoff
 
