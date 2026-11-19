@@ -7,7 +7,7 @@ import re
 from app.contracts import EvidenceRefV1, ExtractedInvoiceV1
 from .consistency import HEADER_LABELS, disputed_headers, parse_printed_amount
 from .schema import SourceClaim
-from .source_layout import SUMMARY, flat, rows_for, split_headers, table_rows, unique_quotes
+from .source_layout import SUMMARY, flat, layout_quote, rows_for, split_headers, table_rows, unique_quotes
 from .types import DocumentInspection, ExtractionError
 
 LABELS = {
@@ -112,7 +112,8 @@ def local_support(invoice, field, value, page, claim):
                 return False
             index, text = headings[0]
             preceding = " ".join(source_lines[max(0, index - 2):index])
-            buyer_context = re.search(r"bill(?:ed)?\s*to|ship\s*to|sold\s*to|\bbuyer\b|\bcustomer\b", preceding, re.I)
+            buyer_context = re.search(r"bill(?:ed)?\s*to|ship\s*to|sold\s*to|\bbuyer\b|\bcustomer\b|"
+                                      r"remit(?:tance)?\s*(?:to|address)", preceding, re.I)
             if not buyer_context and printed_value(text, value):
                 candidates.append(text)
     elif leaf == "description":
@@ -150,10 +151,10 @@ def supported_cell(printed, value, claim, currency=None, *, quantity=False):
             and flat(claim.raw_value) == flat(printed))
 
 
-def layout_support(invoice, field, value, claim, headers, table, unique_rows):
+def layout_support(invoice, field, value, claim, quote, headers, table, unique_rows):
     if field in headers:
         pairs = headers[field]
-        return (len(pairs) == 1 and pairs[0].quote == flat(claim.quote)
+        return (len(pairs) == 1 and quote in pairs[0].quotes
                 and supported_cell(pairs[0].value, value, claim, invoice.currency))
     line = LINE_FIELD.fullmatch(field)
     if line and table:
@@ -162,7 +163,7 @@ def layout_support(invoice, field, value, claim, headers, table, unique_rows):
         # Ordinal mapping is allowed only for a complete single table with the same
         # item sequence and description context. The claim must select the row,
         # even when prices, quantities or item codes repeat elsewhere.
-        return (row.quote in unique_rows and row.quote == flat(claim.quote) and leaf in row.values
+        return (quote in unique_rows and quote in row.quotes and leaf in row.values
                 and supported_cell(row.values[leaf], value, claim, invoice.currency, quantity=leaf == "qty"))
     return False
 
@@ -174,10 +175,10 @@ def ground_evidence(invoice: ExtractedInvoiceV1, claims: tuple[SourceClaim, ...]
     layouts = {number: rows_for(page) for number, page in native_pages.items()}
     headers = {number: split_headers(rows) for number, rows in layouts.items()}
     tables = {number: table_rows(rows) for number, rows in layouts.items()}
-    full_tables = [table for table in tables.values() if table]
+    recognized_tables = [table for table in tables.values() if table is not None]
     eligible_table = ()
-    if len(full_tables) == 1:
-        table = full_tables[0]
+    if len(recognized_tables) == 1:
+        table = recognized_tables[0]
         if len(table) == len(invoice.lines) and all(
             line.item_code and printed_value(row.values["item_code"], line.item_code)
             and ("description" not in row.values or not line.description or printed_value(row.values["description"], line.description))
@@ -185,8 +186,8 @@ def ground_evidence(invoice: ExtractedInvoiceV1, claims: tuple[SourceClaim, ...]
         ):
             eligible_table = table
     located_quotes = {
-        number: {pair.quote for group in pairs.values() for pair in group if pair.quote}
-                | {row.quote for row in tables[number]}
+        number: {quote for group in pairs.values() for pair in group for quote in pair.quotes}
+                | {quote for row in (tables[number] or ()) for quote in row.quotes}
         for number, pairs in headers.items()
     }
     distinct_rows = unique_quotes(eligible_table)
@@ -218,13 +219,14 @@ def ground_evidence(invoice: ExtractedInvoiceV1, claims: tuple[SourceClaim, ...]
             else:
                 source, quote = sources[page.number], flat(claim.quote)
                 occurrences = source.count(quote) if quote else 0
-                if occurrences or quote in located_quotes[page.number]:
+                normalized_quote = layout_quote(claim.quote)
+                if occurrences or normalized_quote in located_quotes[page.number]:
                     state = "SOURCE_LOCATED_UNVERIFIED"
                     if field not in disputed and len(matches) == 1:
                         table = eligible_table if tables[page.number] is eligible_table else ()
                         split = headers[page.number]
-                        if field in split or (LINE_FIELD.fullmatch(field) and tables[page.number]):
-                            supported = layout_support(invoice, field, value, claim, split, table, distinct_rows)
+                        if field in split or (LINE_FIELD.fullmatch(field) and recognized_tables):
+                            supported = layout_support(invoice, field, value, claim, normalized_quote, split, table, distinct_rows)
                         else:
                             # A complete source line is distinct from its substring in a longer
                             # statement label. Duplicate complete lines still fail closed.

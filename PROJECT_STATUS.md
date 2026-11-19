@@ -1,9 +1,9 @@
 # AP Compass — Project Status / Gate Register
 
 **Updated:** 2026-11-19 IST.
-**Current gate:** Phase 6B.2D.2 private demo release hardening. Controlled demonstration verified on loopback.
-**Base:** b06b34d01a07f6543bfe048d22627be115f37033.
-**Branch:** codex/phase-06b2d2-private-demo-hardening. **Checkpoint:** phase-06b2d2-private-demo-hardening.
+**Current gate:** Phase 6B.2E.1 source generalization. Development-only verification passed.
+**Base:** 4bac08cd84226703cdcef2b76089f72f4e920cbe.
+**Branch:** codex/phase-06b2e1-source-generalization. **Checkpoint:** phase-06b2e1-source-generalization.
 Final exact SHA and remote publication/clean-tree verification accompany the checkpoint handoff.
 No prior-tag/default-branch alteration. Deadline remains Saturday 2026-11-21 IST.
 
@@ -25,6 +25,7 @@ No prior-tag/default-branch alteration. Deadline remains Saturday 2026-11-21 IST
 | 06B.2C.4 Post-fix validation | Complete for release review | Offline evidence 123/135 development, 54/100 held-out. Decisions 9/10 and 3/6. Eight live generations yielded one Review and three terminal technical failures. No completed live non-Ready target. |
 | 06B.2D.1 Financial evidence integrity | Backend and frontend verification passed | Shared native source-currency invariant. 471 backend and 58 frontend tests passed, including 49 dedicated tests and controlled persisted reload without historical/audit changes. |
 | 06B.2D.2 Private demo release hardening | Verified for controlled demonstration | 488 backend and 58 frontend tests passed. Real private Docker and Chrome acceptance, persistent PDF and audit restart checks, and four controlled demo scenarios. Zero Gemini requests. See [release report](docs/RELEASE_HARDENING_REPORT.md). |
+| 06B.2E.1 Source generalization and completeness | Verified for independent evaluation | 508 backend and 58 frontend tests passed. Bounded field and full-row quote forms, recognized omitted-line Review, private Docker and restart verified. Frozen evidence matched. No held-out PDF access or Gemini requests. See [source report](docs/PHASE_06B2E1_SOURCE_GENERALIZATION_REPORT.md). |
 | 07 Release | LOCKED | Remote/public hosting and paid deployment await explicit authorization |
 
 ## Verified Phase 6A evidence

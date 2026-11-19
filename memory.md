@@ -1,12 +1,16 @@
 # AP Compass — Project Memory (living handoff)
 
 **Last reviewed:** 2026-11-19 (IST)
-**Repository status:** Private single-instance demo hardening verified on loopback using Docker and Chrome.
-**Current authorized segment:** `06B.2D.2 PRIVATE DEMO RELEASE HARDENING` only.
+**Repository status:** Native source association and recognized table completeness verified on development-only fixtures.
+**Current authorized segment:** `06B.2E.1 NATIVE SOURCE GENERALIZATION & INVOICE COMPLETENESS` only.
 **Deadline:** Saturday 2026-11-21 (IST); target Friday evening feature freeze.
 **Maintainers:** Builder owns product decisions; Codex implements one authorized phase; architectural review gates further work.
 
 > Repo-local continuity. Status is evidence, not completion by assertion. Latest user acceptance/routing adjustment is recorded in ADR-016 and the handoff below.
+
+## Phase 6B.2E.1 handoff
+
+Base `4bac08cd84226703cdcef2b76089f72f4e920cbe`. Split-label and complete visual table quotes can verify with bounded delimiter formatting when field/row, value, currency and conflict checks pass. In three synthetic omission cases the base returned Ready on reconciling facts. The new recognized-table gate now withholds line evidence and the existing source rule returns Review. One fully supported reformatted invoice moved from 0/18 to 18/18 native references and Ready. Full regression passed 508 backend and 58 frontend tests, plus real private Docker/Chrome and persisted restart checks. Frozen results and PDFs matched the base, with zero held-out access and zero Gemini requests. Financial logic, contracts and parser subprocess limits stayed unchanged. See `docs/PHASE_06B2E1_SOURCE_GENERALIZATION_REPORT.md`. Stop before independent evaluation.
 
 ## Phase 6B.2D.2 handoff
 

@@ -3,12 +3,24 @@ from collections import Counter, defaultdict
 from dataclasses import dataclass
 import re
 
-from .consistency import AMOUNT, HEADER_LABELS, QUALIFIER
+from .consistency import AMOUNT, HEADER_LABELS, PATTERNS, QUALIFIER
 from .limits import MAX_LAYOUT_LINES
 
 
 def flat(text):
     return " ".join(text.split()).casefold()
+
+
+def layout_quote(text):
+    return re.sub(r"\s*\|\s*", "|", flat(text))
+
+
+def quote_forms(parts):
+    """Allow a separator between exact printed cells, preserving their content and order."""
+    forms = {layout_quote(" ".join(parts))}
+    if all("|" not in part for part in parts):
+        forms.add(layout_quote("|".join(parts)))
+    return frozenset(forms)
 
 
 SUMMARY = re.compile(r"(?:customer\s+)?(?:account\s+(?:summary|statement)|statement\s+summary)\s*:?", re.I)
@@ -57,7 +69,7 @@ class Cell:
 @dataclass(frozen=True)
 class Pair:
     value: str
-    quote: str
+    quotes: frozenset[str] = frozenset()
     cell: Cell | None = None
 
 
@@ -135,7 +147,8 @@ def adjacent(rows, row_index, col, label, field):
                 options.extend(cell for i, cell in aligned
                                if cell.rect[1] >= label.rect[3] and not has_left_label(below, i))
             break
-    return tuple(Pair(cell.text, flat(f"{label.text} {cell.text}"), cell) for cell in options
+    return tuple(Pair(cell.text, quote_forms((label.text, cell.text))
+                      | {layout_quote(f"{label.text.rstrip(':')}: {cell.text}")}, cell) for cell in options
                  if not matches(cell.text, HEADER_PATTERNS) and header_shape(field, cell.text))
 
 
@@ -156,11 +169,11 @@ def split_headers(rows):
             if field and (not summary or revised or field.startswith("bank_instructions.")):
                 pairs = adjacent(rows, index, col, label, field)
                 # An unresolved label counts as a competing association, even beside a supported label.
-                observations[field].extend(pairs or (Pair("", ""),))
+                observations[field].extend(pairs or (Pair(""),))
     used_cells = Counter(pair.cell for pairs in observations.values() for pair in pairs if pair.cell is not None)
     for field, pairs in observations.items():
         if field in inline_fields or any(used_cells[pair.cell] > 1 for pair in pairs):
-            pairs.append(Pair("", ""))
+            pairs.append(Pair(""))
     return dict(observations)
 
 
@@ -170,35 +183,66 @@ def table_columns(row):
     return labelled if len(labelled) == len(row) and len(names) == len(set(names)) and REQUIRED_COLUMNS <= set(names) else ()
 
 
+def table_end(row):
+    amount_fields = ("net", "tax", "total")
+    if len(row) == 1:
+        text = row[0].text
+        return bool(SUMMARY.fullmatch(text) or any(
+            (match := PATTERNS[field].fullmatch(text)) and AMOUNT.fullmatch(match[1]) for field in amount_fields))
+    return (len(row) == 2 and clean(row) and matches(row[0].text, HEADER_PATTERNS) in amount_fields
+            and bool(AMOUNT.fullmatch(row[1].text)))
+
+
+def charge_cells(row, labels, edges):
+    if not clean(row):
+        return None
+    cells = {}
+    for cell in row:
+        column = sum(cell.x > edge for edge in edges)
+        key, label = labels[column]
+        if (key in cells or (column and cell.rect[0] < edges[column - 1]) or
+                (column < len(edges) and cell.rect[2] > edges[column]) or
+                (column == 0 and abs(cell.rect[0] - label.rect[0]) > 22)):
+            return None
+        cells[key] = cell.text
+    if not REQUIRED_COLUMNS <= cells.keys() or not IDENT.fullmatch(cells["item_code"]):
+        return None
+    quantity = AMOUNT.fullmatch(cells["qty"])
+    if (not quantity or quantity[1] or
+            any(not AMOUNT.fullmatch(cells[field]) for field in {"unit_price_net", "net"} & cells.keys())):
+        return None
+    return cells
+
+
 def table_rows(rows):
-    headers = [(index, labels) for index, row in enumerate(rows) if clean(row) and (labels := table_columns(row))]
+    """None means no recognized header. An empty tuple means recognized but unresolved."""
+    headers = [index for index, row in enumerate(rows) if REQUIRED_COLUMNS <= {
+        matches(cell.text, TABLE_PATTERNS) for cell in row}]
+    if not headers:
+        return None
     if len(headers) != 1:
         return ()
-    index, labels = headers[0]
+    index = headers[0]
+    previous = rows[index]
+    labels = table_columns(previous)
+    if not labels or not clean(previous):
+        return ()
     edges = tuple((a.rect[2] + b.rect[0]) / 2 for (_, a), (_, b) in zip(labels, labels[1:]))
     result = []
-    previous = rows[index]
+    closed = False
     for row in rows[index + 1:]:
-        if row[0].y - previous[0].y > 35 or any(matches(cell.text, HEADER_PATTERNS) or SUMMARY.fullmatch(cell.text) for cell in row):
-            break
-        if not clean(row) or min(cell.rect[1] for cell in row) < max(cell.rect[3] for cell in previous):
-            return ()
-        cells = {}
-        for cell in row:
-            column = sum(cell.x > edge for edge in edges)
-            key, label = labels[column]
-            if (key in cells or (column and cell.rect[0] < edges[column - 1]) or
-                    (column < len(edges) and cell.rect[2] > edges[column]) or
-                    (column == 0 and abs(cell.rect[0] - label.rect[0]) > 22)):
+        if table_end(row):
+            closed = True
+            continue
+        cells = charge_cells(row, labels, edges)
+        if closed:
+            # Another charge-shaped row after a totals band leaves the table extent unclear.
+            if cells:
                 return ()
-            cells[key] = cell.text
-        if not REQUIRED_COLUMNS <= cells.keys() or not IDENT.fullmatch(cells["item_code"]):
+            continue
+        if not cells or min(cell.rect[1] for cell in row) < max(cell.rect[3] for cell in previous):
             return ()
-        quantities = AMOUNT.fullmatch(cells["qty"])
-        if (not quantities or quantities[1] or
-                any(not AMOUNT.fullmatch(cells[field]) for field in {"unit_price_net", "net"} & cells.keys())):
-            return ()
-        result.append(PairRow(cells, flat(" ".join(cell.text for cell in row))))
+        result.append(TableRow(cells, quote_forms(tuple(cell.text for cell in row))))
         previous = row
         if len(result) > 50:
             return ()
@@ -206,10 +250,10 @@ def table_rows(rows):
 
 
 @dataclass(frozen=True)
-class PairRow:
+class TableRow:
     values: dict[str, str]
-    quote: str
+    quotes: frozenset[str]
 
 
 def unique_quotes(table):
-    return {quote for quote, count in Counter(row.quote for row in table).items() if count == 1}
+    return {quote for quote, count in Counter(quote for row in table for quote in row.quotes).items() if count == 1}
