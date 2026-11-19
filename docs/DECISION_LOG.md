@@ -191,3 +191,11 @@ Do not rewrite past records to pretend a previous design was never chosen. Recor
 - Mixed content with unresolved bank presence uses Option A and existing UNSUPPORTED_PDF. Complete bank claims remain unverified in mixed documents. A future explicitly typed presence state is available for proposal if completed review is required for that case.
 - The native parser applies one bounded grayscale render and refuses exactly uniform output. Ordinary visible PDFs, repeated summaries, the uniform swatch and existing scans were checked.
 - Existing evidence, financial and persistence contracts apply. No migration. See DOCUMENT_TRUST_HARDENING.md and PHASE_06B2B_REPORT.md for tradeoffs, observed results and runtime cost.
+
+## ADR-022 — Mixed content as review uncertainty
+
+- Phase 6B.2B.1 supersedes the mixed-content missing-bank technical gate in ADR-021.
+- Add an optional extraction snapshot flag owned by the grounder. Historical omission is serialized as omission, preserving compatibility and old source-fingerprint input. No migration or provider schema extension.
+- An isolated document-content finding requires review for flagged invoices. Existing hard-block precedence, policy preview and confirmation use the same rules. The integrity signal is not a bank fact.
+- Mixed-page evidence cannot independently establish bank facts. A truly supported separate native page retains normal mismatch checks.
+- Keep conservative raster routing. Unresolved decorative content can require review. See MIXED_DOCUMENT_REVIEW.md and PHASE_06B2B1_REPORT.md.

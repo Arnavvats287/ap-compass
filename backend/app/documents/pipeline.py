@@ -74,9 +74,6 @@ async def extract_pdf(raw: bytes, provider: ExtractionProvider, *,
             reply = await asyncio.wait_for(chosen.generate(document, model_timeout_seconds), model_timeout_seconds)
             invoice, claims = parse_response(reply.json_text)
             invoice = ground_evidence(invoice, claims, document)
-            if document.route == "mixed" and invoice.bank_instructions is None:
-                # Unresolved raster content cannot be represented as confirmed absence.
-                raise ExtractionError("UNSUPPORTED_PDF")
             if not usable_extraction(invoice):
                 raise ExtractionError("INVALID_RESPONSE")
             attempts.append(ModelAttempt(number, chosen.model_id, int((perf_counter() - began) * 1000), None, reply.model_id, reply.usage))

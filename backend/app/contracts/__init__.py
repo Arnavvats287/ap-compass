@@ -81,6 +81,9 @@ class InvoiceLineV1(Contract):
     unit_price_net: Amount | None = None
     net: Amount | None = None
 
+DocumentIntegrityFlag = Literal["RASTER_CONTENT_UNRESOLVED"]
+
+
 class ExtractedInvoiceV1(Contract):
     schema_version: Literal["extracted-invoice-v1"] = "extracted-invoice-v1"
     vendor_name_raw: str | None = None
@@ -95,6 +98,10 @@ class ExtractedInvoiceV1(Contract):
     lines: tuple[InvoiceLineV1, ...] = ()
     bank_instructions: BankInstructionsV1 | None = None
     evidence: tuple[EvidenceRefV1, ...] = ()
+    # Missing denotes a historical snapshot that predates this adapter assessment.
+    document_integrity_flags: tuple[DocumentIntegrityFlag, ...] | None = Field(
+        default=None, exclude_if=lambda flags: flags is None,
+    )
 
 class PolicyV1(Contract):
     version: str = "policy-v1"

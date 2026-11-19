@@ -5,6 +5,7 @@ from decimal import Context, Decimal, MAX_EMAX, MIN_EMIN, ROUND_HALF_EVEN, local
 from app.contracts import DecisionV1, EvaluationContextV1, FindingV1, PolicyV1
 from .controls import bank_instructions, billed_duplicates
 from .evidence import required_fields, source_evidence
+from .document_integrity import document_content
 from .matching import build_context
 from .reconciliation import (
     financial_values, invoice_arithmetic, item_mapping, remaining_commitment,
@@ -16,7 +17,7 @@ from .validation import validate_inputs
 Rule = Callable[[EvaluationContextV1, PolicyV1], tuple[FindingV1, ...]]
 DEFAULT_RULES: tuple[Rule, ...] = (
     vendor_requirement, po_identity, billed_duplicates, vendor_po_consistency,
-    po_status, currency_compatibility, required_fields, source_evidence,
+    po_status, currency_compatibility, required_fields, document_content, source_evidence,
     financial_values, invoice_arithmetic, item_mapping, remaining_commitment,
     remaining_quantities, remaining_line_commitments, unit_price_tolerance, bank_instructions,
 )

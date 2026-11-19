@@ -1,9 +1,6 @@
-import asyncio
 from dataclasses import replace
 from io import BytesIO
 import json
-
-import httpx
 
 import pymupdf
 import pytest
@@ -14,13 +11,10 @@ from app.documents.evidence import ground_evidence
 from app.documents.fixtures import native_case
 from app.domain import build_context, evaluate
 from app.documents.inspection import inspect_pdf
-from app.documents.pipeline import extract_pdf
 from app.documents.schema import parse_response
 from app.documents.types import ExtractionError
-from app.main import create_app
 from test_document_engine import CASES, FakeProvider, ROOT, run, wire
 from test_finance_engine import HISTORY, POS, VENDORS
-from test_orchestration_api import authority, upload
 from test_document_positive_controls import control
 
 
@@ -109,43 +103,14 @@ def test_actual_blank_and_visible_documents():
             inspect_pdf(pdf.tobytes())
     assert inspect_pdf(control("visible")).route == "native_text"
 
-def test_unresolved_mixed_raster_stops_at_adapter():
+def test_unresolved_mixed_raster_retains_extraction_and_flags():
     provider = FakeProvider([json.dumps(wire())])
-    with pytest.raises(ExtractionError, match="UNSUPPORTED_PDF") as failure:
-        run(payment_notice_pdf(), provider, max_attempts=2)
-    assert len(provider.calls) == failure.value.calls == 1
+    result = run(payment_notice_pdf(), provider, max_attempts=2)
+    assert result.invoice.document_integrity_flags == ("RASTER_CONTENT_UNRESOLVED",)
+    assert result.invoice.bank_instructions is None
+    assert len(provider.calls) == result.metadata.model_calls == 1
     assert provider.calls[0].pages[0].image_png
 
-
-
-def test_raster_uncertainty_persists_as_technical_failure(tmp_path):
-    async def scenario():
-        provider = FakeProvider([json.dumps(wire())], model="TEST_ONLY-payment-notice")
-
-        async def extract(raw):
-            return await extract_pdf(raw, provider)
-
-        app = create_app(tmp_path / "runs.db", document_dir=tmp_path / "documents", extractor=extract)
-        async with app.router.lifespan_context(app):
-            before = authority(app.state.engine)
-            async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
-                policy = (await client.get("/api/policy")).json()
-                uploaded = await upload(client, data=payment_notice_pdf())
-                assert uploaded.status_code == 202
-                await app.state.runs.idle()
-                path = "/api/runs/" + uploaded.json()["run_id"]
-                result = (await client.get(path)).json()
-                assert result["execution_state"] == "PROCESSING_FAILED"
-                assert result["execution_error_code"] == "UNSUPPORTED_PDF"
-                assert result["decision"] is None and result["extracted_invoice"] is None
-                assert result["usage"]["model_calls"] == 1
-                assert result["stages"][1]["state"] == "FAILED"
-                assert result["stages"][2]["state"] == "SKIPPED"
-                assert (await client.get("/api/policy")).json() == policy
-                assert authority(app.state.engine) == before
-            assert len(provider.calls) == 1
-
-    asyncio.run(scenario())
 
 def test_mixed_document_with_bank_claims_withholds_bank_verification():
     with pymupdf.open(stream=native_case(CASES["BANK_CHANGED"]), filetype="pdf") as native:
@@ -154,7 +119,12 @@ def test_mixed_document_with_bank_claims_withholds_bank_verification():
         inspection = inspect_pdf(native.tobytes())
     assert inspection.route == "mixed"
     invoice, claims = parse_response(json.dumps(wire("BANK_CHANGED", line_net=False)))
-    grounded = ground_evidence(invoice, claims, inspection)
+    image_claims = tuple(
+        claim.model_copy(update={"page": 2})
+        if claim.field.startswith("bank_instructions.") else claim
+        for claim in claims
+    )
+    grounded = ground_evidence(invoice, image_claims, inspection)
     refs = {ref.field: ref.evidence_state for ref in grounded.evidence}
     assert refs["net"] == "NATIVE_VERIFIED"
     assert refs["bank_instructions.account"] == refs["bank_instructions.ifsc"] == "SOURCE_LOCATED_UNVERIFIED"
@@ -162,6 +132,11 @@ def test_mixed_document_with_bank_claims_withholds_bank_verification():
     assert decision.outcome == "REVIEW_REQUIRED"
     assert any(f.code == "BANK_DETAILS_UNVERIFIED" for f in decision.findings)
     assert all(f.code != "BANK_DETAILS_MISMATCH" for f in decision.findings)
+
+    native_bank = ground_evidence(invoice, claims, inspection)
+    blocked = evaluate(build_context(native_bank, VENDORS, POS, HISTORY), PolicyV1())
+    assert blocked.outcome == "BLOCKED"
+    assert {"BANK_DETAILS_MISMATCH", "DOCUMENT_CONTENT_UNVERIFIED"} <= {f.code for f in blocked.findings}
 
     wrong_claims = tuple(
         claim.model_copy(update={"quote": "This sentence is absent from the native page."})

@@ -1,9 +1,9 @@
 # AP Compass — Project Status / Gate Register
 
 **Updated:** 2026-11-19 IST.
-**Current gate:** Phase 6B.2B defensive hardening review.
-**Base:** f7f669821464183bcad6d8802177d2e170187285.
-**Branch:** codex/phase-06b2b-document-hardening. **Checkpoint:** phase-06b2b-document-hardening.
+**Current gate:** Phase 6B.2B.1 mixed-document review.
+**Base:** 51b1a7fe07f85b2b32d4ec8c3753cf521b44bda9.
+**Branch:** codex/phase-06b2b1-mixed-review. **Checkpoint:** phase-06b2b1-mixed-review.
 Final exact SHA and remote publication/clean-tree verification accompany the checkpoint handoff.
 No prior-tag/default-branch alteration. Deadline remains Saturday 2026-11-21 IST.
 
@@ -169,3 +169,9 @@ REPRODUCTION INCOMPLETE — INVESTIGATION REQUIRED. Static review of F1–F3 and
 ## Phase 6B.2B defensive document hardening
 
 Branch `codex/phase-06b2b-document-hardening` from `f7f669821464183bcad6d8802177d2e170187285`. Supported native headers are compared across the document. Mixed raster uncertainty uses a sanitized technical gate when bank details are unresolved. Native pages with extractable text and a uniform render fail before inference. Existing benign controls pass. Exact historical audit scenarios remain inconclusive. See `docs/PHASE_06B2B_REPORT.md` for test evidence and measured latency. Zero Gemini requests.
+
+## Phase 6B.2B.1 review handoff
+
+Usable mixed documents with unresolved raster now complete with document-content Review, or retain an independent Block. The optional adapter-owned marker persists in JSON and old records keep the historical omission. No schema migration. Bank evidence and document uncertainty remain distinct. Policy preview and PO reassessment retain the marker. The normal logo can still require review. See ADR-022 and PHASE_06B2B1_REPORT.md for evidence, limits and the checkpoint. Zero live Gemini calls.
+
+Verification: 354 backend and 58 frontend tests passed, build and dependency checks passed, real Chrome mixed Review verified and seven historical runs and two actions preserved after restart.

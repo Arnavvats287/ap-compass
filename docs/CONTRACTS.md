@@ -84,3 +84,7 @@ compose existing DecisionV1/PolicyV1. POST /api/runs/{id}/po-confirmations and G
 are additive. GET original run remains unchanged. Summary projection adds nullable reviewed_outcome,reviewed_at,
 review_action_id; original metrics/filter semantics remain. See HUMAN_PO_RESOLUTION.md for strict validation,
 immutable source policy/current authority,append-only migration and explicitly unauthenticated demo identity.
+
+## Approved Phase 6B.2B.1 additive extraction field
+
+`ExtractedInvoiceV1.document_integrity_flags` is an optional tuple of the closed literal `RASTER_CONTENT_UNRESOLVED`. The document adapter sets it from inspection. Historical absence is retained on serialization and conveys no recorded assessment under this check. The field stays outside the provider wire schema. Existing run and review persistence require no migration. See MIXED_DOCUMENT_REVIEW.md.

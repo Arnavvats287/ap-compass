@@ -142,8 +142,8 @@ def ground_evidence(invoice: ExtractedInvoiceV1, claims: tuple[SourceClaim, ...]
         bank_printed = any(re.fullmatch(rf"\s*(?:{LABELS['account']}|{LABELS['ifsc']})\s*:\s*\S.*", text, re.I)
                            for page in inspection.pages if page.route == "native_text" for text, _ in page.lines)
         if bank_claimed or bank_printed:
-            # None means absent to the existing financial contract. Do not let a
-            # clearly omitted instruction masquerade as absence or fill digits.
+            # A detected native instruction or explicit claim makes this omission
+            # an invalid extraction response. Never backfill credentials.
             raise ExtractionError("INVALID_RESPONSE")
     disputed = disputed_headers(inspection.pages)
     grounded = []
@@ -160,8 +160,7 @@ def ground_evidence(invoice: ExtractedInvoiceV1, claims: tuple[SourceClaim, ...]
                 occurrences = source.count(quote) if quote else 0
                 if occurrences:
                     state = "SOURCE_LOCATED_UNVERIFIED"
-                    unresolved_bank_source = inspection.route == "mixed" and field.startswith("bank_instructions.")
-                    if (not unresolved_bank_source and field not in disputed
+                    if (field not in disputed
                             and len(matches) == 1 and occurrences == 1
                             and local_support(invoice, field, value, page, claim)):
                         state = "NATIVE_VERIFIED"
@@ -183,4 +182,10 @@ def ground_evidence(invoice: ExtractedInvoiceV1, claims: tuple[SourceClaim, ...]
                 # audit, but leave both the fact and its normalized value unknown.
                 lines[index] = line.model_copy(update={"net": None})
                 grounded[ref_index] = ref.model_copy(update={"normalized_value": None})
-    return invoice.model_copy(update={"lines": tuple(lines), "evidence": tuple(grounded)})
+    # This comes from parser routing, never from a provider's field or source claim.
+    flags = ("RASTER_CONTENT_UNRESOLVED",) if inspection.route == "mixed" else ()
+    return invoice.model_copy(update={
+        "lines": tuple(lines),
+        "evidence": tuple(grounded),
+        "document_integrity_flags": flags,
+    })

@@ -42,8 +42,9 @@ def bank_instructions(context: EvaluationContextV1, policy: PolicyV1):
     invoice, vendor = context.invoice, context.canonical_vendor
     bank = invoice.bank_instructions
     if bank is None:
-        return (finding("BANK_DETAILS_NOT_PROVIDED", "INFO", "No payment instructions supplied",
-                        "Bank comparison is not applicable; missing instructions are not a verified contradiction."),)
+        return (finding("BANK_DETAILS_NOT_PROVIDED", "INFO", "No payment instructions extracted",
+                        "Extraction returned no complete bank details for comparison. "
+                        "This does not confirm that the document contains no payment instructions."),)
     if vendor is None or vendor.verified_bank is None:
         return (finding("BANK_MASTER_UNVERIFIED", "REVIEW", "No verified bank master is available",
                         "The invoice supplies payment instructions, but no trusted bank record is available for comparison.",

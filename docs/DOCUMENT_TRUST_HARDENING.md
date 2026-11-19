@@ -8,6 +8,8 @@ Grounding still requires unique local support. A disputed field can retain the m
 
 ## Raster and payment uncertainty
 
+Phase 6B.2B.1 supersedes the technical gate described in this historical section. See MIXED_DOCUMENT_REVIEW.md for current semantics.
+
 The parser enumerates raster placements for readable text pages. A single small opaque swatch can use native routing only when its bounded, decoded source pixels are uniformly colored and mask checks pass. Dimensions alone cannot establish harmlessness. A normal nonuniform logo can conservatively route as mixed. Mixed pages send bounded page images to extraction and do not independently verify their quotes. Unaffected native pages can still ground non-bank fields.
 
 Chose Option A. A mixed document without a complete bank object fails with existing UNSUPPORTED_PDF after a usable provider reply. The request and measured timing remain accounted for. A supplied bank object across mixed content stays unverified even if its citation points at a native page. This avoids presenting a possible discrepancy as an independently verified mismatch. The existing image-only path remains review-only under source evidence controls. Its missing bank object still has the existing informational absence finding. That finding represents absent extracted details, and does not verify the visual absence of payment text.
