@@ -3,13 +3,17 @@ from decimal import Decimal
 import re
 
 
-# Full-line labels exclude previous/customer balances and line-level subtotals.
+# Keep invoice-specific labels distinct from generic payment and balance labels.
+INVOICE_DUE_LABEL = r"(?:current\s+)?invoice\s+amount\s+due"
+GENERIC_PAYABLE = r"(?:total\s+(?:amount\s+)?payable|amount\s+payable)"
+PAYABLE_ALIASES = rf"(?:{INVOICE_DUE_LABEL}|gross\s+payable|{GENERIC_PAYABLE})"
 HEADER_LABELS = {
     "invoice_number": r"invoice\s*(?:number|no\.?|#)",
     "po_reference": r"(?:purchase\s*order|p\.?o\.?\s*(?:number|no\.?|#|reference)?)",
     "net": r"(?:net\s*subtotal|subtotal|invoice\s*net|net\s*(?:amount|total)|taxable\s*(?:amount|value))",
     "tax": r"(?:tax(?:\s*\([^)]{1,40}\))?|(?:gst|vat)(?:\s*\(?\d{1,2}(?:\.\d+)?%\)?)?)",
-    "total": r"(?:invoice\s*total|grand\s*total|amount\s*due|gross(?:\s*total)?|total\s*(?:payable|amount)?)",
+    "total": (r"(?:invoice\s*total|grand\s*total|amount\s*due|gross(?:\s*total)?|"
+              rf"total(?:\s*amount)?|{PAYABLE_ALIASES})"),
 }
 QUALIFIER = r"(?:(?:revised|final|corrected)\s+){0,2}"
 PATTERNS = {
@@ -34,7 +38,12 @@ def parse_printed_amount(text: str) -> tuple[Decimal, str | None] | None:
     return Decimal(number.replace(",", "")), CURRENCIES.get(code, code)
 
 
-def disputed_headers(pages, split_observations=()):
+def inline_amount(field, text):
+    match = PATTERNS[field].fullmatch(text)
+    return bool(match and parse_printed_amount(match[1]))
+
+
+def disputed_headers(pages, split_observations=(), *, summary_payables=()):
     """Identify disagreement; never pick a replacement value or evaluate eligibility."""
     values = {field: set() for field in PATTERNS}
     currencies = {field: set() for field in PATTERNS}
@@ -55,6 +64,11 @@ def disputed_headers(pages, split_observations=()):
                 ambiguous.add(field)
             for pair in pairs:
                 record(field, pair.value)
+    for pairs in summary_payables:
+        if len(pairs) != 1:
+            ambiguous.add("total")
+        for pair in pairs:
+            record("total", pair.value)
     for page in pages:
         if page.route != "native_text":
             continue

@@ -5,9 +5,9 @@ from decimal import Decimal
 import re
 
 from app.contracts import EvidenceRefV1, ExtractedInvoiceV1
-from .consistency import HEADER_LABELS, disputed_headers, parse_printed_amount
+from .consistency import HEADER_LABELS, PAYABLE_ALIASES, QUALIFIER, disputed_headers, inline_amount, parse_printed_amount
 from .schema import SourceClaim
-from .source_layout import SUMMARY, flat, layout_quote, rows_for, split_headers, table_rows, unique_quotes
+from .source_layout import GENERIC_PAYABLE_LABEL, SUMMARY, flat, layout_quote, rows_for, split_headers, table_rows, unique_quotes
 from .types import DocumentInspection, ExtractionError
 
 LABELS = {
@@ -124,13 +124,20 @@ def local_support(invoice, field, value, page, claim):
                     if (match := re.fullmatch(rf"\s*{LABELS[leaf]}\s*:\s*(.+)", text, re.I))]
         if len(labelled) != 1:
             return False
-        if field in {"net", "tax", "total"} and any(SUMMARY.fullmatch(text.strip())
-                                                    for text in scope[:scope.index(labelled[0][0])]):
+        index = scope.index(labelled[0][0])
+        if field in {"net", "tax", "total"} and any(SUMMARY.fullmatch(text.strip()) for text in scope[:index]):
             return False
         text, printed = labelled[0]
         if isinstance(value, Decimal):
-            return (flat(text) in quote and supported_amount(printed, value, claim.raw_value, invoice.currency,
-                                                            quantity=leaf == "qty"))
+            source_line = flat(text)
+            label = text.partition(":")[0].strip()
+            if field == "total" and GENERIC_PAYABLE_LABEL.fullmatch(label) and not (
+                    index >= 2 and inline_amount("net", scope[index - 2]) and inline_amount("tax", scope[index - 1])):
+                return False
+            payable_alias = field == "total" and re.fullmatch(rf"{QUALIFIER}{PAYABLE_ALIASES}", label, re.I)
+            quote_matches = source_line == quote if payable_alias else source_line in quote
+            return quote_matches and supported_amount(printed, value, claim.raw_value, invoice.currency,
+                                                      quantity=leaf == "qty")
         candidates = [text] if printed_value(printed, value) else []
     if len(candidates) != 1:
         return False
@@ -173,7 +180,8 @@ def ground_evidence(invoice: ExtractedInvoiceV1, claims: tuple[SourceClaim, ...]
     pages = {page.number: page for page in inspection.pages}
     native_pages = {number: page for number, page in pages.items() if page.route == "native_text"}
     layouts = {number: rows_for(page) for number, page in native_pages.items()}
-    headers = {number: split_headers(rows) for number, rows in layouts.items()}
+    summary_payables = []
+    headers = {number: split_headers(rows, summary_payables=summary_payables) for number, rows in layouts.items()}
     tables = {number: table_rows(rows) for number, rows in layouts.items()}
     recognized_tables = [table for table in tables.values() if table is not None]
     eligible_table = ()
@@ -201,7 +209,7 @@ def ground_evidence(invoice: ExtractedInvoiceV1, claims: tuple[SourceClaim, ...]
             # A detected native instruction or explicit claim makes this omission
             # an invalid extraction response. Never backfill credentials.
             raise ExtractionError("INVALID_RESPONSE")
-    disputed = disputed_headers(inspection.pages, headers.values())
+    disputed = disputed_headers(inspection.pages, headers.values(), summary_payables=summary_payables)
     sources = {number: flat(page.native_text) for number, page in native_pages.items()}
     line_counts = {number: Counter(flat(text) for text, _ in page.lines) for number, page in native_pages.items()}
     by_field = defaultdict(list)

@@ -3,7 +3,9 @@ from collections import Counter, defaultdict
 from dataclasses import dataclass
 import re
 
-from .consistency import AMOUNT, HEADER_LABELS, PATTERNS, QUALIFIER
+from .consistency import (
+    AMOUNT, GENERIC_PAYABLE, HEADER_LABELS, INVOICE_DUE_LABEL, PATTERNS, PAYABLE_ALIASES, QUALIFIER, inline_amount,
+)
 from .limits import MAX_LAYOUT_LINES
 
 
@@ -23,7 +25,11 @@ def quote_forms(parts):
     return frozenset(forms)
 
 
-SUMMARY = re.compile(r"(?:customer\s+)?(?:account\s+(?:summary|statement)|statement\s+summary)\s*:?", re.I)
+SUMMARY = re.compile(r"(?:(?:customer|payment)\s+)?account\s+(?:summary|statement)\s*:?|"
+                     r"(?:statement\s+(?:summary|activity|totals?)|payment\s+history)\s*:?", re.I)
+INVOICE_DUE_IN_SUMMARY = re.compile(rf"{QUALIFIER}{INVOICE_DUE_LABEL}\s*:?", re.I)
+PAYABLE_ALIAS_LABEL = re.compile(rf"{QUALIFIER}{PAYABLE_ALIASES}\s*:?", re.I)
+GENERIC_PAYABLE_LABEL = re.compile(rf"{QUALIFIER}{GENERIC_PAYABLE}\s*:?", re.I)
 HEADER = {
     **HEADER_LABELS,
     "vendor_name_raw": r"(?:supplier|vendor|from|billed by)",
@@ -37,7 +43,9 @@ INLINE_HEADERS = {field: re.compile(rf"{QUALIFIER}{label}\s*:\s*\S.*", re.I) for
 NOT_VALUE = re.compile(r"(?:bill(?:ed)?\s+to|ship\s+to|sold\s+to|buyer|customer|remit\s+to|"
                        r"remittance\s+address|description|item\s+code|qty\.?|purchase\s+order)\s*:?.*", re.I)
 OTHER_ROLE = re.compile(r"(?:(?:previous|prior|opening|closing|combined|customer)\s+(?:account\s+)?balance|"
-                        r"account\s+(?:number|reference)|service\s+date|(?:billing|shipping)\s+address)\s*:?", re.I)
+                        r"(?:payment\s+)?account\s+(?:number|reference|total|balance)|"
+                        r"settlement\s+balance|statement\s+total|(?:unapplied|available)\s+credit|"
+                        r"service\s+date|(?:billing|shipping)\s+address)\s*:?", re.I)
 IDENT = re.compile(r"(?=.*\d)[a-z\d][a-z\d./_-]{0,79}", re.I | re.ASCII)
 DATE = re.compile(r"(?:\d{4}-\d{2}-\d{2}|\d{1,2}\s+[a-z]+\s+\d{4}|[a-z]+\s+\d{1,2},\s+\d{4})", re.I)
 TABLE = {
@@ -128,6 +136,46 @@ def header_shape(field, text):
             and not NOT_VALUE.fullmatch(text) and not re.search(r"\b(?:invoice|address|statement)\b", text, re.I))
 
 
+def has_amount_column_label_above(rows, row_index, value):
+    for index in range(row_index - 1, -1, -1):
+        row = rows[index]
+        if value.y - row[0].y > 29:
+            break
+        if any(cell.rect[3] <= value.rect[1] and abs(cell.rect[0] - value.rect[0]) <= 7
+               and (OTHER_ROLE.fullmatch(cell.text) or matches(cell.text, HEADER_PATTERNS)
+                    or matches(cell.text, TABLE_PATTERNS)) for cell in row):
+            return True
+    return False
+
+
+def invoice_amount_row(field, row, label):
+    if abs(row[0].rect[0] - label.rect[0]) > 7 or abs(row[0].y - label.y) > 90:
+        return False
+    if len(row) == 1:
+        return inline_amount(field, row[0].text)
+    return (len(row) == 2 and clean(row) and bool(HEADER_PATTERNS[field].fullmatch(row[0].text))
+            and bool(AMOUNT.fullmatch(row[1].text)))
+
+
+def aligned_tax_summary(rows, index, label, amount):
+    """Recognize a two-column invoice summary with a wider tax row."""
+    if index == 0 or index + 1 == len(rows) or len(rows[index]) != 2 or not AMOUNT.fullmatch(amount.text):
+        return False
+    before, after = rows[index - 1], rows[index + 1]
+    if abs((label.y - before[0].y) - (after[0].y - label.y)) > 4:
+        return False
+    for row, field in ((before, "net"), (after, "total")):
+        if len(row) != 2 or not clean(row):
+            return False
+        other_label, other_amount = row
+        if (not HEADER_PATTERNS[field].fullmatch(other_label.text) or not AMOUNT.fullmatch(other_amount.text)
+                or abs(label.y - other_label.y) > 36 or abs(label.rect[0] - other_label.rect[0]) > 7
+                or abs(amount.rect[2] - other_amount.rect[2]) > 4
+                or not 4 <= other_amount.rect[0] - other_label.rect[2] <= 185):
+            return False
+    return True
+
+
 def adjacent(rows, row_index, col, label, field):
     row = rows[row_index]
     if not clean(row):
@@ -135,7 +183,10 @@ def adjacent(rows, row_index, col, label, field):
     options = []
     if col + 1 < len(row):
         right = row[col + 1]
-        if 4 <= right.rect[0] - label.rect[2] <= 185:
+        gap = right.rect[0] - label.rect[2]
+        wide_tax = field == "tax" and 185 < gap <= 225 and aligned_tax_summary(rows, row_index, label, right)
+        if (4 <= gap <= 185 or wide_tax) and not (
+                (field == "total" or wide_tax) and has_amount_column_label_above(rows, row_index, right)):
             options.append(right)
     for index in range(row_index + 1, len(rows)):
         below = rows[index]
@@ -152,7 +203,7 @@ def adjacent(rows, row_index, col, label, field):
                  if not matches(cell.text, HEADER_PATTERNS) and header_shape(field, cell.text))
 
 
-def split_headers(rows):
+def split_headers(rows, *, summary_payables=None):
     observations = defaultdict(list)
     inline_fields = set()
     summary = False
@@ -166,10 +217,20 @@ def split_headers(rows):
                 if not summary or revised or inline.startswith("bank_instructions."):
                     inline_fields.add(inline)
             field = matches(label.text, HEADER_PATTERNS)
-            if field and (not summary or revised or field.startswith("bank_instructions.")):
-                pairs = adjacent(rows, index, col, label, field)
+            legacy_revision = revised and not PAYABLE_ALIAS_LABEL.fullmatch(label.text)
+            if field and (not summary or legacy_revision or field.startswith("bank_instructions.")):
+                generic = field == "total" and GENERIC_PAYABLE_LABEL.fullmatch(label.text)
+                if generic and not (index >= 2 and invoice_amount_row("net", rows[index - 2], label)
+                                    and invoice_amount_row("tax", rows[index - 1], label)):
+                    pairs = ()
+                else:
+                    pairs = adjacent(rows, index, col, label, field)
                 # An unresolved label counts as a competing association, even beside a supported label.
                 observations[field].extend(pairs or (Pair(""),))
+            elif field == "total" and summary_payables is not None and INVOICE_DUE_IN_SUMMARY.fullmatch(label.text):
+                # An invoice-specific restatement can show a conflict. Its
+                # placement in the account section cannot supply positive support.
+                summary_payables.append(adjacent(rows, index, col, label, field))
     used_cells = Counter(pair.cell for pairs in observations.values() for pair in pairs if pair.cell is not None)
     for field, pairs in observations.items():
         if field in inline_fields or any(used_cells[pair.cell] > 1 for pair in pairs):

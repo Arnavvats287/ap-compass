@@ -1,12 +1,16 @@
 # AP Compass — Project Memory (living handoff)
 
 **Last reviewed:** 2026-11-20 (IST)
-**Repository status:** Final decision journey and persisted financial overview verified in the separate F.3 worktree.
-**Current authorized segment:** `06B.2F.3 FINAL DEMO EXPERIENCE` only.
+**Repository status:** F.3 is preserved. The final automation quality pass is isolated in a separate worktree.
+**Current authorized segment:** Final automation quality pass only.
 **Deadline:** Saturday 2026-11-21 (IST); target Friday evening feature freeze.
 **Maintainers:** Builder owns product decisions; Codex implements one authorized phase; architectural review gates further work.
 
 > Repo-local continuity. Status is evidence, not completion by assertion. Latest user acceptance/routing adjustment is recorded in ADR-016 and the handoff below.
+
+## Final automation quality handoff
+
+The controlled comparison reused all 26 PDF and wire pairs. Ready decisions improved from 2/12 to 6/12 among Ready targets. Three Blind V2 invoices reached Ready after their printed payable verified, and DEMO-02 reached Ready after its printed tax label and aligned amount verified. All 14 non-Ready targets kept their prior outcomes. DEMO-05 retains AP ownership because its unmatched code lacks independent line evidence. Procurement authority, financial control conditions, the F.3 UI, existing rehearsal databases and frozen benchmarks were preserved. Zero Gemini attempts. See `docs/FINAL_AUTOMATION_QUALITY_REPORT.md`. Stop after this pass.
 
 ## Phase 6B.2F.3 handoff
 

@@ -154,6 +154,11 @@ def test_scope_owner_requires_a_supported_explicit_item(item, trusted, owner):
     findings = evaluate(context, PolicyV1()).findings
     mapping = next(f for f in findings if f.code == "LINE_MAPPING_UNRESOLVED")
     assert mapping.owner == owner
+    if trusted:
+        assert "authorized PO amendment" in mapping.next_action
+    else:
+        assert mapping.title == "Item or PO details need verification"
+        assert "rendered invoice" in mapping.next_action and "intended PO" in mapping.next_action
 
 
 def test_supported_native_extra_item_routes_to_procurement():

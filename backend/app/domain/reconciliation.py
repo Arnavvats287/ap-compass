@@ -119,12 +119,14 @@ def item_mapping(context: EvaluationContextV1, policy: PolicyV1):
     if outside_scope:
         notes.append("Invoice lines with verified item codes outside the selected PO scope: " + ", ".join(outside_scope))
     if unclear:
-        notes.append("Invoice lines requiring item-code/PO clarification: " + ", ".join(unclear))
-    clarification = "Obtain missing item codes or itemized source information and verify against the intended PO."
+        notes.append("Invoice lines without enough verified detail to confirm PO scope: " + ", ".join(unclear))
+    clarification = ("Check the item code and charge description against the rendered invoice. Request itemized "
+                     "details if unclear, then compare the charge with the intended PO.")
     authorization = ("Verify authorization of the additional item or service. Obtain an authorized PO amendment "
                      "or corrected supplier invoice as appropriate, then re-evaluate.")
     action = " ".join(text for text, needed in ((authorization, outside_scope), (clarification, unclear)) if needed)
-    return (finding("LINE_MAPPING_UNRESOLVED", "REVIEW", "Invoice items are not mapped to authorized PO scope",
+    title = "Invoice items are not mapped to authorized PO scope" if outside_scope else "Item or PO details need verification"
+    return (finding("LINE_MAPPING_UNRESOLVED", "REVIEW", title,
                     ". ".join(notes), source="procurement", owner="Procurement" if outside_scope else "AP", action=action),)
 
 
