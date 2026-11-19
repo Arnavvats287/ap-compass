@@ -16,4 +16,4 @@ print(f"GIT HYGIENE PASS: {len(PROBES)} exclusions; placeholder allowed; no igno
 for path in Path("tests/fixtures").glob("*.pdf"):
     tracked = subprocess.check_output(["git", "show", ":" + path.as_posix()])
     assert tracked == path.read_bytes(), f"PDF changed by Git normalization: {path}"
-print("PDF GIT BYTES PASS: 4 native-text PDFs stored without line-ending conversion")
+print(f"PDF GIT BYTES PASS: {len(list(Path('tests/fixtures').glob('*.pdf')))} fixture PDFs stored without line-ending conversion")

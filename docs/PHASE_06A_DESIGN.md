@@ -1,0 +1,28 @@
+# Phase 6A creative direction — editorial finance / interactive control room
+
+Written before the creative-override implementation. Real baseline: `tmp/phase06a-design-before`, actual local Chrome responses at1440×1000,1024×900,390×844; policy baseline in its `policy` subdirectory. The reference video `tmp/ui-reference.mp4` is absent. No video frames/transitions are claimed inspected; the user's two descriptions guide ambition.
+
+## Rendered critique
+
+The five equal metric cells still read as a generic admin strip; they compete with the attention value rather than forming one purposeful surface. The upload and distribution have tidy but unmemorable rectangular composition. The first Phase6A trace is truthful but too thin and low-contrast to be a signature interaction. The policy comparison communicates correctly but looks like ordinary form columns, with insufficient distinction between historical and hypothetical. Typography is uniformly workmanlike. Keep the readable queue, financial comparison, source PDF adjacency and explicit caveats.
+
+## Compact specification
+
+- **Typography:** native Georgia editorial headings for page/section identity; Segoe UI/system sans for fields, actions, identifiers and tabular financial numbers. Whole headings, no isolated italic word or decorative quote.44px page title,32px mobile; numerical48–64px attention figures; compact13–16px working data. No downloaded font assets or font-loading shift.
+- **Palette:** retain and deepen forest, warm cream and white. Mint/citrus distinguish attention links and selected controls; semantic red/amber/green remain authoritative. All additions live in the existing root tokens; dark-panel secondary text must remain readable.
+- **Surfaces:** asymmetric overview with a dominant attention/value area, compact supporting counts, upload and outcome distribution. Thin utility borders and white queue;12px signature surfaces,8px utility cards. No glass over tables, gradient wallpaper or decorative art.
+- **Attention signature:** review/blocked counts and actual flagged NET share one visual focus. Ready/total/processing remain supporting real counts. Retain repeat-analysis, unknown-value and currency caveats. Never sum new metrics or imply savings/exposure.
+- **Trace signature:** connected dark execution nodes, clear active/completed/failure semantics, measured time. Compact persisted path remains after completion; final business outcome stays separate. Horizontal desktop, vertical mobile; node disclosures remain keyboard-operable.
+- **Policy signature:** recorded evaluation on light paper, hypothetical preview in a forest interaction surface; native2%/5% radio controls with a sliding selection background. This background tracks requested choice, not a financial outcome. Outcome appears only from the real API response. Explicit original-unchanged/no-reprocessing/no-payment text and locked hard controls remain visible.
+- **Motion:**160ms press/hover,220ms response entrance (opacity/transform),1600ms active connector loop only during actual RUNNING. No finance-number motion, automatic page entrance, decorative loops, height animation or ETA. Reduced motion disables all movement; focus remains immediate. Static preview path never mimics extraction.
+- **Screen hierarchy:** Overview attention → upload/supporting distribution → readable activity ledger. Queue preserves existing workflow/table. Workspace recorded decision/source → policy comparison → execution trace → findings/evidence; running trace is the focal surface. Mobile retains decision-first ordering and tap access to every control.
+
+## Research and implementation choices
+
+- [Aceternity Bento Grid](https://ui.aceternity.com/components/bento-grid): studied varied column spans and content-led composition, rather than copying promotional cards. [Timeline](https://ui.aceternity.com/components/timeline): studied connected narrative/context, rejecting scroll-position-based progress for backend execution. [Licence](https://ui.aceternity.com/licence) reviewed; no Aceternity source/assets or Pro blocks copied/installed.
+- [shadcn Toggle Group](https://ui.shadcn.com/docs/components/base/toggle-group): studied bounded single selection. Native radios fit this required-value policy input better than optional toggles; implement original segmented presentation. [MIT licence](https://raw.githubusercontent.com/shadcn-ui/ui/main/LICENSE.md) reviewed; no component source copied or package added.
+- [Motion React layout](https://motion.dev/docs/react-layout-animations) and [accessibility](https://motion.dev/docs/react-accessibility): considered shared-layout/presence patterns. CSS handles two fixed choices and one finite API-result entrance with less complexity. No Motion dependency added.
+- [Tailwind interaction/state guidance](https://tailwindcss.com/docs/hover-focus-and-other-states): use focus,checked,disabled,open and reduced-motion states with existing tokens. No Next.js assumptions or library-wide install.
+- Product truth > Hallmark app/redesign > [Vercel interaction guidelines](https://raw.githubusercontent.com/vercel-labs/web-interface-guidelines/main/command.md) > Taste critique. Reject marketing hero pacing, decorative beams/particles, full-screen sections, table tilt and gratuitous blur. Circle/check markers are actual execution-state controls, not feature decoration.
+
+The existing single live PRICE extraction is reused. This override authorizes frontend composition, not another Gemini call or a financial architecture change. At least two rendered browser-feedback iterations follow this specification; final observations/results belong in PHASE_06A_REPORT.md.

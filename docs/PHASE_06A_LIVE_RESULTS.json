@@ -1,0 +1,120 @@
+{
+  "fixture": "PRICE_3PCT.pdf",
+  "run_id": "d2269cade6cb4dca94e6239e5658d25a",
+  "actual_model": "gemini-3.5-flash-lite",
+  "route": "native_text",
+  "execution_state": "COMPLETED",
+  "header_fields": {
+    "invoice_number": {
+      "expected": "PRICE_3PCT-2026",
+      "actual": "PRICE_3PCT-2026",
+      "match": true
+    },
+    "invoice_date": {
+      "expected": "2026-11-14",
+      "actual": "2026-11-14",
+      "match": true
+    },
+    "po_reference": {
+      "expected": "PO-2010",
+      "actual": "PO-2010",
+      "match": true
+    },
+    "currency": {
+      "expected": "INR",
+      "actual": "INR",
+      "match": true
+    },
+    "net": {
+      "expected": "10300",
+      "actual": "10300",
+      "match": true
+    },
+    "tax": {
+      "expected": "1854",
+      "actual": "1854",
+      "match": true
+    },
+    "total": {
+      "expected": "12154",
+      "actual": "12154",
+      "match": true
+    },
+    "vendor_name_raw": {
+      "expected": "Northstar Supplies",
+      "actual": "Northstar Supplies",
+      "match": true
+    }
+  },
+  "lines": [
+    {
+      "description": "Office chairs",
+      "item_code": "NS-CHAIR-01",
+      "qty": "10",
+      "unit_price_net": "1030",
+      "net": "10300"
+    }
+  ],
+  "evidence_states": {
+    "vendor_name_raw": "NATIVE_VERIFIED",
+    "invoice_number": "NATIVE_VERIFIED",
+    "invoice_date": "NATIVE_VERIFIED",
+    "po_reference": "NATIVE_VERIFIED",
+    "currency": "NATIVE_VERIFIED",
+    "net": "NATIVE_VERIFIED",
+    "tax": "NATIVE_VERIFIED",
+    "total": "NATIVE_VERIFIED",
+    "lines[0].description": "NATIVE_VERIFIED",
+    "lines[0].item_code": "NATIVE_VERIFIED",
+    "lines[0].qty": "NATIVE_VERIFIED",
+    "lines[0].unit_price_net": "NATIVE_VERIFIED",
+    "lines[0].net": "NATIVE_VERIFIED"
+  },
+  "recorded_outcome": "REVIEW_REQUIRED",
+  "recorded_reason_codes": [
+    "PO_MATCH_CONFIRMED",
+    "PRICE_VARIANCE",
+    "BANK_DETAILS_NOT_PROVIDED"
+  ],
+  "preview_5pct": {
+    "outcome": "READY_FOR_AP",
+    "changed": true,
+    "reasonCodes": [
+      "PO_MATCH_CONFIRMED",
+      "BANK_DETAILS_NOT_PROVIDED"
+    ]
+  },
+  "usage": {
+    "model_calls": 1,
+    "input_tokens": 542,
+    "output_tokens": 681
+  },
+  "timings": [
+    {
+      "name": "extraction",
+      "milliseconds": 5807
+    },
+    {
+      "name": "matching",
+      "milliseconds": 2
+    },
+    {
+      "name": "evaluation",
+      "milliseconds": 2
+    },
+    {
+      "name": "total_processing",
+      "milliseconds": 5852
+    }
+  ],
+  "actual_generation_requests": [
+    {
+      "kind": "generation",
+      "model": "gemini-3.5-flash-lite"
+    }
+  ],
+  "preview_generation_calls": 0,
+  "authority_hash_unchanged": "7fb54a84f32bd0bf75a29396bb50c450878503dd70515b33bafcc330e2a54398",
+  "original_snapshots_and_active_policy_unchanged_by_preview": true,
+  "real_running_trace_capture": "tmp/phase06a-qa/actual-live-trace-1440.png"
+}

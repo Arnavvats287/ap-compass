@@ -1,4 +1,4 @@
-import type { Dashboard, Run, RunSummary } from './types'
+import type { Dashboard, Run, RunSummary, PolicyPreview, PriceTolerance } from './types'
 
 export class ApiError extends Error {
   constructor(public status: number) {
@@ -24,4 +24,10 @@ export const api = {
     })
   },
   documentUrl: (id: string) => `/api/runs/${encodeURIComponent(id)}/document`,
+  preview: (id: string, tolerance: PriceTolerance) =>
+    request<PolicyPreview>(`/runs/${encodeURIComponent(id)}/policy-preview`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ price_tolerance_pct: tolerance }),
+    }),
 }

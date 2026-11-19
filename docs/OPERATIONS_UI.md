@@ -125,3 +125,16 @@ AP_COMPASS_API_TARGET=http://127.0.0.1:8005. The compiled app is also directly u
 QA reused runtime/phase04-smoke-0221866e9e214f3a84149d1f79098bd9/runs.db and its documents directory,
 then added one genuine overbilled analysis. These runtime files, credentials, screenshots and skill installs
 are ignored. No paid/public deployment was performed.
+
+
+## Phase 6A additions
+
+Policy impact is a separate,explicitly hypothetical workspace disclosure,not a worklist filter or active-policy
+editor. Native2%/5% controls request the read-only policy-preview API; wait for its response,keep the recorded
+badge/decision unchanged,and show locked hard controls. No automatic extraction/request on disclosure.
+Decision trace replaces the basic history timeline with actual persisted nodes,timings and separate business
+outcome. Horizontal desktop/vertical mobile; only RUNNING connectors move; reduced-motion disables movement.
+The user's creative override adds an attention-focused asymmetric overview and editorial/control-room tokens,
+with original native-control/CSS patterns and no new design dependency. All metrics remain real with existing
+NET/currency/repeated-analysis caveats. Read PHASE_06A_DESIGN.md,POLICY_PREVIEW.md and PHASE_06A_REPORT.md.
+The verified6A local server is8006,reusing existing persisted data; older8005 remains a prior server. No hosting.

@@ -131,3 +131,34 @@ Do not rewrite past records to pretend a previous design was never chosen. Recor
 - **Evidence:** PHASE_05_REPORT.md, PHASE_05_DESIGN_NOTE.md, PHASE_05_DESIGN_QA.md and live/UI QA JSONs.
   One real browser upload, one primary model call, actual stages and BLOCKED result; authority hash unchanged.
 - **Deferred:** Human confirmation/approval/reevaluation/policy editing, new scenarios, hosting and Phase 6.
+
+
+## ADR-019 — Phase 6A read-only policy simulation and persisted decision trace
+
+- **Status/date:** ACCEPTED by the explicit Phase 6A request, 2026-11-19 IST.
+- **Simulation:** POST /api/runs/{id}/policy-preview accepts only Decimal tolerance0.02 or0.05.
+  Reuse the completed run's stored extracted invoice and all other recorded PolicyV1 fields; load current
+  trusted vendor/PO/billed snapshots, then call the existing build_context/evaluate functions. A deterministic
+  content-derived preview policy version distinguishes the immutable simulation. Active policy is unchanged.
+- **No writes or extraction:** No run/stage/policy/master/ledger writes, PDF reads/parsing, Gemini calls or
+  preview persistence. This is not the persisted reevaluation/revision workflow in CHANGE_RULE_PROTOCOL.
+  Original decisions remain historical facts; previews can differ as current trusted records evolve.
+- **Controls:** Price tolerance alone is configurable. Commitment/quantity ceilings, exact duplicates,
+  identity/source requirements and explicit-PO framework remain in the existing evaluator. No rules changed.
+- **Response:** API-local models contain both policies and decisions. changed compares business decision
+  fields excluding policy_version; it can reflect findings/actions even if the top-level outcome is unchanged.
+  Unknown run404, unfinished/technical/missing analysis409, invalid bounded input422; no shared schema change.
+- **UI:** Explicit Policy preview / Original AP decision unchanged / No document reprocessing wording;
+  never replace the main recorded badge or imply approval. Current trusted records are named honestly,
+  rather than asserting authority is necessarily identical to the original evaluation.
+- **Trace:** Returned stage rows own state. PASSED means execution succeeded, not identity/financial approval.
+  Display measured timings, otherwise valid timestamp duration, otherwise unknown. Business outcome is
+  separate. Only a genuine RUNNING node animates a connector; reduced motion disables movement.
+- **Boundary:** No active policy editor, PO confirmation, approval, audit action history, new creative cases,
+  new LLM authority, payments, deployment or Phase6B. PRICE_3PCT is an existing frozen manifest scenario.
+
+- **Supplementary creative authorization:** The user's Phase6A creative override explicitly includes the
+  overview and shared presentation system. Adopt editorial Georgia headings/system-sans financial data,
+  asymmetric real-data attention bento and forest policy/trace surfaces. Original CSS/native controls; no
+  imported Pro components or new Motion/design-library dependency. Two rendered iterations and full regression
+  recorded in PHASE_06A_DESIGN/REPORT. This authorizes no new metric,financial rule,model call or Phase6B work.

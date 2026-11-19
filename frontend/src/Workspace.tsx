@@ -4,77 +4,30 @@ import {
   ArrowUpRight,
   Check,
   CircleCheck,
-  CirclePause,
   Copy,
   FileText,
-  LoaderCircle,
   ShieldCheck,
   TriangleAlert,
-  X,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { ApiError, api } from './api'
 import { active, useRun } from './queries'
 import { ErrorState, Loading, Status, statusInfo } from './components'
-import { date, decimal, elapsed, money, unknown, valueLabels, words } from './format'
-import type { Evidence, Finding, Run, Stage } from './types'
+import {
+  date,
+  decimal,
+  elapsed,
+  money,
+  unknown,
+  valueLabels,
+  words,
+  toleranceLabel,
+} from './format'
+import DecisionTrace, { stageLabels } from './DecisionTrace'
+import PolicyImpact from './PolicyImpact'
+export { StageTimeline } from './DecisionTrace'
+import type { Evidence, Finding, Run } from './types'
 
-const stageLabels: Record<string, string> = {
-  received: 'Invoice received',
-  extracting_invoice: 'Reading invoice',
-  matching_records: 'Matching procurement records',
-  evaluating_controls: 'Running AP controls',
-  finalizing: 'Finalizing decision',
-}
-const stageStates = {
-  QUEUED: 'Waiting',
-  RUNNING: 'Running',
-  PASSED: 'Complete',
-  WARNING: 'Attention',
-  FAILED: 'Failed',
-  SKIPPED: 'Skipped',
-}
-export function StageTimeline({ stages }: { stages: Stage[] }) {
-  return (
-    <ol className="stage-timeline" aria-label="Persisted processing stages">
-      {stages.map((stage) => {
-        const Icon =
-          stage.state === 'RUNNING'
-            ? LoaderCircle
-            : stage.state === 'PASSED'
-              ? Check
-              : stage.state === 'FAILED'
-                ? X
-                : CirclePause
-        return (
-          <li key={stage.name} className={`stage stage-${stage.state.toLowerCase()}`}>
-            <Icon
-              size={18}
-              className={stage.state === 'RUNNING' ? 'spin' : ''}
-              aria-hidden="true"
-            />
-            <span>
-              <strong>{stageLabels[stage.name] ?? words(stage.name)}</strong>
-              <small>{stageStates[stage.state]}</small>
-            </span>
-            {stage.started_at && (
-              <time
-                dateTime={stage.started_at}
-                title={`Started ${date(stage.started_at, true)}${stage.finished_at ? `; finished ${date(stage.finished_at, true)}` : ''}`}
-              >
-                {new Intl.DateTimeFormat('en-IN', {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  second: '2-digit',
-                }).format(new Date(stage.started_at))}
-              </time>
-            )}
-          </li>
-        )
-      })}
-    </ol>
-  )
-}
 export function FindingValues({
   finding,
   currency,
@@ -83,7 +36,8 @@ export function FindingValues({
   currency?: string | null
 }) {
   const isMoney = (name: string) =>
-    name.endsWith('_net') || ['expected_gross', 'stated_gross', 'difference'].includes(name)
+    name.endsWith('_net') ||
+    ['expected_gross', 'stated_gross', 'difference', 'invoice_price', 'po_price'].includes(name)
   return finding.values.length ? (
     <dl className="finding-values">
       {finding.values.map((value, index) => (
@@ -94,9 +48,11 @@ export function FindingValues({
               ? unknown
               : isMoney(value.name)
                 ? money(value.value, currency)
-                : value.name.endsWith('_qty') || value.name === 'qty'
-                  ? decimal(value.value)
-                  : value.value}
+                : value.name === 'tolerance_pct'
+                  ? toleranceLabel(value.value)
+                  : value.name.endsWith('_qty') || value.name === 'qty'
+                    ? decimal(value.value)
+                    : value.value}
           </dd>
         </div>
       ))}
@@ -378,6 +334,8 @@ function BusinessDecision({ run }: { run: Run }) {
           </section>
         </>
       )}
+      <PolicyImpact key={run.id} run={run} />
+      <DecisionTrace run={run} />
       <section className="workspace-section">
         <h2>Findings & controls</h2>
         {(
@@ -555,7 +513,7 @@ export default function Workspace() {
               ? 'Your PDF is stored. It will be processed when capacity is available.'
               : 'Progress below reflects real backend work. You can leave and return to this invoice.'}
           </p>
-          <StageTimeline stages={run.stages} />
+          <DecisionTrace run={run} />
         </section>
       )}
       {failed && (
@@ -578,6 +536,7 @@ export default function Workspace() {
           </Link>
         </section>
       )}
+      {failed && <DecisionTrace run={run} />}
       <div className="workspace-grid">
         <div className="decision-column">
           {run.decision && <BusinessDecision run={run} />}
@@ -587,12 +546,6 @@ export default function Workspace() {
               <p>Verification describes support in the document, not financial approval.</p>
               <EvidenceList evidence={invoice.evidence} />
             </section>
-          )}
-          {!pending && (
-            <details className="stage-history">
-              <summary>Processing history</summary>
-              <StageTimeline stages={run.stages} />
-            </details>
           )}
           <Diagnostics run={run} />
         </div>

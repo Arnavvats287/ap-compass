@@ -1,4 +1,4 @@
-"""Generate exactly the four Phase 1 synthetic native-text PDFs from the oracle."""
+"""Generate native-text oracle fixtures; default selection preserves the four Phase 1 PDFs."""
 import json
 from decimal import Decimal
 from pathlib import Path
@@ -8,12 +8,12 @@ from reportlab.lib.pagesizes import A4
 ROOT = Path(__file__).resolve().parents[1]
 IDS = ("HAPPY_CLEAN", "HAPPY_PARTIAL", "OVERBILLED_PARTIAL", "DUPLICATE_REISSUED")
 
-def generate(output=ROOT / "tests/fixtures"):
+def generate(output=ROOT / "tests/fixtures", *, ids=IDS):
     output = Path(output)
     output.mkdir(parents=True, exist_ok=True)
     cases = json.loads((ROOT / "data/fixture_manifest.json").read_text())["fixture_cases"]
     for case in cases:
-        if case["id"] not in IDS:
+        if case["id"] not in ids:
             continue
         pdf = canvas.Canvas(str(output / case["filename"]), pagesize=A4, invariant=1)
         pdf.setTitle("Synthetic invoice - " + case["invoice_number"])
@@ -56,4 +56,8 @@ def generate(output=ROOT / "tests/fixtures"):
         print("Generated " + case["filename"])
 
 if __name__ == "__main__":
-    generate()
+    import argparse
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--case", choices=(*IDS, "PRICE_3PCT"))
+    args = parser.parse_args()
+    generate(ids=(args.case,) if args.case else IDS)

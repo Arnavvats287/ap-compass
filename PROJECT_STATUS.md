@@ -1,11 +1,10 @@
 # AP Compass — Project Status / Gate Register
 
 **Updated:** 2026-11-19 IST.
-**Current gate:** Phase 5 accepted by user; Phase 5.1 visual refinement PASS, review pending. STOP before Phase 6.
-**Base:** phase-05-operations-ui / 8816cff9ee721bfdf2ce35ac5faf4601eb3f18df.
-**Branch:** codex/phase-05-1-visual-refinement. Accepted `phase-05-operations-ui` checkpoint preserved.
-Checkpoint-only publication authorized after fresh checks. Checkpoint name: `phase-05-1-visual-refinement`.
-Exact SHA and independently verified remote publication/clean-tree evidence are in the publication handoff.
+**Current gate:** Phase 6A PASS; architectural and visual review pending. STOP before Phase 6B.
+**Base:** phase-05-1-visual-refinement / 4e9665daac7dda661f19217ab9ba8630c640b839.
+**Branch:** codex/phase-06a-policy-decision-trace. **Checkpoint:** phase-06a-policy-decision-trace.
+Final exact SHA and remote publication/clean-tree verification accompany the checkpoint handoff.
 No prior-tag/default-branch alteration. Deadline remains Saturday 2026-11-21 IST.
 
 | Phase | State | Evidence |
@@ -15,9 +14,38 @@ No prior-tag/default-branch alteration. Deadline remains Saturday 2026-11-21 IST
 | 03/3.1 Extraction | ACCEPTED | Original document/AI code/tests unchanged; primary only |
 | 04 API/orchestration | ACCEPTED | User review passed; original workflow/tests unchanged |
 | 05 Operations UI | ACCEPTED | User confirmed functional gate passed; existing checkpoint preserved |
-| 05.1 Visual refinement | PASS, review pending | Two rendered iterations, 280 backend + 32 frontend tests, 15 real-data views + 7 deterministic states; zero model calls |
-| 06 Scenarios | LOCKED | No new fixtures/scenarios authorized |
+| 05.1 Visual refinement | ACCEPTED | Two rendered iterations, 280 backend + 32 frontend tests, 15 real-data views + 7 deterministic states; zero model calls |
+| 06A Policy and trace | PASS, review pending | 299 backend +47 frontend tests; one live PRICE extraction, zero-AI previews; two creative browser iterations |
+| 06B Human resolution/scenarios | LOCKED | No PO confirmation, action history or new creative fixtures authorized |
 | 07 Release | LOCKED | No public/paid/Docker deployment |
+
+## Verified Phase 6A evidence
+
+- Read-only API-local policy preview uses stored invoice/current trusted authority and the unchanged
+  build_context/evaluate functions. Decimal0.02/0.05 only; extra controls/float inputs rejected. No shared
+  contract/schema/financial/document/provider/authority change. No run/stage/policy/ledger writes by previews.
+- **299 backend tests pass** (280 original +19 new),52.18s,one existing warning; **47 frontend tests pass**
+  (32 original +15 new),6.55s. Typecheck/build PASS;1751modules,JS316.59kB/CSS61.08kB (gzip99.34/10.87kB).
+- Manifest/hygiene/pip PASS; npm audit0 vulnerabilities. Existing PDF/manifests unchanged; generated only
+  the frozen PRICE_3PCT native PDF. Hygiene byte check now accurately reports6 fixture PDFs.
+- One genuine browser PRICE upload,run d2269cade6cb4dca94e6239e5658d25a:Flash-Lite/native_text,
+ 8 critical headers match oracle,13 source refs NATIVE_VERIFIED. At2% REVIEW_REQUIRED/PRICE_VARIANCE;
+  at5% preview READY_FOR_AP. Original decision unchanged. Input542/output681 tokens; extraction5807ms,
+  matching2ms/evaluation2ms/total5852ms. Exactly1 generation overall,0 during creative redesign/previews.
+- Overbilling stays BLOCKED at5% in real API/browser; duplicates stay BLOCKED/EXACT_DUPLICATE in API tests.
+  Tests forbid extractor/PDF access and all non-SELECT SQL during previews; snapshots/stages/authority/policy
+  remain identical. Authority hash still7fb54a84f32bd0bf75a29396bb50c450878503dd70515b33bafcc330e2a54398.
+- Actual stage-driven trace:compact completed nodes and separate business outcome; actual-only RUNNING
+  connector animation; milliseconds/unknown timing preserved. Native details and reduced motion verified.
+- User creative override expressly authorized overview/shared visual refinement. Pre-edit critique/spec,
+  two actual Chrome iterations:asymmetric attention bento,editorial Georgia/system sans,forest trace/preview,
+  mint/citrus,readable white queue. Reference video absent; no inspection claim. No design dependency added.
+- Core browser15 real views +7 test states PASS; focused12 recorded/preview states +3 running states across
+ 1440×1000/1024×900/390×844 PASS. Hallmark rendered0FAIL/0WARN/3ANSWERED; Vercel/Taste reviews recorded.
+  One concurrent Chrome PDF navigation timeout resolved by rerunning the unchanged suite alone.
+- Current app http://127.0.0.1:8006;5 actual analyses,ready1/review2/blocked2. Preview-ready does not change
+  recorded counts. Runtime/smoke guard/screenshots ignored. No stronger model,6B,approval or deployment work.
+- Reports:POLICY_PREVIEW.md,PHASE_06A_DESIGN.md,PHASE_06A_REPORT.md,PHASE_06A_LIVE_RESULTS.json; ADR-019.
 
 ## Phase 5.1 publication verification
 
@@ -69,7 +97,7 @@ diff empty against accepted Phase5. Exact commands/classification:docs/PHASE_05_
 - Current demo history: 4 submissions, 1 ready / 1 review / 2 blocked; flagged known INR net130000 including
   repeated analysis, not unique payable exposure. Existing Phase 4 runs/documents survive restart.
 
-## Scope and decisions
+## Scope and decisions (Phase 5 history)
 
 No shared-contract, financial/document/AI rule, DB schema, orchestration, seed or fixture change. Small backend
 changes: approved dashboard read projection and identified/reported static deep-link serving fix (ADR-018).
@@ -77,7 +105,7 @@ The design note predates implementation. Hallmark app redesign, Vercel QA, then 
 marketing heroes/shaders/mandatory loops/photography rejected in favor of finance work and reduced motion.
 Final audit/screenshot details in PHASE_05_REPORT and DESIGN_QA. Review remains in-thread; no agents.
 
-## Local review and limitations
+## Local review and limitations (Phase 5 history)
 
 Compiled UI/backend http://127.0.0.1:8005 in local Chrome; Vite http://127.0.0.1:5175 proxies it. The default
 8000 port belongs to an older process and was not overwritten. Existing demo DB/document location documented

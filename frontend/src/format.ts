@@ -80,6 +80,9 @@ export const valueLabels: Record<string, string> = {
   prior_billed_qty: 'Previously billed quantity',
   excess_qty: 'Excess quantity',
   item_code: 'Item code',
+  invoice_price: 'Invoice unit price',
+  po_price: 'PO unit price',
+  tolerance_pct: 'Price tolerance',
   fields: 'Fields requiring verification',
 }
 
@@ -99,4 +102,9 @@ export function fileSize(bytes: number): string {
   const unit = bytes < 1024 ? 'B' : bytes < 1024 * 1024 ? 'KiB' : 'MiB'
   const value = bytes / (unit === 'B' ? 1 : unit === 'KiB' ? 1024 : 1024 * 1024)
   return `${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(value)} ${unit}`
+}
+
+/** Labels for the two bounded policy choices; no financial decision or arithmetic. */
+export function toleranceLabel(value?: string | null): string {
+  return ({ '0.02': '2%', '0.05': '5%' } as Record<string, string>)[value ?? ''] ?? value ?? unknown
 }

@@ -74,7 +74,7 @@ export interface Run {
   source_route: string | null
   model_id: string | null
   extraction_schema_version: string | null
-  policy_snapshot: { version: string } | null
+  policy_snapshot: { version: string; price_tolerance_pct?: string } | null
   timings: { name: string; milliseconds: number }[]
   usage: {
     model_calls: number | null
@@ -106,4 +106,12 @@ export interface Dashboard {
   interrupted: number
   flagged_invoice_net_by_currency?: Record<string, string>
   flagged_invoice_net_missing_count?: number
+}
+export type PriceTolerance = '0.02' | '0.05'
+export interface PolicyPreview {
+  original_policy: { version: string; price_tolerance_pct: string }
+  preview_policy: { version: string; price_tolerance_pct: string }
+  original_decision: Decision
+  preview_decision: Decision
+  changed: boolean
 }

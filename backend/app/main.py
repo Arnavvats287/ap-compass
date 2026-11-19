@@ -4,6 +4,7 @@ from .api.health import router
 from .db.session import create_db_engine, initialize, ROOT
 from .db.seed import seed
 from .api.runs import router as runs_router
+from .api.policy_preview import router as policy_preview_router
 from .api.spa import AppStaticFiles
 from .ai.gemini import extract_runtime_pdf
 from .orchestration.documents import DocumentStore
@@ -31,6 +32,7 @@ def create_app(db_path=None, *, document_dir=None, extractor=None):
     application = FastAPI(title="AP Compass", version="0.1.0", lifespan=lifespan)
     application.include_router(router)
     application.include_router(runs_router)
+    application.include_router(policy_preview_router)
     static = ROOT / "frontend/dist"
     if static.is_dir():
         application.mount("/", AppStaticFiles(directory=static, html=True), name="frontend")

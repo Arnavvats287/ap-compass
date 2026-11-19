@@ -125,3 +125,12 @@ Normal automated tests use deterministic fakes and no network/key. Manual live s
 It uses real POST/detail/document endpoints via ASGI, the actual default runtime extractor, persisted DB/files,
 and app recreation. It caps generation at three total requests, forbids metadata/other-model requests, and
 retains only sanitized synthetic report fields. Do not rerun it casually; it consumes real provider quota.
+
+
+## Phase 6A additive read-only policy simulation
+
+POST /api/runs/{id}/policy-preview accepts only Decimal0.02/0.05,requires a completed business analysis,
+loads stored invoice/current authority,then calls existing build_context/evaluate under a copied immutable
+policy. Returns original/preview policies and decisions plus changed. No PDF/Gemini call or run/stage/policy/
+authority write. API-local models only; no shared shape change or persisted reevaluation. See POLICY_PREVIEW.md
+and ADR-019. Dashboard counts/metric definitions,upload,existing processing and restart semantics are unchanged.
