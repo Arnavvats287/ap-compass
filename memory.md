@@ -1,12 +1,16 @@
 # AP Compass — Project Memory (living handoff)
 
 **Last reviewed:** 2026-11-19 (IST)
-**Repository status:** Post-remediation validation complete for release review.
-**Current authorized segment:** `06B.2C.4 POST-REMEDIATION INDEPENDENT VALIDATION` only.
+**Repository status:** Financial evidence integrity repair verified locally for release-hardening review.
+**Current authorized segment:** `06B.2D.1 FINANCIAL EVIDENCE INVARIANT HARDENING` only.
 **Deadline:** Saturday 2026-11-21 (IST); target Friday evening feature freeze.
 **Maintainers:** Builder owns product decisions; Codex implements one authorized phase; architectural review gates further work.
 
 > Repo-local continuity. Status is evidence, not completion by assertion. Latest user acceptance/routing adjustment is recorded in ADR-016 and the handoff below.
+
+## Phase 6B.2D.1 handoff
+
+Base `bc674cac698a1c09ab94ff8b93592c50b5ebdad2`. Original synthetic red tests showed legacy USD and `$` amounts could verify against extracted INR and reach Ready. The shared legacy/geometry amount predicate now requires exact magnitude and compatible printed denomination, checks the actual raw source token, and keeps quantities denomination-free. Conflicting amounts remain source-uncertain and enter Review. The existing proven currency mismatch against PO authority still Blocks. The bounded omitted-row, issuer-role, and equal-amount diagnostics did not add any completeness or layout rule. Frozen result and fixture hashes stayed intact. No live inference or benchmark reruns. See `docs/PHASE_06B2D1_EVIDENCE_INTEGRITY_REPORT.md` and stop before release hardening.
 
 ## Phase 6B.2C.4 handoff
 

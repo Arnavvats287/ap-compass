@@ -24,6 +24,16 @@ AMOUNT = re.compile(
 CURRENCIES = {"₹": "INR", "RS": "INR", "RS.": "INR", "$": "USD", "€": "EUR", "£": "GBP"}
 
 
+def parse_printed_amount(text: str) -> tuple[Decimal, str | None] | None:
+    """Read the existing amount grammar without inferring a denomination."""
+    match = AMOUNT.fullmatch(text.strip())
+    if not match:
+        return None
+    prefix, number = match.groups()
+    code = prefix.upper() if prefix else None
+    return Decimal(number.replace(",", "")), CURRENCIES.get(code, code)
+
+
 def disputed_headers(pages, split_observations=()):
     """Identify disagreement; never pick a replacement value or evaluate eligibility."""
     values = {field: set() for field in PATTERNS}
@@ -31,11 +41,11 @@ def disputed_headers(pages, split_observations=()):
     def record(field, raw):
         if field in {"invoice_number", "po_reference"}:
             values[field].add(" ".join(raw.split()).casefold())
-        elif amount := AMOUNT.fullmatch(raw):
-            currency, number = amount.groups()
-            values[field].add(Decimal(number.replace(",", "")))
+        elif amount := parse_printed_amount(raw):
+            number, currency = amount
+            values[field].add(number)
             if currency:
-                currencies[field].add(CURRENCIES.get(currency.upper(), currency.upper()))
+                currencies[field].add(currency)
 
     ambiguous = set()
     for observations in split_observations:

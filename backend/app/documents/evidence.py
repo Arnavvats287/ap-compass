@@ -5,7 +5,7 @@ from decimal import Decimal
 import re
 
 from app.contracts import EvidenceRefV1, ExtractedInvoiceV1
-from .consistency import AMOUNT, CURRENCIES, HEADER_LABELS, disputed_headers
+from .consistency import HEADER_LABELS, disputed_headers, parse_printed_amount
 from .schema import SourceClaim
 from .source_layout import SUMMARY, flat, rows_for, split_headers, table_rows, unique_quotes
 from .types import DocumentInspection, ExtractionError
@@ -38,8 +38,8 @@ def values(invoice):
 def printed_value(text, expected):
     text = text.strip()
     if isinstance(expected, Decimal):
-        amount = AMOUNT.fullmatch(text)
-        return bool(amount and Decimal(amount[2].replace(",", "")) == expected)
+        amount = parse_printed_amount(text)
+        return bool(amount and amount[0] == expected)
     if isinstance(expected, date):
         for form in ("%Y-%m-%d", "%d %b %Y", "%d %B %Y", "%B %d, %Y"):
             try:
@@ -51,11 +51,26 @@ def printed_value(text, expected):
     return flat(text) == flat(str(expected))
 
 
+def supported_amount(printed, expected, claim_raw, currency, *, quantity=False):
+    source = parse_printed_amount(printed)
+    claim = parse_printed_amount(claim_raw)
+    if source is None or claim is None or source[0] != expected or claim[0] != expected:
+        return False
+    denomination, claimed_denomination = source[1], claim[1]
+    if quantity and (denomination or claimed_denomination):
+        return False
+    if denomination and denomination != (currency or "").strip().upper():
+        return False
+    if claimed_denomination and claimed_denomination != denomination:
+        return False
+    return bool(re.search(r"(?<![\d.,])" + re.escape(flat(claim_raw)) + r"(?![\d.,])", flat(printed)))
+
+
 def local_support(invoice, field, value, page, claim):
     """Preserve field-specific grounding for existing labelled blocks."""
     quote = flat(claim.quote)
     raw = flat(claim.raw_value)
-    if not raw or not printed_value(claim.raw_value, value):
+    if not raw or (not isinstance(value, Decimal) and not printed_value(claim.raw_value, value)):
         return False
     source_lines = [text for text, _ in page.lines]
     line_field = re.fullmatch(r"lines\[(\d+)\]\.(description|item_code|qty|unit_price_net|net)", field)
@@ -111,14 +126,16 @@ def local_support(invoice, field, value, page, claim):
         if field in {"net", "tax", "total"} and any(SUMMARY.fullmatch(text.strip())
                                                     for text in scope[:scope.index(labelled[0][0])]):
             return False
-        candidates = [text for text, printed in labelled if printed_value(printed, value)]
+        text, printed = labelled[0]
+        if isinstance(value, Decimal):
+            return (flat(text) in quote and supported_amount(printed, value, claim.raw_value, invoice.currency,
+                                                            quantity=leaf == "qty"))
+        candidates = [text] if printed_value(printed, value) else []
     if len(candidates) != 1:
         return False
     supporting_line = flat(candidates[0])
     # Require the full labelled source line, not just a quoted number somewhere.
     if supporting_line not in quote or raw not in supporting_line:
-        return False
-    if isinstance(value, Decimal) and not re.search(r"(?<![\d.,])" + re.escape(raw) + r"(?![\d.,])", supporting_line):
         return False
     return True
 
@@ -126,16 +143,11 @@ def local_support(invoice, field, value, page, claim):
 LINE_FIELD = re.compile(r"lines\[(\d+)\]\.(description|item_code|qty|unit_price_net|net)")
 
 
-def supported_cell(printed, value, claim, currency=None):
-    if not printed_value(printed, value) or not printed_value(claim.raw_value, value):
-        return False
-    raw, text = flat(claim.raw_value), flat(printed)
+def supported_cell(printed, value, claim, currency=None, *, quantity=False):
     if isinstance(value, Decimal):
-        prefix = AMOUNT.fullmatch(printed)[1]
-        if prefix and currency and CURRENCIES.get(prefix.upper(), prefix.upper()) != currency.upper():
-            return False
-        return bool(re.search(r"(?<![\d.,])" + re.escape(raw) + r"(?![\d.,])", text))
-    return raw == text
+        return supported_amount(printed, value, claim.raw_value, currency, quantity=quantity)
+    return (printed_value(printed, value) and printed_value(claim.raw_value, value)
+            and flat(claim.raw_value) == flat(printed))
 
 
 def layout_support(invoice, field, value, claim, headers, table, unique_rows):
@@ -151,7 +163,7 @@ def layout_support(invoice, field, value, claim, headers, table, unique_rows):
         # item sequence and description context. The claim must select the row,
         # even when prices, quantities or item codes repeat elsewhere.
         return (row.quote in unique_rows and row.quote == flat(claim.quote) and leaf in row.values
-                and supported_cell(row.values[leaf], value, claim, invoice.currency))
+                and supported_cell(row.values[leaf], value, claim, invoice.currency, quantity=leaf == "qty"))
     return False
 
 
