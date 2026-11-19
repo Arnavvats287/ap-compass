@@ -109,6 +109,13 @@ export interface Dashboard {
   interrupted: number
   flagged_invoice_net_by_currency?: Record<string, string>
   flagged_invoice_net_missing_count?: number
+  invoice_gross?: Record<
+    'submitted' | 'ready' | 'review_required' | 'blocked',
+    {
+      by_currency: Record<string, string>
+      missing_count: number
+    }
+  >
 }
 export type PriceTolerance = '0.02' | '0.05'
 export interface PolicyPreview {

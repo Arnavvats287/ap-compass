@@ -1,9 +1,9 @@
 # AP Compass — Project Status / Gate Register
 
 **Updated:** 2026-11-20 IST.
-**Current gate:** Phase 6B.2F.2 Batch upload and Excel export. Review before F.3.
-**Base:** 4e1946490e278072bef2ef0b27a344ec14972835.
-**Branch:** codex/phase-06b2f2-batch-excel. **Checkpoint:** phase-06b2f2-batch-excel.
+**Current gate:** Phase 6B.2F.3 Final demo experience. Review before submission.
+**Base:** f6fb08b7fe0bd5d04e6749c8e7f914faf0f8097d.
+**Branch:** codex/phase-06b2f3-final-demo. **Checkpoint:** phase-06b2f3-final-demo.
 Final exact SHA and local checkpoint verification accompany the handoff.
 No prior-tag/default-branch alteration. Deadline remains Saturday 2026-11-21 IST.
 
@@ -28,6 +28,7 @@ No prior-tag/default-branch alteration. Deadline remains Saturday 2026-11-21 IST
 | 06B.2E.1 Source generalization and completeness | Verified for independent evaluation | 508 backend and 58 frontend tests passed. Bounded field and full-row quote forms, recognized omitted-line Review, private Docker and restart verified. Frozen evidence matched. No held-out PDF access or Gemini requests. See [source report](docs/PHASE_06B2E1_SOURCE_GENERALIZATION_REPORT.md). |
 | 06B.2F.1 Premium dashboard | Locally verified for review | Needs Attention spotlight, recorded outcomes, recent vendor ranking and queue sort. 63 frontend and 17 private-demo tests passed, with scoped Chrome QA. No backend or frozen evaluation changes. See [dashboard report](docs/PHASE_06B2F1_PREMIUM_DASHBOARD_REPORT.md). |
 | 06B.2F.2 Batch upload and Excel export | Locally verified for review | Five Chrome uploads completed serially using disposable private storage and controlled extraction. XLSX matched five records and 15 findings. 67 frontend and 77 relevant backend tests passed. Zero Gemini calls. See [batch and Excel report](docs/PHASE_06B2F2_BATCH_EXCEL_REPORT.md). |
+| 06B.2F.3 Final demo experience | Locally verified for submission review | Chrome verified four journey endings, real live stages, reduced motion, and gross totals from eight stored runs. Serial batch and Excel repeated successfully. 69 frontend and 4 focused backend tests passed. Zero Gemini calls. See [demo report](docs/PHASE_06B2F3_FINAL_DEMO_REPORT.md). |
 | 07 Release | LOCKED | Remote/public hosting and paid deployment await explicit authorization |
 
 ## Verified Phase 6A evidence

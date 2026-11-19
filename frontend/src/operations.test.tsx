@@ -66,6 +66,31 @@ describe('connected operations views', () => {
     expect(screen.getByText('No recorded exceptions')).toBeInTheDocument()
     expect(api.runs).toHaveBeenCalledTimes(1)
   })
+  it('uses the exact server gross projection and labels missing and separate currency values', async () => {
+    defaults()
+    vi.spyOn(api, 'dashboard').mockResolvedValue({
+      ...dashboard,
+      invoice_gross: {
+        submitted: { by_currency: { INR: '221545', USD: '7.25' }, missing_count: 1 },
+        ready: { by_currency: { INR: '55460' }, missing_count: 0 },
+        review_required: { by_currency: { INR: '118885' }, missing_count: 0 },
+        blocked: { by_currency: {}, missing_count: 1 },
+      },
+    })
+    renderPage(<Overview />)
+    const financial = await screen.findByRole('region', { name: 'Financial overview' })
+    const submitted = within(financial).getByRole('region', { name: 'Total submitted gross' })
+    expect(submitted).toHaveTextContent('₹2,21,545')
+    expect(submitted).toHaveTextContent('USD')
+    expect(submitted).toHaveTextContent(/7\.25/)
+    expect(submitted).toHaveTextContent('1 run excluded')
+    expect(within(financial).getByRole('region', { name: 'Blocked gross' })).toHaveTextContent(
+      'No recorded gross',
+    )
+    expect(within(financial).getByRole('region', { name: 'Review gross' })).toHaveTextContent(
+      '₹1,18,885',
+    )
+  })
   it('loads only the prioritized blocked record for its actual next action', async () => {
     defaults()
     vi.spyOn(api, 'runs').mockResolvedValue([

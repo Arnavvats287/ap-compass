@@ -285,11 +285,20 @@ export default function OperationsBento({
           ))}
         </section>
       )}
-      <div className={metrics ? 'ops-grid' : 'ops-grid ops-grid-fallback'}>
+      <div
+        className={
+          metrics?.invoice_gross
+            ? 'ops-grid ops-grid-financial'
+            : metrics
+              ? 'ops-grid'
+              : 'ops-grid ops-grid-fallback'
+        }
+      >
         {metrics && (
           <>
             <Spotlight metrics={metrics} runs={runs} listState={listState} retry={retry} />
             <Distribution metrics={metrics} />
+            {metrics.invoice_gross && <FinancialOverview gross={metrics.invoice_gross} />}
             <Vendors runs={runs} listState={listState} retry={retry} />
           </>
         )}
@@ -329,3 +338,4 @@ export default function OperationsBento({
     </>
   )
 }
+import FinancialOverview from './FinancialOverview'

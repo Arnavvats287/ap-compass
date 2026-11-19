@@ -139,6 +139,19 @@ def policy(request: Request):
     return request.app.state.runs.current_policy
 
 
+def exact_currency_totals(grouped, *, fixed=False):
+    values = {}
+    for currency, amounts in sorted(grouped.items()):
+        # Display aggregation only. Keep the precision of widely separated exponents.
+        with localcontext() as context:
+            context.prec = max(28, max(amount.adjusted() for amount in amounts)
+                               - min(amount.as_tuple().exponent for amount in amounts)
+                               + len(str(len(amounts))) + 4)
+            total = sum(amounts, Decimal(0))
+            values[currency] = format(total, "f") if fixed else str(total)
+    return values
+
+
 @router.get("/dashboard")
 def dashboard(request: Request):
     snapshots = request.app.state.runs.repository.all()
@@ -147,27 +160,29 @@ def dashboard(request: Request):
     outcomes = {"READY_FOR_AP": "ready", "REVIEW_REQUIRED": "review_required", "BLOCKED": "blocked"}
     flagged = {}
     missing = 0
+    gross = {key: {} for key in ("submitted", *outcomes.values())}
+    gross_missing = dict.fromkeys(gross, 0)
     for snapshot in snapshots:
         if snapshot.execution_state in ("QUEUED", "RUNNING"):
             counts["in_progress"] += 1
         else:
             counts[snapshot.execution_state.lower()] += 1
-        if snapshot.decision:
-            counts[outcomes[snapshot.decision.outcome]] += 1
-            if snapshot.decision.outcome in ("REVIEW_REQUIRED", "BLOCKED"):
-                invoice = snapshot.extracted_invoice
-                if invoice is None or invoice.net is None or not invoice.currency:
-                    missing += 1
-                else:
-                    flagged.setdefault(invoice.currency, []).append(invoice.net)
-    values = {}
-    for currency, amounts in sorted(flagged.items()):
-        # Exact display projection, including widely separated decimal exponents.
-        # No rounding, cross-currency addition or financial decision is performed.
-        with localcontext() as context:
-            context.prec = max(28, max(amount.adjusted() for amount in amounts)
-                               - min(amount.as_tuple().exponent for amount in amounts)
-                               + len(str(len(amounts))) + 4)
-            values[currency] = str(sum(amounts, Decimal(0)))
-    return {**counts, "flagged_invoice_net_by_currency": values,
-            "flagged_invoice_net_missing_count": missing}
+        invoice = snapshot.extracted_invoice
+        bucket = outcomes[snapshot.decision.outcome] if snapshot.decision else None
+        if bucket:
+            counts[bucket] += 1
+        if bucket in ("review_required", "blocked"):
+            if invoice is None or invoice.net is None or not invoice.currency:
+                missing += 1
+            else:
+                flagged.setdefault(invoice.currency, []).append(invoice.net)
+        for group in ("submitted", bucket) if bucket else ("submitted",):
+            if invoice is None or invoice.total is None or not invoice.currency:
+                gross_missing[group] += 1
+            else:
+                gross[group].setdefault(invoice.currency, []).append(invoice.total)
+    return {**counts, "flagged_invoice_net_by_currency": exact_currency_totals(flagged),
+            "flagged_invoice_net_missing_count": missing,
+            "invoice_gross": {key: {"by_currency": exact_currency_totals(amounts, fixed=True),
+                                     "missing_count": gross_missing[key]}
+                              for key, amounts in gross.items()}}

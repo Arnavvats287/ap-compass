@@ -13,80 +13,16 @@ import { useEffect, useState } from 'react'
 import { ApiError, api } from './api'
 import { active, useRun } from './queries'
 import { ErrorState, Loading, Status, statusInfo } from './components'
-import {
-  date,
-  decimal,
-  elapsed,
-  money,
-  unknown,
-  valueLabels,
-  words,
-  toleranceLabel,
-} from './format'
+import { date, elapsed, money, unknown, words } from './format'
 import DecisionTrace, { stageLabels } from './DecisionTrace'
+import { ExceptionValues, FindingValues } from './FindingValues'
 import PolicyImpact from './PolicyImpact'
 import HumanPOReview from './HumanPOReview'
 export { StageTimeline } from './DecisionTrace'
 import type { Evidence, Finding, Run } from './types'
 
-export function FindingValues({
-  finding,
-  currency,
-}: {
-  finding: Finding
-  currency?: string | null
-}) {
-  const isMoney = (name: string) =>
-    name.endsWith('_net') ||
-    ['expected_gross', 'stated_gross', 'difference', 'invoice_price', 'po_price'].includes(name)
-  return finding.values.length ? (
-    <dl className="finding-values">
-      {finding.values.map((value, index) => (
-        <div key={`${value.name}-${index}`}>
-          <dt>{valueLabels[value.name] ?? words(value.name)}</dt>
-          <dd className={isMoney(value.name) ? 'amount' : ''}>
-            {value.value === null
-              ? unknown
-              : isMoney(value.name)
-                ? money(value.value, currency)
-                : value.name === 'tolerance_pct'
-                  ? toleranceLabel(value.value)
-                  : value.name.endsWith('_qty') || value.name === 'qty'
-                    ? decimal(value.value)
-                    : value.value}
-          </dd>
-        </div>
-      ))}
-    </dl>
-  ) : null
-}
-/** Presentation only: emphasize existing backend comparison values; never calculate them. */
-function ExceptionValues({ finding, currency }: { finding: Finding; currency?: string | null }) {
-  const keys = ['remaining_net', 'requested_net', 'excess_net'].every((name) =>
-    finding.values.some((value) => value.name === name),
-  )
-    ? ['remaining_net', 'requested_net', 'excess_net']
-    : ['expected_gross', 'stated_gross', 'difference'].every((name) =>
-          finding.values.some((value) => value.name === name),
-        )
-      ? ['expected_gross', 'stated_gross', 'difference']
-      : []
-  if (!keys.length) return <FindingValues finding={finding} currency={currency} />
-  const comparison = keys.flatMap((name) => finding.values.filter((value) => value.name === name))
-  const supporting = finding.values.filter((value) => !keys.includes(value.name))
-  return (
-    <>
-      <div className="exception-comparison">
-        <FindingValues finding={{ ...finding, values: comparison }} currency={currency} />
-      </div>
-      {supporting.length > 0 && (
-        <div className="comparison-context">
-          <FindingValues finding={{ ...finding, values: supporting }} currency={currency} />
-        </div>
-      )}
-    </>
-  )
-}
+export { FindingValues } from './FindingValues'
+
 export function FindingDetails({
   finding,
   currency,
@@ -524,7 +460,7 @@ export default function Workspace() {
               ? 'Your PDF is stored. It will be processed when capacity is available.'
               : 'Progress below reflects real backend work. You can leave and return to this invoice.'}
           </p>
-          <DecisionTrace run={run} />
+          <DecisionTrace key={run.id} run={run} />
         </section>
       )}
       {failed && (
@@ -547,11 +483,11 @@ export default function Workspace() {
           </Link>
         </section>
       )}
-      {failed && <DecisionTrace run={run} />}
+      {failed && <DecisionTrace key={run.id} run={run} />}
       <nav className="case-nav" aria-label="Invoice workspace sections">
         <a href="#case-decision">{run.decision ? 'Decision' : 'Source invoice'}</a>
         {invoice && <a href="#evidence">Source evidence</a>}
-        <a href="#case-trace">Decision trace</a>
+        <a href="#case-trace">Decision journey</a>
         {run.decision && <a href="#case-policy">Policy impact</a>}
         {run.decision && (
           <span className="case-recorded">
@@ -628,7 +564,7 @@ export default function Workspace() {
       </div>
       {run.decision && (
         <div className="completed-trace">
-          <DecisionTrace run={run} />
+          <DecisionTrace key={run.id} run={run} />
         </div>
       )}
       {run.decision && (

@@ -71,7 +71,9 @@ describe('truthful decision trace', () => {
   it('shows successful execution stages separately from a BLOCKED outcome', () => {
     mount(<DecisionTrace run={recorded} />)
     expect(screen.getAllByText('Complete')).toHaveLength(5)
-    expect(screen.getByText('Blocked')).toBeInTheDocument()
+    expect(
+      within(document.querySelector('.journey-result')!).getByText('Blocked'),
+    ).toBeInTheDocument()
     expect(screen.getByText('Recorded business outcome')).toBeInTheDocument()
     expect(screen.queryByText('Failed')).not.toBeInTheDocument()
   })
@@ -104,6 +106,21 @@ describe('truthful decision trace', () => {
     expect(screen.getByText('3.2 s')).toBeInTheDocument()
     expect(screen.getByText('—')).toBeInTheDocument()
     expect(screen.queryByText('0 s')).not.toBeInTheDocument()
+  })
+  it('replays presentation without closing stages or changing their recorded statuses', async () => {
+    mount(<DecisionTrace run={recorded} />)
+    const journey = screen.getByRole('region', { name: 'Decision journey' })
+    const disclosure = journey.querySelector<HTMLDetailsElement>('details')!
+    disclosure.open = true
+    const replay = screen.getByRole('button', { name: 'Replay journey' })
+    await userEvent.click(replay)
+    expect(journey).toHaveAttribute('data-replay', 'true')
+    expect(disclosure.open).toBe(true)
+    expect(replay).toHaveFocus()
+    expect(screen.getAllByText('Complete')).toHaveLength(5)
+    expect(
+      within(journey.querySelector('.journey-result')!).getByText('Procurement'),
+    ).toBeInTheDocument()
   })
   it('shows a measured millisecond duration without rounding it to zero', () => {
     mount(<StageTimeline stages={[stages[2]]} timings={[{ name: 'matching', milliseconds: 2 }]} />)

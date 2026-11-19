@@ -1,12 +1,16 @@
 # AP Compass — Project Memory (living handoff)
 
 **Last reviewed:** 2026-11-20 (IST)
-**Repository status:** Batch upload and workbook export verified in the separate F.2 worktree.
-**Current authorized segment:** `06B.2F.2 BATCH UPLOAD AND EXCEL EXPORT` only.
+**Repository status:** Final decision journey and persisted financial overview verified in the separate F.3 worktree.
+**Current authorized segment:** `06B.2F.3 FINAL DEMO EXPERIENCE` only.
 **Deadline:** Saturday 2026-11-21 (IST); target Friday evening feature freeze.
 **Maintainers:** Builder owns product decisions; Codex implements one authorized phase; architectural review gates further work.
 
 > Repo-local continuity. Status is evidence, not completion by assertion. Latest user acceptance/routing adjustment is recorded in ADR-016 and the handoff below.
+
+## Phase 6B.2F.3 handoff
+
+Base `f6fb08b7fe0bd5d04e6749c8e7f914faf0f8097d`. Vertical persisted stage disclosures and CSS-only replay work for Ready, Review, Blocked and technical failure. Chrome checked animation, keyboard and reduced motion from real isolated records, plus a controlled live extraction stage. Gross projection across the eight stored runs matches INR 221,545 submitted, INR 55,460 Ready, INR 118,885 Review and INR 47,200 Blocked. Eight serial uploads and the 8/26/8-row workbook were reverified. 69 frontend and 4 focused backend tests passed. Zero Gemini calls. See `docs/PHASE_06B2F3_FINAL_DEMO_REPORT.md` and `docs/FIVE_MINUTE_INTERVIEW_DEMO_V3.md`. Stop at submission review.
 
 ## Phase 6B.2F.2 handoff
 
