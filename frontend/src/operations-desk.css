@@ -248,7 +248,7 @@
   inset-inline-start: -10px;
   inline-size: 3px;
   border-radius: 3px;
-  background: var(--color-mint);
+  background: var(--color-brand-on-dark);
 }
 
 .intake-console .batch-drop {
@@ -263,14 +263,14 @@
 }
 
 .intake-console .batch-drop > svg {
-  color: var(--color-mint);
+  color: var(--color-brand-on-dark);
 }
 .intake-console .batch-drop p,
 .intake-console .intake-note {
   color: var(--color-nav-muted);
 }
 .intake-console .batch-drop.dragging {
-  border-color: var(--color-mint);
+  border-color: var(--color-brand-on-dark);
   background: var(--color-forest-hover);
 }
 
@@ -280,7 +280,7 @@
 }
 
 .intake-console .button.primary {
-  background: var(--color-mint);
+  background: var(--color-brand-on-dark);
   color: var(--color-nav);
 }
 

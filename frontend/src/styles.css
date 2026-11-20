@@ -1,7 +1,7 @@
 /* Hallmark · shape: app screen · genre: modern-minimal · theme: brand · redesign: full
- * paper: warm neutral · accent: forest · display: Segoe UI · body: Segoe UI
+ * paper: warm neutral · accent: orange · display: Segoe UI · body: Segoe UI
  * nav: horizontal app shell · signature: attention summary and exception comparison · states: loading, empty, error, full, processing
- * axes: paper/sans/forest · posture: restrained surfaces · contrast: tested in sweep · v2.0.0 */
+ * axes: paper/sans/orange · posture: restrained surfaces · contrast: tested in sweep · v2.0.0 */
 /* Hallmark · pre-emit critique: P4 H4 E4 S5 R5 V4 · weakest: H, elevated owner and next action beside source instead of a repeated card grid */
 /* Hallmark · dropped #operations and Foundation status · user explicitly replaces the Phase 1 placeholder with real routes and data */
 /* Hallmark · answered F25 · Mobile invoice rows restack every data cell; this warning measures the clipped semantic table header, not visible invoice or action cells */
@@ -115,6 +115,7 @@
   }
 }
 .page-heading {
+  color: var(--color-page-text);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -122,7 +123,7 @@
   margin-bottom: var(--space-lg);
 }
 .page-heading p {
-  color: var(--color-muted);
+  color: var(--color-page-muted);
   margin-top: var(--space-xs);
   font-size: var(--text-sm);
 }
@@ -142,9 +143,9 @@
   width: 100%;
   margin: 0 auto;
   padding: var(--space-lg) var(--gutter);
-  border-top: 1px solid var(--color-rule);
+  border-top: 1px solid var(--color-page-rule);
   font-size: var(--text-xs);
-  color: var(--color-muted);
+  color: var(--color-page-muted);
 }
 .app-footer > span:first-child {
   display: flex;
@@ -680,6 +681,13 @@ tbody tr:focus-within {
   max-width: 60ch;
   color: var(--color-muted);
   font-size: var(--text-sm);
+}
+/* Loading and empty states also appear inside light cards. */
+:is(.main-content, .ops-overview) > :is(.loading-state, .empty-state) {
+  color: var(--color-page-text);
+}
+:is(.main-content, .ops-overview) > .empty-state p {
+  color: var(--color-page-muted);
 }
 .loading-state {
   min-height: 248px;

@@ -5,9 +5,9 @@
 
 /* Quiet application chrome; contrast is reserved for the working surfaces. */
 .app-header {
-  background: var(--color-paper);
-  color: var(--color-ink);
-  border-bottom: 1px solid var(--color-rule);
+  background: var(--color-page);
+  color: var(--color-page-text);
+  border-bottom: 1px solid var(--color-page-rule);
 }
 .brand {
   font-family: var(--font-editorial);
@@ -15,22 +15,22 @@
   font-size: var(--text-2xl);
 }
 .brand small {
-  color: var(--color-muted);
+  color: var(--color-page-muted);
   font-family: var(--font-body);
 }
 .app-header nav a {
-  color: var(--color-ink-2);
-}
-.app-header nav a:hover,
-.app-header nav a.active {
-  background: var(--color-paper-3);
-  color: var(--color-ink);
+  color: var(--color-page-accent);
 }
 .app-header nav a.active {
-  border-bottom-color: var(--color-accent);
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+}
+.app-header nav a:hover {
+  background: var(--color-accent-hover);
+  color: var(--color-accent-ink);
 }
 .app-header :focus-visible {
-  outline-color: var(--color-focus);
+  outline-color: var(--color-nav-focus);
 }
 .environment-label {
   color: var(--color-muted);
@@ -128,7 +128,7 @@
   color: var(--color-forest-blocked);
 }
 .attention-workload .metric:focus-visible {
-  outline-color: var(--color-mint);
+  outline-color: var(--color-brand-on-dark);
   outline-offset: var(--space-2xs);
 }
 .attention-hub .attention-value {
@@ -262,7 +262,7 @@
 .tolerance-options label:has(:checked) {
   background: transparent;
   border: 0;
-  color: var(--color-accent);
+  color: var(--color-nav);
 }
 .tolerance-options label:has(:focus-visible) {
   outline-color: var(--color-citrus);
@@ -291,11 +291,11 @@
     opacity var(--dur-micro) var(--ease-out);
 }
 .tolerance-options[data-choice='0.02'] .tolerance-thumb {
-  background: var(--color-mint);
+  background: var(--color-brand-on-dark);
   opacity: 1;
 }
 .tolerance-options[data-choice='0.05'] .tolerance-thumb {
-  background: var(--color-mint);
+  background: var(--color-brand-on-dark);
   opacity: 1;
   transform: translateX(100%);
 }

@@ -13,7 +13,7 @@
 }
 .ops-heading h1 em {
   font-weight: inherit;
-  color: var(--color-accent);
+  color: var(--color-page-accent);
   display: inline-block;
 }
 .ops-page .queue-basis {
@@ -29,8 +29,8 @@
   border-radius: 12px;
   box-sizing: content-box;
   padding: 7px;
-  color: var(--color-accent);
-  background: var(--surface-spotlight);
+  color: var(--color-page-accent);
+  background: var(--color-nav);
 }
 .app-header nav a {
   border-radius: var(--radius-pill);
@@ -336,7 +336,7 @@ a.ops-metric:active {
 }
 .ops-distribution {
   grid-area: distribution;
-  background: var(--surface-canvas);
+  background: var(--surface-distribution);
   display: flex;
   flex-direction: column;
 }
@@ -682,7 +682,7 @@ a.ops-metric:active {
   font-weight: 650;
 }
 .ops-loading > p {
-  color: var(--color-muted);
+  color: var(--color-page-muted);
   margin-bottom: var(--space-sm);
 }
 .ops-loading .ops-card {

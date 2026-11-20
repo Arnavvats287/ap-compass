@@ -138,6 +138,26 @@
   margin-inline: var(--content-inset);
 }
 
+/* These labels sit on the canvas. Evidence cards and focused panels keep their light surfaces. */
+.workspace-breadcrumb > :is(a:first-child, .quiet),
+.invoice-content :is(.invoice-evidence > h2, .invoice-run-details > .section-heading h2,
+  .invoice-run-details > details > summary, .invoice-run-details .diagnostics dd) {
+  color: var(--color-page-text);
+}
+
+.workspace-breadcrumb > .quiet:hover {
+  background: var(--color-nav-selected);
+}
+
+.invoice-content :is(.invoice-evidence > p, .evidence-toolbar, .recorded-assessment-label,
+  .invoice-demo-label, .invoice-run-details .diagnostics dt, .invoice-run-details .run-provenance) {
+  color: var(--color-page-muted);
+}
+
+.invoice-content :is(.invoice-run-details, .invoice-evidence, .invoice-run-details > details) {
+  border-color: var(--color-page-rule);
+}
+
 .invoice-content > [id],
 .invoice-workspace #source-document,
 .invoice-workspace #case-trace {

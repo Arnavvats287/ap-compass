@@ -10,11 +10,11 @@ body {
 html {
   scroll-padding-top: var(--space-lg);
   color-scheme: light;
-  scrollbar-color: var(--color-muted) var(--color-paper);
+  scrollbar-color: var(--color-page-muted) var(--color-page);
 }
 body {
   margin: 0;
-  background: var(--color-paper);
+  background: var(--color-page);
   color: var(--color-ink);
   font-family: var(--font-body);
   font-size: var(--text-md);
