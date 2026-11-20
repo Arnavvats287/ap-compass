@@ -1,5 +1,13 @@
-import { ChevronLeft, ChevronRight, CircleHelp, ShieldCheck, TriangleAlert } from 'lucide-react'
-import { useId, useRef, useState } from 'react'
+import {
+  ChevronLeft,
+  ChevronRight,
+  CircleHelp,
+  Pause,
+  Play,
+  ShieldCheck,
+  TriangleAlert,
+} from 'lucide-react'
+import { useCallback, useEffect, useId, useRef, useState } from 'react'
 import { unknown, words } from './format'
 import type { Evidence } from './types'
 
@@ -26,6 +34,8 @@ const states = {
   SOURCE_LOCATED_UNVERIFIED: { label: 'Source needs review', tone: 'review', Icon: TriangleAlert },
   MISSING: { label: 'Source not confirmed', tone: 'missing', Icon: CircleHelp },
 } as const
+const rotationDelay = 4000
+const motionPreference = '(prefers-reduced-motion: reduce)'
 
 export default function EvidenceList({
   evidence,
@@ -36,32 +46,105 @@ export default function EvidenceList({
 }) {
   const id = useId()
   const [selectedIndex, setSelectedIndex] = useState(0)
+  const [playing, setPlaying] = useState(true)
+  const [hovered, setHovered] = useState(false)
+  const [visible, setVisible] = useState(() => typeof IntersectionObserver === 'undefined')
+  const [reducedMotion, setReducedMotion] = useState(
+    () => window.matchMedia?.(motionPreference).matches ?? false,
+  )
   const rail = useRef<HTMLDivElement>(null)
+  const rotationControl = useRef<HTMLButtonElement>(null)
   const index = Math.min(selectedIndex, evidence.length - 1)
   const ref = evidence[index]
+  const hasChoices = evidence.length > 1
+  const rotating = hasChoices && playing && !hovered && visible && !reducedMotion
+
+  const select = useCallback(
+    (next: number, focus = false, automatic = false) => {
+      if (!automatic) setPlaying(false)
+      if (next < 0 || next >= evidence.length) return
+      setSelectedIndex(next)
+      const container = rail.current
+      const target = container?.children[next] as HTMLButtonElement | undefined
+      if (!container || !target) return
+      if (automatic && next === 0) {
+        if (container.scrollLeft) container.scrollTo({ left: 0, behavior: 'instant' })
+        return
+      }
+      const bounds = container.getBoundingClientRect()
+      const item = target.getBoundingClientRect()
+      const offset = item.left - bounds.left
+      if (offset && (automatic || item.left < bounds.left || item.right > bounds.right)) {
+        container.scrollBy({
+          left: offset,
+          behavior: automatic ? 'smooth' : 'instant',
+        })
+      }
+      if (focus) target.focus({ preventScroll: true })
+    },
+    [evidence.length],
+  )
+
+  useEffect(() => {
+    const preference = window.matchMedia?.(motionPreference)
+    if (!preference) return
+    const update = (event: MediaQueryListEvent) => setReducedMotion(event.matches)
+    preference.addEventListener('change', update)
+    return () => preference.removeEventListener('change', update)
+  }, [])
+
+  useEffect(() => {
+    if (!hasChoices || !rail.current || typeof IntersectionObserver === 'undefined') return
+    const observer = new IntersectionObserver(
+      ([entry]) => setVisible(entry.intersectionRatio >= 0.4),
+      { threshold: 0.4 },
+    )
+    observer.observe(rail.current)
+    return () => observer.disconnect()
+  }, [hasChoices])
+
+  useEffect(() => {
+    if (!rotating) return
+    const timer = window.setInterval(() => {
+      if (!document.hidden) select((index + 1) % evidence.length, false, true)
+    }, rotationDelay)
+    return () => window.clearInterval(timer)
+  }, [evidence.length, index, rotating, select])
+
   if (!ref) return <p>No source references are available. Verify the original invoice.</p>
 
-  function select(next: number, focus = false) {
-    if (next < 0 || next >= evidence.length) return
-    setSelectedIndex(next)
-    const container = rail.current
-    const target = container?.children[next] as HTMLButtonElement | undefined
-    if (!container || !target) return
-    const bounds = container.getBoundingClientRect()
-    const item = target.getBoundingClientRect()
-    if (item.left < bounds.left || item.right > bounds.right) {
-      container.scrollBy({ left: item.left - bounds.left })
-    }
-    if (focus) target.focus({ preventScroll: true })
+  function pauseOnHover(event: React.PointerEvent) {
+    if (event.pointerType === 'mouse' || event.pointerType === 'pen') setHovered(true)
   }
 
   return (
-    <div className="evidence-browser">
+    <div
+      className="evidence-browser"
+      onPointerEnter={pauseOnHover}
+      onPointerLeave={() => setHovered(false)}
+      onFocusCapture={(event) => {
+        if (!rotationControl.current?.contains(event.target)) setPlaying(false)
+      }}
+    >
       <div className="evidence-toolbar">
-        <span aria-live="polite">
+        <span aria-live={rotating ? 'off' : 'polite'}>
           Field {index + 1} of {evidence.length}
         </span>
         <div className="evidence-arrows">
+          {hasChoices && !reducedMotion && (
+            <button
+              ref={rotationControl}
+              type="button"
+              aria-label={playing ? 'Pause evidence rotation' : 'Play evidence rotation'}
+              title={playing ? 'Pause evidence rotation' : 'Play evidence rotation'}
+              onClick={() => {
+                if (!playing) setHovered(false)
+                setPlaying(!playing)
+              }}
+            >
+              {playing ? <Pause size={16} aria-hidden /> : <Play size={16} aria-hidden />}
+            </button>
+          )}
           <button
             type="button"
             aria-label="Previous evidence field"
@@ -85,6 +168,10 @@ export default function EvidenceList({
         ref={rail}
         role="group"
         aria-label="Evidence fields"
+        onPointerDown={() => setPlaying(false)}
+        onWheel={(event) => {
+          if (event.deltaX !== 0 || event.shiftKey) setPlaying(false)
+        }}
         onKeyDown={(event) => {
           const next = {
             ArrowRight: index + 1,

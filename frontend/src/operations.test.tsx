@@ -431,6 +431,57 @@ describe('connected operations views', () => {
     expect(screen.getByRole('button', { name: /Source not confirmed/ })).toHaveFocus()
     expect(screen.getByText('Page not located')).toBeInTheDocument()
   })
+  it('loops through evidence, pauses on request, and lets the analyst restart it', () => {
+    vi.useFakeTimers()
+    vi.spyOn(document, 'hidden', 'get').mockReturnValue(false)
+    const reference = run.extracted_invoice!.evidence[0]
+    try {
+      render(<EvidenceList evidence={[reference, { ...reference, field: 'tax' }]} />)
+      expect(screen.getByText('Field 1 of 2')).toBeInTheDocument()
+      act(() => vi.advanceTimersByTime(4000))
+      expect(screen.getByText('Field 2 of 2')).toBeInTheDocument()
+      const rail = screen.getByRole('group', { name: 'Evidence fields' })
+      const scrollTo = vi.fn()
+      Object.assign(rail, { scrollLeft: 500, scrollTo })
+      act(() => vi.advanceTimersByTime(4000))
+      expect(screen.getByText('Field 1 of 2')).toBeInTheDocument()
+      expect(scrollTo).toHaveBeenCalledWith({ left: 0, behavior: 'instant' })
+
+      fireEvent.click(screen.getByRole('button', { name: 'Pause evidence rotation' }))
+      act(() => vi.advanceTimersByTime(8000))
+      expect(screen.getByText('Field 1 of 2')).toBeInTheDocument()
+      fireEvent.click(screen.getByRole('button', { name: 'Play evidence rotation' }))
+      act(() => vi.advanceTimersByTime(4000))
+      expect(screen.getByText('Field 2 of 2')).toBeInTheDocument()
+
+      act(() => screen.getByRole('button', { name: /Source verified.*Tax/ }).focus())
+      act(() => vi.advanceTimersByTime(4000))
+      expect(screen.getByText('Field 2 of 2')).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Play evidence rotation' })).toBeInTheDocument()
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+  it('keeps manual navigation available with reduced motion', () => {
+    vi.useFakeTimers()
+    vi.stubGlobal('matchMedia', () => ({
+      matches: true,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    }))
+    const reference = run.extracted_invoice!.evidence[0]
+    try {
+      render(<EvidenceList evidence={[reference, { ...reference, field: 'tax' }]} />)
+      act(() => vi.advanceTimersByTime(8000))
+      expect(screen.getByText('Field 1 of 2')).toBeInTheDocument()
+      expect(screen.queryByRole('button', { name: /evidence rotation/ })).not.toBeInTheDocument()
+      fireEvent.click(screen.getByRole('button', { name: 'Next evidence field' }))
+      expect(screen.getByText('Field 2 of 2')).toBeInTheDocument()
+    } finally {
+      vi.unstubAllGlobals()
+      vi.useRealTimers()
+    }
+  })
   it('shows controlled provenance in Run details and keeps raw model wording out of the hero', async () => {
     defaults()
     vi.mocked(api.run).mockResolvedValue({ ...run, model_id: 'TEST_ONLY-rehearsal' })
