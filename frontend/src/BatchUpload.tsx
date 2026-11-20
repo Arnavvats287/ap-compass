@@ -362,15 +362,6 @@ export default function BatchUpload({ launch = false }: { launch?: boolean }) {
         </>
       )}
       <div className={launch ? 'intake-desk launch-intake' : 'intake-desk'}>
-        {launch && (
-          <header className="launch-intro">
-            <h1>AP Compass</h1>
-            <p className="launch-statement">Know what’s ready for AP.</p>
-            <p className="launch-description">
-              Check invoices against purchase orders and see what needs review before payment.
-            </p>
-          </header>
-        )}
         <section
           className="intake-console"
           aria-label={launch ? 'Invoice intake' : 'Batch controls'}
@@ -378,17 +369,15 @@ export default function BatchUpload({ launch = false }: { launch?: boolean }) {
           {...(launch ? dropHandlers : {})}
           data-started={launch ? started : undefined}
         >
-          {(!launch || started) && (
-            <div className="intake-console-heading">
-              {started ? (
-                <h2 ref={heading} tabIndex={-1}>
-                  {paused ? 'Status checks paused' : busy ? 'Batch in progress' : 'Batch complete'}
-                </h2>
-              ) : (
-                <h2>Add invoice PDFs</h2>
-              )}
-            </div>
-          )}
+          <div className="intake-console-heading">
+            {started ? (
+              <h2 ref={heading} tabIndex={-1}>
+                {paused ? 'Status checks paused' : busy ? 'Batch in progress' : 'Batch complete'}
+              </h2>
+            ) : (
+              <h2>{launch ? 'Start a review' : 'Add invoice PDFs'}</h2>
+            )}
+          </div>
           {started && (
             <>
               <p className="intake-count" role="status">

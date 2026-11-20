@@ -1,48 +1,39 @@
-import { useEffect, useRef, useState } from 'react'
 import BatchUpload from './BatchUpload'
 
 const steps = [
-  {
-    title: 'Read the source',
-    description: 'Extract invoice fields and show which values the PDF can independently support.',
-  },
-  {
-    title: 'Check the purchase order',
-    description: 'Match approved records and check prices, remaining quantities and prior billing.',
-  },
-  {
-    title: 'Work the exceptions',
-    description:
-      'See why an invoice is Ready, needs Review or is Blocked, and who should act next.',
-  },
+  ['Read the source', 'Trace extracted fields back to the invoice.'],
+  ['Validate against the PO', 'Check approved prices, quantities and remaining commitment.'],
+  ['Explain the next action', 'See the reason for each exception and who should act.'],
 ] as const
 
 export default function LaunchPage() {
-  const story = useRef<HTMLOListElement>(null)
-  const [entered, setEntered] = useState(false)
-  useEffect(() => {
-    if (!story.current || typeof IntersectionObserver === 'undefined') return
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (!entries.some((entry) => entry.isIntersecting)) return
-        setEntered(true)
-        observer.disconnect()
-      },
-      { threshold: 0.2 },
-    )
-    observer.observe(story.current)
-    return () => observer.disconnect()
-  }, [])
   return (
     <div className="launch-page">
+      <header className="launch-intro">
+        <p className="launch-eyebrow">ACCOUNTS PAYABLE / REVIEW WORKSPACE</p>
+        <h1>
+          <span>Understand the invoice.</span> <span>Verify the decision.</span>
+        </h1>
+        <p className="launch-description">
+          Extract invoice details with source evidence, validate them against the purchase order,
+          and see which exceptions need AP review.
+        </p>
+      </header>
       <BatchUpload launch />
       <section className="launch-story" aria-labelledby="launch-story-title">
-        <h2 id="launch-story-title">From PDF to decision</h2>
-        <ol ref={story} data-entered={entered} className="launch-steps">
-          {steps.map(({ title, description }) => (
+        <h2 className="sr-only" id="launch-story-title">
+          Review workflow
+        </h2>
+        <ol className="launch-steps">
+          {steps.map(([title, description], index) => (
             <li key={title}>
-              <h3>{title}</h3>
-              <p>{description}</p>
+              <span className="launch-step-number" aria-hidden="true">
+                0{index + 1}
+              </span>
+              <div>
+                <h3>{title}</h3>
+                <p>{description}</p>
+              </div>
             </li>
           ))}
         </ol>

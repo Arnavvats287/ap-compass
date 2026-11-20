@@ -53,8 +53,11 @@ it('captures the homepage tolerance for every file in a serial batch', async () 
       : Promise.resolve(run),
   )
   setup(true)
-  expect(screen.getByRole('heading', { name: 'AP Compass' })).toBeInTheDocument()
+  expect(
+    screen.getByRole('heading', { name: 'Understand the invoice. Verify the decision.' }),
+  ).toBeInTheDocument()
   const composer = within(screen.getByRole('region', { name: 'Invoice intake' }))
+  expect(composer.getByRole('heading', { name: 'Start a review' })).toBeInTheDocument()
   const process = composer.getByRole('button', { name: 'Process invoices' })
   expect(process).toBeDisabled()
   expect(composer.getByRole('radio', { name: '2%' })).toBeChecked()
