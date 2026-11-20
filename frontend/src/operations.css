@@ -1,6 +1,6 @@
 .ops-page {
-  --ops-padding: clamp(18px, 2.35vw, 32px);
-  --ops-title: clamp(2.25rem, 4.05vw, 3.85rem);
+  --ops-padding: clamp(16px, 1.85vw, 25px);
+  --ops-title: clamp(2rem, 3.6vw, 3.3rem);
 }
 .ops-page .ops-heading {
   margin-bottom: var(--space-lg);
@@ -80,13 +80,13 @@
   margin-top: var(--space-xs);
 }
 .ops-metric {
-  min-height: 108px;
+  min-height: 96px;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   column-gap: var(--space-xs);
   row-gap: var(--space-xs);
-  padding: clamp(14px, 1.65vw, 24px);
+  padding: clamp(12px, 1.45vw, 20px);
   text-decoration: none;
   color: var(--color-ink);
   transition:
@@ -97,7 +97,7 @@
 .ops-metric strong {
   grid-row: 1;
   grid-column: 2;
-  font: 650 clamp(2rem, 3vw, 2.75rem)/1 var(--font-body);
+  font: 650 clamp(1.85rem, 2.6vw, 2.45rem)/1 var(--font-body);
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.045em;
 }
@@ -156,7 +156,7 @@ a.ops-metric:active {
 }
 .ops-spotlight h2 {
   margin-block: var(--space-xs);
-  font: 400 clamp(2rem, 3.2vw, 3.45rem)/1.02 var(--font-editorial);
+  font: 400 clamp(1.85rem, 2.85vw, 3rem)/1.02 var(--font-editorial);
   letter-spacing: -0.045em;
 }
 .ops-kicker {
@@ -188,7 +188,7 @@ a.ops-metric:active {
     var(--surface-spotlight) 57%
   );
   color: var(--color-accent);
-  font-size: clamp(2.25rem, 5vw, 5rem);
+  font-size: clamp(2.125rem, 4.4vw, 4.1rem);
   font-weight: 650;
   line-height: 1;
   letter-spacing: -0.045em;
@@ -342,7 +342,7 @@ a.ops-metric:active {
 }
 .ops-figure {
   margin-top: var(--space-lg);
-  font-size: clamp(2.5rem, 4.5vw, 4.5rem);
+  font-size: clamp(2.25rem, 3.8vw, 3.8rem);
   font-weight: 650;
   letter-spacing: -0.06em;
   line-height: 1;

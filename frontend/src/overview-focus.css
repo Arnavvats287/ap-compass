@@ -12,6 +12,11 @@
 
 .overview-content {
   min-width: 0;
+  margin-inline: var(--content-inset);
+}
+
+.ops-overview > .ops-heading {
+  margin-inline: var(--content-inset);
 }
 
 .overview-content [data-overview-section] {

@@ -1,3 +1,8 @@
+.ops-queue {
+  max-width: 1200px;
+  margin-inline: auto;
+}
+
 .ops-queue .operations-heading {
   margin-bottom: var(--space-lg);
 }
@@ -10,8 +15,8 @@
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: 12px 20px;
-  padding-block: 16px 8px;
+  gap: 10px 16px;
+  padding-block: 14px 6px;
 }
 
 .operations-decisions {
@@ -110,7 +115,18 @@
   outline-color: var(--color-nav-focus);
 }
 
-@media (max-width: 1150px) {
+@media (min-width: 1280px) {
+  .ops-queue .ops-queue-controls .search-input {
+    width: 248px;
+    min-width: 0;
+  }
+
+  .operations-decision {
+    padding-inline: 6px;
+  }
+}
+
+@media (max-width: 1279px) {
   .ops-queue .queue-toolbar {
     grid-template-columns: auto minmax(0, 1fr);
   }
@@ -163,14 +179,21 @@
 }
 
 .ops-queue .table-scroll tbody td {
-  padding-block: 10px;
+  padding-block: 8px;
 }
+
+@media (min-width: 901px) {
+  .ops-queue .table-scroll tbody td {
+    height: 72px;
+  }
+}
+
 .ops-queue .table-scroll .issue-cell {
   max-width: 28ch;
 }
 
 .batch-page:has(.intake-desk) {
-  max-width: 1160px;
+  max-width: 1040px;
 }
 .batch-page .batch-back {
   margin-bottom: var(--space-sm);
@@ -182,14 +205,14 @@
 .intake-desk {
   display: grid;
   grid-template-columns: minmax(290px, 0.74fr) minmax(0, 1.26fr);
-  gap: clamp(16px, 2.2vw, 30px);
+  gap: clamp(14px, 1.8vw, 24px);
   align-items: start;
 }
 
 .intake-console,
 .intake-desk .batch-card {
   border-radius: var(--radius-bento);
-  padding: clamp(18px, 2.4vw, 30px);
+  padding: clamp(16px, 1.9vw, 24px);
 }
 
 .intake-console {
@@ -201,7 +224,7 @@
 
 .intake-console h2,
 .intake-desk .batch-heading h2 {
-  font: 400 clamp(1.65rem, 2.7vw, 2.35rem)/1.12 var(--font-editorial);
+  font: 400 clamp(1.55rem, 2.3vw, 2.05rem)/1.12 var(--font-editorial);
   letter-spacing: var(--tracking-display);
   margin: 0;
 }

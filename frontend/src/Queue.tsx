@@ -137,7 +137,7 @@ export default function Queue() {
                 name="q"
                 type="search"
                 autoComplete="off"
-                placeholder="Search invoices or suppliers…"
+                placeholder="Invoice or supplier"
                 value={search}
                 onChange={(e) => {
                   setSearch(e.target.value)

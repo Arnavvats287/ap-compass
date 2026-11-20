@@ -104,6 +104,7 @@
   margin: 0 auto;
   flex: 1;
   min-width: 0;
+  --content-inset: clamp(0px, calc((100vw - 1120px) / 7), 48px);
 }
 .main-content:focus {
   outline: none;

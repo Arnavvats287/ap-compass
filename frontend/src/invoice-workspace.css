@@ -134,6 +134,10 @@
   min-width: 0;
 }
 
+.invoice-content {
+  margin-inline: var(--content-inset);
+}
+
 .invoice-content > [id],
 .invoice-workspace #source-document,
 .invoice-workspace #case-trace {
@@ -146,7 +150,7 @@
   align-items: center;
   gap: 24px;
   min-width: 0;
-  padding: clamp(20px, 2.7vw, 38px);
+  padding: clamp(18px, 2.25vw, 30px);
   border-radius: var(--workspace-radius);
   background: linear-gradient(110deg, var(--color-nav), var(--color-forest-raised));
   color: var(--color-nav-text);
@@ -175,7 +179,7 @@
 
 .invoice-hero h1 {
   margin: 10px 0 2px;
-  font: 400 clamp(2.1rem, 3.4vw, 3.45rem)/1.06 var(--font-editorial);
+  font: 400 clamp(1.95rem, 3vw, 3rem)/1.06 var(--font-editorial);
   letter-spacing: var(--tracking-display);
   overflow-wrap: anywhere;
 }
@@ -204,7 +208,7 @@
 .invoice-hero-amount strong {
   display: block;
   margin-top: 4px;
-  font-size: clamp(1.8rem, 3.1vw, 3.25rem);
+  font-size: clamp(1.7rem, 2.75vw, 2.9rem);
   line-height: 1.12;
   overflow-wrap: anywhere;
 }
@@ -224,7 +228,7 @@
 
 .invoice-workspace .decision-brief {
   border-radius: var(--radius-nested);
-  padding: clamp(18px, 2vw, 28px);
+  padding: clamp(16px, 1.75vw, 24px);
   box-shadow: var(--shadow-bento);
 }
 

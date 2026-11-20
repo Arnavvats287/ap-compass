@@ -9,7 +9,7 @@
 
 .launch-intake,
 .launch-story {
-  width: min(100%, 1100px);
+  width: min(100%, 1000px);
   margin-inline: auto;
 }
 
@@ -19,14 +19,14 @@
 }
 
 .launch-intro {
-  padding-block: clamp(18px, 5vw, 62px) clamp(14px, 2vw, 24px);
+  padding-block: clamp(16px, 4vw, 48px) clamp(12px, 1.8vw, 20px);
   text-align: center;
 }
 
 .launch-intro h1 {
   margin: 0;
   color: var(--color-nav);
-  font: 400 clamp(3.1rem, 7vw, 6.25rem) / 0.95 var(--font-editorial);
+  font: 400 clamp(2.85rem, 6.25vw, 5.5rem) / 0.95 var(--font-editorial);
   letter-spacing: -0.075em;
 }
 
@@ -57,7 +57,7 @@
 .launch-statement {
   margin: 15px 0 8px;
   color: var(--color-ink);
-  font: 400 clamp(1.45rem, 3vw, 2.5rem) / 1.12 var(--font-editorial);
+  font: 400 clamp(1.35rem, 2.65vw, 2.2rem) / 1.12 var(--font-editorial);
   letter-spacing: -0.035em;
   text-wrap: balance;
 }
@@ -71,10 +71,10 @@
 
 .launch-intake .intake-console {
   position: static;
-  width: min(100%, 800px);
+  width: min(100%, 720px);
   min-width: 0;
   justify-self: center;
-  padding: clamp(14px, 3vw, 22px);
+  padding: clamp(14px, 2.6vw, 19px);
   border-radius: var(--radius-bento);
   border: 1px solid var(--color-rule);
   background: var(--color-surface);
