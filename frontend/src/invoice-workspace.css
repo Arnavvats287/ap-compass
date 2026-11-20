@@ -158,6 +158,20 @@
   border-color: var(--color-page-rule);
 }
 
+.invoice-content .workspace-audit,
+.invoice-content .workspace-audit .finding-disclosure summary::after,
+.invoice-content .workspace-audit :is(
+  .workspace-section > p:not(.review-note),
+  .finding-group-heading,
+  .disclosure-content,
+  .finding-values dt,
+  .reason-code,
+  .po-record .section-heading span,
+  .po-record p
+) {
+  color: var(--color-page-text);
+}
+
 .invoice-content > [id],
 .invoice-workspace #source-document,
 .invoice-workspace #case-trace {
