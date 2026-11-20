@@ -1,6 +1,6 @@
 # Final native source-grounding verification
 
-Orion and Northstar moved from Review to Ready on an offline replay of the same saved Gemini facts and claims. Each improved from 1/13 to 13/13 independently verified references. The original Aster extraction remained Blocked. No Gemini generations were made in this phase. The previous Aster PROVIDER_UNAVAILABLE is a separate live-provider observation.
+Orion and Northstar moved from Review to Ready on an offline replay of the same saved Gemini facts and claims. Each improved from 1/13 to 13/13 independently verified references. The original Aster extraction remained Blocked. The offline pass made zero Gemini generations. The separately approved live validation then used exactly two attempts and passed both decision checks. The previous Aster PROVIDER_UNAVAILABLE is a separate live-provider observation.
 
 ## Diagnosis from the saved live claims and PDFs
 
@@ -50,8 +50,19 @@ The 26 sealed controlled cases used unchanged input hashes and preserved their a
 - Disposable outputs under tmp/hybrid: source-final-before.json SHA-256 52d173d19bb526a5b3e5dab92bca5609af83435b27e74b131ac86a3839e94e85, source-final-verified.json SHA-256 0dbe71f9ef7cedc5196978286d08f7826149bf329a0cdfeb48885e65fea82329, source-final-controlled-verified.json SHA-256 a915fccdc5faa92da99800312e7c0d0ba0a57b1b186b56607b45834b1073a021. The before replay disabled only the added layout extension, matching the saved Orion and Northstar counts and the pre-existing hybrid Aster count.
 - The local backend checkpoint includes the earlier pending hybrid and wire-diagnostic backend changes already present at the start. It leaves the existing frontend edits in the worktree.
 
-## Live proposal and scope
+## Approved live validation
 
-Request a separate budget for **at most two** new Gemini generations. Run **Orion** first, verify the actual extraction and independent evidence, then run **Aster** and check the actual PO net and quantity findings. Use the production adapter in an isolated SQLite/PDF store, one call per invoice, zero retries or escalation. Provider failures count as technical failures. The offline result is sufficient to retain the verifier but does not establish live Gemini reliability.
+The test used backend checkpoint e1ce3fe4e13ac5ef825fa408a8bf4d738cb5419f, the frozen Orion and Aster PDFs, the normal production gemini-3.5-flash-lite adapter, and a new isolated SQLite and PDF store. Orion ran first. Both received HTTP 202, passed the wire schema and completed at the recorded 2% tolerance. Exactly two generations were attempted, with zero retries, provider errors, or escalation. Both uploaded PDFs matched their manifest hashes after reopening. Each decision was based on its own extraction. The historical Aster provider outage was not repeated.
 
-This pass preserves the existing single-page scope of the new layout association. Unsupported native layouts, ambiguous documents, absent claims and raster evidence may still require Review. No deployment or push was made.
+| Invoice | Decision | Critical facts | Native evidence | Total processing |
+|---|---|---:|---:|---:|
+| Orion OOP-2611-617 | Ready | 13/13 | 13/13 | 3,692 ms |
+| Aster AS-2611-632 | Blocked | 13/13 | 1/13 | 3,669 ms |
+
+Orion independently grounded every reported critical field. Aster had 12 source-located but unverified references. Its separate hard findings still recorded PO_BALANCE_EXCEEDED, PO_QUANTITY_EXCEEDED and PO_LINE_BALANCE_EXCEEDED. Against the unchanged PO records, its INR 30,000.00 net exceeded INR 25,000.00 remaining by INR 5,000.00. Six units exceeded the five remaining by one. The run also retained SOURCE_EVIDENCE_MISSING. Two runs and zero review actions were stored in the isolated database.
+
+The private observation hashes under tmp/source-grounding-live were 433a9187d7caca909b05019207dbbdf779cdf3edab97e7033474d1f2aa83a8e6 for Orion and 5a47ec304d6271e9e3bffd3f802926bd5c43ff41c73aa3d27739a41cf3454dcd for Aster.
+
+## Scope
+
+Both targeted live decision checks passed. This two-case sample does not establish general provider reliability or complete native evidence support for Aster-style invoice layouts. Unsupported native layouts, ambiguous documents, absent claims and raster evidence may still require Review. No production code, prior results, or existing data changed during this live validation. No deployment or push was made.

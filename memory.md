@@ -10,7 +10,7 @@
 
 ## Final source-grounding handoff
 
-The single-page native verifier independently associates top metadata, coherent labelled totals and complete charge rows with a stacked SKU. Saved Orion and Northstar extractions both improved from 1/13 native references and Review to 13/13 and Ready. Aster preserved its three hard Block findings. 274 focused backend tests and all 26 sealed comparisons passed offline. Financial rules and working frontend stayed as they were. No Gemini calls. Live Orion and Aster validation awaits separate approval. See [the grounding report](docs/FINAL_SOURCE_GROUNDING_REPORT.md).
+The single-page native verifier independently associates top metadata, coherent labelled totals and complete charge rows with a stacked SKU. Saved Orion and Northstar extractions both improved from 1/13 native references and Review to 13/13 and Ready. Aster preserved its three hard Block findings. 274 focused backend tests and all 26 sealed comparisons passed offline. Financial rules and working frontend stayed as they were. The offline run made no Gemini calls. The separate approved two-generation live check passed: Orion reached Ready with 13/13 native evidence and Aster remained Blocked. Zero retries. See [the grounding report](docs/FINAL_SOURCE_GROUNDING_REPORT.md).
 
 ## Targeted Gemini wire-schema handoff
 
