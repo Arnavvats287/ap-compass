@@ -117,6 +117,9 @@ export const dashboard: Dashboard = {
   blocked: 3,
   processing_failed: 1,
   interrupted: 1,
+  vendor_attention: [],
+  procurement_capacity: [],
+  exception_insights: [],
   flagged_invoice_net_by_currency: { INR: '123456' },
   flagged_invoice_net_missing_count: 0,
 }

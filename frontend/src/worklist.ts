@@ -19,17 +19,6 @@ export function attentionRuns(runs: RunSummary[]) {
     )
 }
 
-export function rankVendors(runs: RunSummary[]) {
-  const counts = new Map<string, number>()
-  for (const run of runs) {
-    const name = run.vendor_name
-    if (name?.trim() && isAttention(run)) counts.set(name, (counts.get(name) ?? 0) + 1)
-  }
-  return Array.from(counts, ([name, count]) => ({ name, count }))
-    .sort((a, b) => b.count - a.count || compareSupplier(a.name, b.name))
-    .slice(0, 10)
-}
-
 export const sortChoices = [
   ['latest', 'Newest first'],
   ['oldest', 'Oldest first'],

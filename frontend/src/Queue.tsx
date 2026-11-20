@@ -68,11 +68,12 @@ export default function Queue() {
       },
       { replace: true },
     )
-  const vendor = params.get('vendor')
+  const vendors = params.getAll('vendor').filter(Boolean)
   const requestedSort = params.get('sort')
   const sort = sortChoices.find(([key]) => key === requestedSort)?.[0] ?? 'latest'
   const comparable = query.data?.filter(
-    (run) => (!vendor || run.vendor_name === vendor) && matches(run, 'all', search),
+    (run) =>
+      (!vendors.length || vendors.includes(run.vendor_name ?? '')) && matches(run, 'all', search),
   )
   const rows = sortRuns(comparable?.filter((run) => matchesFilter(run, status)) ?? [], sort)
   return (
@@ -156,9 +157,9 @@ export default function Queue() {
             </label>
           </div>
         </div>
-        {vendor && (
+        {vendors.length > 0 && (
           <div className="ops-vendor-filter">
-            <span>Supplier: {vendor}</span>
+            <span>Supplier: {vendors.join(' / ')}</span>
             <button type="button" className="button secondary" onClick={() => update('vendor', '')}>
               Clear supplier
             </button>

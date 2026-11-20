@@ -5,7 +5,9 @@ import { api } from './api'
 import { ErrorState, UploadPanel } from './components'
 import { money, reasonLabel } from './format'
 import type { Dashboard, RunSummary } from './types'
-import { attentionRuns, invoiceUrl, rankVendors } from './worklist'
+import { attentionRuns, invoiceUrl } from './worklist'
+import FinancialOverview from './FinancialOverview'
+import { ExceptionInsights, ProcurementCapacity, VendorAttentionTable } from './DashboardTables'
 
 const scope = 'Among the latest 100 invoices'
 
@@ -206,45 +208,6 @@ function Distribution({ metrics }: { metrics: Dashboard }) {
   )
 }
 
-function Vendors({
-  runs,
-  listState,
-  retry,
-}: {
-  runs: RunSummary[]
-  listState: 'pending' | 'error' | 'success'
-  retry: () => void
-}) {
-  const vendors = rankVendors(runs)
-  return (
-    <section className="ops-card ops-vendors" aria-labelledby="vendors-title">
-      <h2 id="vendors-title">Top 10 vendors needing attention</h2>
-      <p>{scope} · Recorded Review and Blocked</p>
-      {listState === 'pending' ? (
-        <p role="status">Loading vendor activity…</p>
-      ) : listState === 'error' ? (
-        <ErrorState retry={retry} />
-      ) : vendors.length === 0 ? (
-        <p className="ops-chart-empty">No named vendors have recent recorded exceptions.</p>
-      ) : (
-        <ol>
-          {vendors.map(({ name, count }) => (
-            <li key={name}>
-              <Link to={'/runs?' + new URLSearchParams({ status: 'attention', vendor: name })}>
-                <span>{name}</span>
-                <strong aria-label={count + ' invoices'}>{count}</strong>
-                <span className="ops-vendor-bar" aria-hidden="true">
-                  <i style={{ width: (count / vendors[0].count) * 100 + '%' }} />
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ol>
-      )}
-    </section>
-  )
-}
-
 export default function OperationsBento({
   metrics,
   runs,
@@ -299,7 +262,9 @@ export default function OperationsBento({
             <Spotlight metrics={metrics} runs={runs} listState={listState} retry={retry} />
             <Distribution metrics={metrics} />
             {metrics.invoice_gross && <FinancialOverview gross={metrics.invoice_gross} />}
-            <Vendors runs={runs} listState={listState} retry={retry} />
+            <VendorAttentionTable rows={metrics.vendor_attention} />
+            <ProcurementCapacity rows={metrics.procurement_capacity} />
+            <ExceptionInsights rows={metrics.exception_insights} />
           </>
         )}
         <div className="ops-support">
@@ -338,4 +303,3 @@ export default function OperationsBento({
     </>
   )
 }
-import FinancialOverview from './FinancialOverview'

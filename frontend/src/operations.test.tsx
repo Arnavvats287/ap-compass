@@ -13,7 +13,6 @@ import { detailInterval, useRun } from './queries'
 import { date, decimal, elapsed, money } from './format'
 import { dashboard, finding, run, summary } from './test/fixtures'
 import type { Run } from './types'
-import { rankVendors } from './worklist'
 
 function renderPage(element: React.ReactNode, path = '/') {
   const client = new QueryClient({
@@ -64,6 +63,9 @@ describe('connected operations views', () => {
     expect(await screen.findByText('Your invoice queue starts here')).toBeInTheDocument()
     expect(screen.getByText(/No completed decisions yet/)).toBeInTheDocument()
     expect(screen.getByText('No recorded exceptions')).toBeInTheDocument()
+    expect(
+      screen.getByText('No named vendors have recent recorded exceptions.'),
+    ).toBeInTheDocument()
     expect(api.runs).toHaveBeenCalledTimes(1)
   })
   it('uses the exact server gross projection and labels missing and separate currency values', async () => {
@@ -114,26 +116,78 @@ describe('connected operations views', () => {
     expect(api.run).toHaveBeenCalledExactlyOnceWith(summary.id, expect.anything())
     expect(within(spotlight).queryByText('Processing failed')).not.toBeInTheDocument()
   })
-  it('ranks only named recorded exceptions with deterministic ties and a ten-vendor cap', () => {
-    const entries = Array.from({ length: 12 }, (_, index) => ({
-      ...summary,
-      id: String(index),
-      vendor_name: 'Vendor ' + index,
-      outcome: 'REVIEW_REQUIRED' as const,
-    }))
-    const ranked = rankVendors([
-      ...entries,
-      { ...entries[11], id: 'repeat', currency: 'USD', reviewed_outcome: 'READY_FOR_AP' },
-      { ...summary, id: 'ready', outcome: 'READY_FOR_AP' },
-      { ...summary, id: 'failed', outcome: null, execution_state: 'PROCESSING_FAILED' },
-      { ...summary, id: 'unnamed', vendor_name: null },
+  it('shows exact per-currency attention gross and links both approved spellings', async () => {
+    defaults()
+    vi.spyOn(api, 'dashboard').mockResolvedValue({
+      ...dashboard,
+      vendor_attention: [
+        {
+          name: 'Meridian Cloud Pvt Ltd',
+          source_names: ['Meridian Cloud Ltd.', 'Meridian Cloud Pvt Ltd'],
+          review_count: 1,
+          blocked_count: 2,
+          gross_by_currency: { INR: '211.20', USD: '18.49' },
+          missing_gross_count: 1,
+        },
+      ],
+      procurement_capacity: [
+        {
+          po_id: 'PO-1042',
+          vendor_name: 'Meridian Cloud Pvt Ltd',
+          status: 'OPEN',
+          currency: 'INR',
+          approved_net: '200000',
+          previously_billed_net: '120000',
+          remaining_net: '80000',
+        },
+      ],
+      exception_insights: [{ code: 'PO_BALANCE_EXCEEDED', count: 2 }],
+    })
+    renderPage(<Overview />)
+    const table = await screen.findByRole('table', { name: /Top 10 vendors/ })
+    expect(table).toHaveTextContent(/211\.2.*INR/)
+    expect(table).toHaveTextContent(/18\.49.*USD/)
+    expect(table).toHaveTextContent('1 missing gross or currency')
+    const blocked = within(table).getByRole('link', { name: /2 blocked invoices/ })
+    const search = new URL(blocked.getAttribute('href')!, 'http://localhost').searchParams
+    expect(search.get('status')).toBe('blocked')
+    expect(search.getAll('vendor')).toEqual(['Meridian Cloud Ltd.', 'Meridian Cloud Pvt Ltd'])
+    expect(screen.getByRole('table', { name: 'Purchase order capacity' })).toHaveTextContent(
+      '₹80,000',
+    )
+    expect(screen.getByRole('region', { name: 'Common exceptions' })).toHaveTextContent(
+      'PO_BALANCE_EXCEEDED',
+    )
+  })
+  it('includes each exact vendor spelling in a combined queue link', async () => {
+    defaults()
+    vi.spyOn(api, 'runs').mockResolvedValue([
+      {
+        ...summary,
+        id: 'first',
+        vendor_name: 'Meridian Cloud Ltd.',
+        invoice_number: 'FIRST-EXCEPTION',
+      },
+      {
+        ...summary,
+        id: 'second',
+        vendor_name: 'Meridian Cloud Pvt Ltd',
+        invoice_number: 'SECOND-EXCEPTION',
+      },
+      {
+        ...summary,
+        id: 'unrelated',
+        vendor_name: 'Unrelated vendor',
+        invoice_number: 'OTHER-EXCEPTION',
+      },
     ])
-    expect(ranked).toHaveLength(10)
-    expect(ranked.slice(0, 3)).toEqual([
-      { name: 'Vendor 11', count: 2 },
-      { name: 'Vendor 0', count: 1 },
-      { name: 'Vendor 1', count: 1 },
-    ])
+    renderPage(
+      <Queue />,
+      '/runs?status=attention&vendor=Meridian+Cloud+Ltd.&vendor=Meridian+Cloud+Pvt+Ltd',
+    )
+    expect(await screen.findByText('FIRST-EXCEPTION')).toBeInTheDocument()
+    expect(screen.getByText('SECOND-EXCEPTION')).toBeInTheDocument()
+    expect(screen.queryByText('OTHER-EXCEPTION')).not.toBeInTheDocument()
   })
   it('preserves separate flagged-net currency amounts', async () => {
     defaults()

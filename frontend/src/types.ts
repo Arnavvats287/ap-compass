@@ -98,7 +98,26 @@ export interface RunSummary {
   primary_reason_code: string | null
   owner: string | null
 }
+export interface VendorAttention {
+  name: string
+  source_names: string[]
+  review_count: number
+  blocked_count: number
+  gross_by_currency: Record<string, string>
+  missing_gross_count: number
+}
 export interface Dashboard {
+  vendor_attention: VendorAttention[]
+  procurement_capacity: {
+    po_id: string
+    vendor_name: string
+    status: string
+    currency: string
+    approved_net: string
+    previously_billed_net: string | null
+    remaining_net: string | null
+  }[]
+  exception_insights: { code: string; count: number }[]
   total_runs: number
   in_progress: number
   completed: number

@@ -1,5 +1,5 @@
 .ops-grid-financial {
-  grid-template-areas: 'spotlight distribution' 'financial financial' 'vendors support';
+  grid-template-areas: 'spotlight distribution' 'financial financial' 'vendors vendors' 'capacity insights' 'support support';
 }
 .financial-overview {
   grid-area: financial;
@@ -444,7 +444,7 @@
 
 @media (max-width: 780px) {
   .ops-grid.ops-grid-financial {
-    grid-template-areas: 'spotlight' 'distribution' 'financial' 'vendors' 'support';
+    grid-template-areas: 'spotlight' 'distribution' 'financial' 'vendors' 'capacity' 'insights' 'support';
   }
   .financial-cards {
     grid-template-columns: repeat(2, minmax(0, 1fr));

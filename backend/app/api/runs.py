@@ -1,7 +1,7 @@
 """Request validation and read projections; no financial rules."""
 import asyncio
 from datetime import datetime
-from decimal import Decimal, localcontext
+from decimal import Decimal
 from typing import Literal
 
 from fastapi import APIRouter, HTTPException, Query, Request
@@ -13,6 +13,8 @@ from starlette.responses import Response
 from app.contracts import RunSnapshotV1, PolicyV1, Amount
 from app.orchestration.reviews import ReviewActionSnapshot
 from app.documents.limits import MAX_INPUT_BYTES
+
+from .dashboard_finance import RECENT_LIMIT, exact_currency_totals, exception_insights, procurement_capacity, vendor_attention
 
 router = APIRouter(prefix="/api")
 
@@ -142,22 +144,10 @@ def policy(request: Request):
     return request.app.state.runs.current_policy
 
 
-def exact_currency_totals(grouped, *, fixed=False):
-    values = {}
-    for currency, amounts in sorted(grouped.items()):
-        # Display aggregation only. Keep the precision of widely separated exponents.
-        with localcontext() as context:
-            context.prec = max(28, max(amount.adjusted() for amount in amounts)
-                               - min(amount.as_tuple().exponent for amount in amounts)
-                               + len(str(len(amounts))) + 4)
-            total = sum(amounts, Decimal(0))
-            values[currency] = format(total, "f") if fixed else str(total)
-    return values
-
-
 @router.get("/dashboard")
 def dashboard(request: Request):
-    snapshots = request.app.state.runs.repository.all()
+    repository = request.app.state.runs.repository
+    snapshots = repository.all()
     counts = dict(total_runs=len(snapshots), in_progress=0, completed=0, ready=0, review_required=0,
                   blocked=0, processing_failed=0, interrupted=0)
     outcomes = {"READY_FOR_AP": "ready", "REVIEW_REQUIRED": "review_required", "BLOCKED": "blocked"}
@@ -184,7 +174,12 @@ def dashboard(request: Request):
                 gross_missing[group] += 1
             else:
                 gross[group].setdefault(invoice.currency, []).append(invoice.total)
-    return {**counts, "flagged_invoice_net_by_currency": exact_currency_totals(flagged),
+    vendors, orders, billed = repository.authority()
+    recent = snapshots[:RECENT_LIMIT]
+    return {**counts, "vendor_attention": vendor_attention(recent, vendors),
+            "procurement_capacity": procurement_capacity(vendors, orders, billed),
+            "exception_insights": exception_insights(recent),
+            "flagged_invoice_net_by_currency": exact_currency_totals(flagged),
             "flagged_invoice_net_missing_count": missing,
             "invoice_gross": {key: {"by_currency": exact_currency_totals(amounts, fixed=True),
                                      "missing_count": gross_missing[key]}
