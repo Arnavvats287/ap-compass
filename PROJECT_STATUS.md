@@ -1,7 +1,7 @@
 # AP Compass — Project Status / Gate Register
 
 **Updated:** 2026-11-20 IST.
-**Current gate:** Native source grounding passed offline and in the authorized two-case live check. Orion reached Ready with 13/13 native references and Aster retained its hard Blocks. See the [grounding report](docs/FINAL_SOURCE_GROUNDING_REPORT.md).
+**Current gate:** Final independent reconciliation passed offline. Exact live Orion/Aster decisions replayed, 26 sealed cases held, and 203 mutation quote variants produced zero wrong native verifications. The next three targeted live checks remain unapproved. See the [reconciliation report](docs/FINAL_REVIEW_RECONCILIATION.md).
 **Base:** e5e8a183ad7063b815310b7f2e2234048ec6564d.
 **Branch:** codex/phase-g3-launch-intake. **Checkpoint:** phase-g3-launch-intake.
 See the [Phase G.3 report](docs/PHASE_G3_LAUNCH_EXPERIENCE_REPORT.md) for the Chrome review, recorded intake policy comparison and regression evidence.

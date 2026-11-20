@@ -151,4 +151,8 @@ class RunService:
                     changes["usage"] = usage_snapshot(error.calls, error.attempts)
                 self.repository.update(run_id, **changes)
                 self.repository.terminate(run_id, code)
-                logger.warning("run=%s stage=%s error=%s", run_id, active, code)
+                provider_http_status = error.provider_status if isinstance(error, ExtractionError) else None
+                logger.warning("run=%s stage=%s error=%s elapsed_ms=%d provider_http_status=%s",
+                               run_id, active, code, timings[-1].milliseconds,
+                               provider_http_status if type(provider_http_status) is int
+                               and 100 <= provider_http_status <= 599 else None)

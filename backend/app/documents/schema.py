@@ -5,9 +5,10 @@ from datetime import date
 from decimal import Decimal
 from typing import Annotated
 
-from pydantic import BaseModel, ConfigDict, Field, StringConstraints, ValidationError
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints, ValidationError, model_validator
 
 from app.contracts import BankInstructionsV1, ExtractedInvoiceV1, InvoiceLineV1
+from .consistency import AMOUNT, CURRENCIES
 from .types import ExtractionError
 
 logger = logging.getLogger(__name__)
@@ -15,6 +16,7 @@ logger = logging.getLogger(__name__)
 Text = Annotated[str, StringConstraints(max_length=600)]
 DECIMAL_INSTRUCTION = "Plain decimal string such as 1234.50. No currency symbol, separators, units or exponents."
 DECIMAL_PATTERN = r"^-?\d{1,18}(?:\.\d{1,6})?$"
+DECIMAL_RE = re.compile(DECIMAL_PATTERN)
 Number = Annotated[
     str, StringConstraints(pattern=DECIMAL_PATTERN, max_length=26),
     Field(description=DECIMAL_INSTRUCTION),
@@ -55,6 +57,20 @@ class WireBank(WireModel):
     ifsc: Text | None
 
 
+def normalize_wire_amount(value, currency, *, quantity=False):
+    """Strip valid presentation formatting without guessing currency or precision."""
+    if not isinstance(value, str) or len(value) > 40 or DECIMAL_RE.fullmatch(value):
+        return value
+    printed = AMOUNT.fullmatch(value.strip())
+    if printed is None:
+        return value
+    prefix, amount = printed.groups()
+    if prefix and (quantity or CURRENCIES.get(prefix.upper(), prefix.upper()) != currency):
+        return value
+    # The original strict field checks still enforce canonical width and scale.
+    return amount.replace(",", "")
+
+
 class WireInvoice(WireModel):
     vendor_name_raw: Text | None
     invoice_number: Text | None
@@ -67,6 +83,28 @@ class WireInvoice(WireModel):
     lines: list[WireLine] = Field(max_length=50)
     bank_instructions: WireBank | None
     evidence: list[SourceClaim] = Field(max_length=260)
+
+    @model_validator(mode="before")
+    @classmethod
+    def normalize_money_presentation(cls, data):
+        if not isinstance(data, dict):
+            return data
+        data = data.copy()
+        currency = data.get("currency")
+        currency = currency.strip().upper() if isinstance(currency, str) else None
+        for field in ("net", "tax", "total"):
+            if field in data:
+                data[field] = normalize_wire_amount(data[field], currency)
+        lines = data.get("lines")
+        if isinstance(lines, list) and len(lines) <= 50:
+            data["lines"] = [
+                {field: normalize_wire_amount(value, currency, quantity=field == "qty")
+                 if field in {"qty", "unit_price_net", "net"} else value
+                 for field, value in line.items()} if isinstance(line, dict) else line
+                for line in lines
+            ]
+        return data
+
 
 
 

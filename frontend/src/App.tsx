@@ -9,6 +9,7 @@ import LaunchPage from './LaunchPage'
 
 export default function App() {
   const location = useLocation()
+  const isLaunch = location.pathname === '/'
   const heading = useRef<HTMLElement>(null)
   const previous = useRef(location.pathname)
   useEffect(() => {
@@ -37,13 +38,15 @@ export default function App() {
       <a className="skip-link" href="#main">
         Skip to main content
       </a>
-      <header className="app-header">
+      <header className={isLaunch ? 'app-header launch-header' : 'app-header'}>
         <div className="header-inner">
           <Link className="brand" to="/" aria-label="AP Compass home">
             <Compass size={30} aria-hidden="true" />
-            <span>
-              AP Compass<small>Invoice Operations & Exception Resolution</small>
-            </span>
+            {!isLaunch && (
+              <span>
+                AP Compass<small>Invoice Operations & Exception Resolution</small>
+              </span>
+            )}
           </Link>
           <nav aria-label="Main navigation">
             <NavLink end to="/overview">
@@ -85,7 +88,7 @@ export default function App() {
           <ShieldCheck size={16} aria-hidden="true" />
           Analyst assistance. No payment or posting authority.
         </span>
-        {location.pathname === '/' ? (
+        {isLaunch ? (
           <span className="launch-credit">
             <strong>Made by Arnav Vats</strong>
             <span>

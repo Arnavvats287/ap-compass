@@ -403,3 +403,26 @@ def test_failed_extraction_keeps_reported_usage_but_unknown_stays_null():
     unknown = replace(attempt, number=2, usage=TokenUsage())
     assert usage_snapshot(2, (attempt, unknown)).input_tokens is None
     assert usage_snapshot(0, ()).output_tokens is None
+
+def test_failed_provider_http_status_is_logged_without_changing_snapshot(tmp_path, caplog):
+    from app.documents.types import ExtractionError
+
+    async def fail(_):
+        raise ExtractionError("PROVIDER_UNAVAILABLE", provider_status=503, calls=1)
+
+    async def scenario():
+        app = create_app(tmp_path / "runs.db", document_dir=tmp_path / "docs", extractor=fail)
+        async with app.router.lifespan_context(app):
+            async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
+                posted = await upload(client, data=(ROOT / "tests/fixtures/HAPPY_CLEAN.pdf").read_bytes())
+                assert posted.status_code == 202
+                await app.state.runs.idle()
+                snapshot = (await client.get("/api/runs/" + posted.json()["run_id"])).json()
+                assert snapshot["execution_error_code"] == "PROVIDER_UNAVAILABLE"
+                assert "provider_http_status" not in snapshot
+                assert snapshot["decision"] is None
+                assert snapshot["usage"]["model_calls"] == 1
+
+    asyncio.run(scenario())
+    assert "stage=extracting_invoice error=PROVIDER_UNAVAILABLE elapsed_ms=" in caplog.text
+    assert "provider_http_status=503" in caplog.text

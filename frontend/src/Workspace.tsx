@@ -81,6 +81,9 @@ export const failureMessages: Record<string, string> = {
   AUTHORIZATION:
     'The extraction service could not authorize this request. Ask the application owner to check access.',
   PROVIDER_UNAVAILABLE: 'The document extraction service is temporarily unavailable.',
+  MODEL_OUTPUT_JSON: 'The extraction service returned malformed invoice data.',
+  MODEL_OUTPUT_SCHEMA: 'The extraction service returned data outside the expected invoice format.',
+  MODEL_OUTPUT_UNUSABLE: 'The extraction did not provide enough usable invoice facts.',
   INVALID_RESPONSE:
     'A usable invoice extraction could not be produced. Verify the source PDF and try uploading again.',
 }

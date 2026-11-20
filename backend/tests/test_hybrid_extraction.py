@@ -90,7 +90,7 @@ def test_generation_grammar_explains_decimal_and_evidence_field_formats_without_
     schema = provider_schema()
     assert "1234.50" in schema["properties"]["net"]["anyOf"][0]["description"]
     assert "lines[0].qty" in schema["$defs"]["SourceClaim"]["properties"]["field"]["description"]
-    for mutation in (lambda payload: payload.update(net="48,000.00"),
+    for mutation in (lambda payload: payload.update(net="48,00.00"),
                      lambda payload: payload["evidence"][0].update(field="lines.0.qty")):
         payload = wire()
         mutation(payload)

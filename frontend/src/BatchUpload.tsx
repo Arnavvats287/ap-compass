@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useId, useRef, useState } from 'react'
-import type { ReactNode } from 'react'
+import type { DragEvent, ReactNode } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-import { ArrowLeft, ArrowUpRight, Files, FileText, Upload, X } from 'lucide-react'
+import { ArrowLeft, ArrowUpRight, Files, FileText, LoaderCircle, Upload, X } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { api } from './api'
 import { Status } from './components'
@@ -186,6 +186,7 @@ export default function BatchUpload({ launch = false }: { launch?: boolean }) {
   const focusAfterAction = useRef(false)
   const label = useId()
   const [dragging, setDragging] = useState(false)
+  const [departing, setDeparting] = useState<Entry[]>([])
   const started = batch?.started ?? false
   useEffect(() => {
     if (!focusAfterAction.current) return
@@ -216,215 +217,72 @@ export default function BatchUpload({ launch = false }: { launch?: boolean }) {
   }))
   const withoutDecision = finished.length - outcomes.reduce((sum, result) => sum + result.count, 0)
 
-  return (
-    <div className={launch ? 'launch-batch' : 'ops-page batch-page'}>
-      {!launch && (
-        <>
-          <Link className="text-link batch-back" to="/runs">
-            <ArrowLeft size={16} aria-hidden="true" /> Invoice Operations
-          </Link>
-          <header className="page-heading ops-heading intake-heading">
-            <div>
-              <h1>Process invoices</h1>
-              <p>
-                Submit up to 10 PDFs in one batch. Open each invoice to see its own decision and
-                source.
-              </p>
-            </div>
-          </header>
-        </>
+  const dropHandlers = {
+    onDragOver(event: DragEvent<HTMLElement>) {
+      event.preventDefault()
+      if (!started) setDragging(true)
+    },
+    onDragLeave(event: DragEvent<HTMLElement>) {
+      if (
+        !(event.relatedTarget instanceof Node) ||
+        !event.currentTarget.contains(event.relatedTarget)
+      ) {
+        setDragging(false)
+      }
+    },
+    onDrop(event: DragEvent<HTMLElement>) {
+      event.preventDefault()
+      setDragging(false)
+      add(Array.from(event.dataTransfer.files))
+    },
+  }
+
+  const files = (
+    <>
+      {errors.length > 0 && (
+        <ul className="inline-error batch-errors" role="alert">
+          {errors.map((error, index) => (
+            <li key={index}>{error}</li>
+          ))}
+        </ul>
       )}
-      <div className={launch ? 'intake-desk launch-intake' : 'intake-desk'}>
-        {launch && (
-          <header className="launch-intro">
-            <h1>AP Compass</h1>
-            <p className="launch-statement">Know what’s ready for AP.</p>
-            <p className="launch-description">
-              Check invoices against purchase orders and see what needs review before payment.
-            </p>
-          </header>
-        )}
-        <section className="intake-console" aria-label="Batch controls">
-          <div className="intake-console-heading">
-            {started ? (
-              <h2 ref={heading} tabIndex={-1}>
-                {paused ? 'Status checks paused' : busy ? 'Batch in progress' : 'Batch complete'}
-              </h2>
-            ) : (
-              <h2>Add invoice PDFs</h2>
-            )}
-          </div>
-          {started && (
-            <>
-              <p className="intake-count" role="status">
-                {finished.length} of {entries.length} finished
-              </p>
-              {launch && (
-                <p className="launch-policy-record">
-                  Unit-price tolerance{' '}
-                  {batchTolerance ? toleranceLabel(batchTolerance) : 'from the default policy'}
-                </p>
-              )}
-              <dl className="intake-outcomes" aria-label="Recorded batch outcomes">
-                {outcomes.map(({ outcome, label, count }) => (
-                  <div key={outcome} data-outcome={outcome}>
-                    <dt>{label}</dt>
-                    <dd>{count}</dd>
-                  </div>
-                ))}
-              </dl>
-              {withoutDecision > 0 && (
-                <p className="intake-note">{withoutDecision} finished without an AP decision.</p>
-              )}
-            </>
-          )}
-          {!started && (
-            <div
-              className={dragging ? 'batch-drop dragging' : 'batch-drop'}
-              onDragOver={(event) => {
-                event.preventDefault()
-                setDragging(true)
-              }}
-              onDragLeave={(event) => {
-                if (
-                  !(event.relatedTarget instanceof Node) ||
-                  !event.currentTarget.contains(event.relatedTarget)
-                )
-                  setDragging(false)
-              }}
-              onDrop={(event) => {
-                event.preventDefault()
-                setDragging(false)
-                add(Array.from(event.dataTransfer.files))
-              }}
-            >
-              <Files size={26} aria-hidden="true" />
-              <div>
-                <strong>{dragging ? 'Release to add PDFs' : 'Drop invoice PDFs here'}</strong>
-                <p>Up to 8 MiB per file. Processed one at a time.</p>
-              </div>
-              <input
-                type="file"
-                accept="application/pdf"
-                multiple
-                hidden
-                ref={input}
-                aria-label="Invoice PDFs"
-                onChange={(event) => {
-                  add(Array.from(event.currentTarget.files ?? []))
-                  event.currentTarget.value = ''
-                }}
-              />
-              <button
-                type="button"
-                className="button secondary"
-                ref={choose}
-                onClick={() => input.current?.click()}
-              >
-                <Upload size={17} aria-hidden="true" /> Choose PDFs
-              </button>
-            </div>
-          )}
-          {launch && !started && (
-            <fieldset className="launch-tolerance" aria-describedby={label + '-tolerance-help'}>
-              <legend>Unit-price tolerance</legend>
-              <div className="launch-tolerance-options">
-                {(['0.02', '0.05'] as const).map((choice) => (
-                  <label key={choice}>
-                    <input
-                      type="radio"
-                      name={label + '-tolerance'}
-                      value={choice}
-                      checked={choice === tolerance}
-                      onChange={() => setTolerance(choice)}
-                    />
-                    <span>{toleranceLabel(choice)}</span>
-                  </label>
-                ))}
-              </div>
-              <p id={label + '-tolerance-help'}>
-                Allowed unit-price variance for this batch. PO limits still apply.
-              </p>
-            </fieldset>
-          )}
-          {paused && (
-            <p className="inline-error intake-error" role="alert">
-              The last accepted invoice’s status is unavailable. Resume status checks to continue
-              without uploading it again.
-            </p>
-          )}
-          <div className="batch-actions">
-            {!started && (
-              <button
-                type="button"
-                className="button primary"
-                disabled={!entries.length}
-                onClick={() => {
-                  focusAfterAction.current = true
-                  void process(launch ? tolerance : undefined)
-                }}
-              >
-                Process selected invoices
-              </button>
-            )}
-            {busy && <p className="intake-note">Keep this tab open while the batch runs.</p>}
-            {paused && (
-              <button type="button" className="button primary" onClick={() => void process()}>
-                Resume status checks
-              </button>
-            )}
-            {started && !busy && !paused && (
-              <button
-                type="button"
-                className="button secondary"
-                onClick={() => {
-                  focusAfterAction.current = true
-                  reset()
-                }}
-              >
-                Start another batch
-              </button>
-            )}
-            {started && (
-              <Link className="button secondary" to="/runs">
-                View invoice queue
-              </Link>
-            )}
-          </div>
-        </section>
-        <section className="ops-card batch-card" aria-labelledby={label}>
-          <div className="batch-heading">
-            <h2 id={label}>{started ? 'Invoice results' : 'Selected PDFs'}</h2>
-            <span>
-              {started ? `${entries.length} invoices` : `${entries.length} of ${LIMIT} selected`}
-            </span>
-          </div>
-          {!entries.length && (
-            <p className="intake-empty">Add PDFs to check the list before processing.</p>
-          )}
-          {errors.length > 0 && (
-            <ul className="inline-error batch-errors" role="alert">
-              {errors.map((error, index) => (
-                <li key={index}>{error}</li>
-              ))}
-            </ul>
-          )}
-          {entries.length > 0 && (
-            <ul
-              className="batch-list"
-              aria-label={started ? 'Individual invoice results' : 'Selected invoices'}
-            >
-              {entries.map((entry) => (
+      {(entries.length > 0 || (!started && departing.length > 0)) && (
+        <ul
+          className="batch-list"
+          aria-label={started ? 'Individual invoice results' : 'Selected invoices'}
+        >
+          {[...entries, ...(started ? [] : departing)]
+            .sort((left, right) => left.key - right.key)
+            .map((entry) => {
+              const leaving = departing.some((file) => file.key === entry.key)
+              return (
                 <li
                   key={entry.key}
                   data-phase={entry.phase}
+                  data-leaving={leaving || undefined}
+                  inert={leaving || undefined}
+                  aria-hidden={leaving || undefined}
+                  onAnimationEnd={
+                    leaving
+                      ? () =>
+                          setDeparting((current) =>
+                            current.filter((file) => file.key !== entry.key),
+                          )
+                      : undefined
+                  }
                   data-state={entry.phase === 'accepted' ? entry.run.state : undefined}
                 >
                   <span className="intake-file-icon">
-                    <FileText size={18} aria-hidden="true" />
+                    {launch && entry.phase === 'uploading' ? (
+                      <LoaderCircle className="composer-spinner" size={18} aria-hidden="true" />
+                    ) : (
+                      <FileText size={18} aria-hidden="true" />
+                    )}
                   </span>
                   <div className="batch-file">
-                    <strong>{entry.file.name}</strong>
+                    <strong title={launch && !started ? entry.file.name : undefined}>
+                      {entry.file.name}
+                    </strong>
                     <small>{fileSize(entry.file.size)}</small>
                     {entry.phase === 'upload-failed' && (
                       <p className="batch-item-error">{entry.message}</p>
@@ -439,6 +297,12 @@ export default function BatchUpload({ launch = false }: { launch?: boolean }) {
                       className="icon-button"
                       aria-label={'Remove ' + entry.file.name}
                       onClick={() => {
+                        if (
+                          launch &&
+                          window.matchMedia?.('(prefers-reduced-motion: no-preference)').matches
+                        ) {
+                          setDeparting((current) => [...current, entry])
+                        }
                         remove(entry.key)
                         choose.current?.focus()
                       }}
@@ -472,10 +336,210 @@ export default function BatchUpload({ launch = false }: { launch?: boolean }) {
                     </div>
                   )}
                 </li>
-              ))}
-            </ul>
+              )
+            })}
+        </ul>
+      )}
+    </>
+  )
+
+  return (
+    <div className={launch ? 'launch-batch' : 'ops-page batch-page'}>
+      {!launch && (
+        <>
+          <Link className="text-link batch-back" to="/runs">
+            <ArrowLeft size={16} aria-hidden="true" /> Invoice Operations
+          </Link>
+          <header className="page-heading ops-heading intake-heading">
+            <div>
+              <h1>Process invoices</h1>
+              <p>
+                Submit up to 10 PDFs in one batch. Open each invoice to see its own decision and
+                source.
+              </p>
+            </div>
+          </header>
+        </>
+      )}
+      <div className={launch ? 'intake-desk launch-intake' : 'intake-desk'}>
+        {launch && (
+          <header className="launch-intro">
+            <h1>AP Compass</h1>
+            <p className="launch-statement">Know what’s ready for AP.</p>
+            <p className="launch-description">
+              Check invoices against purchase orders and see what needs review before payment.
+            </p>
+          </header>
+        )}
+        <section
+          className="intake-console"
+          aria-label={launch ? 'Invoice intake' : 'Batch controls'}
+          data-dragging={launch && dragging ? true : undefined}
+          {...(launch ? dropHandlers : {})}
+          data-started={launch ? started : undefined}
+        >
+          {(!launch || started) && (
+            <div className="intake-console-heading">
+              {started ? (
+                <h2 ref={heading} tabIndex={-1}>
+                  {paused ? 'Status checks paused' : busy ? 'Batch in progress' : 'Batch complete'}
+                </h2>
+              ) : (
+                <h2>Add invoice PDFs</h2>
+              )}
+            </div>
           )}
+          {started && (
+            <>
+              <p className="intake-count" role="status">
+                {finished.length} of {entries.length} finished
+              </p>
+              {launch && (
+                <p className="launch-policy-record">
+                  Unit-price tolerance{' '}
+                  {batchTolerance ? toleranceLabel(batchTolerance) : 'from the default policy'}
+                </p>
+              )}
+              <dl className="intake-outcomes" aria-label="Recorded batch outcomes">
+                {outcomes.map(({ outcome, label, count }) => (
+                  <div key={outcome} data-outcome={outcome}>
+                    <dt>{label}</dt>
+                    <dd>{count}</dd>
+                  </div>
+                ))}
+              </dl>
+              {withoutDecision > 0 && (
+                <p className="intake-note">{withoutDecision} finished without an AP decision.</p>
+              )}
+            </>
+          )}
+          {!started && (
+            <div
+              className={dragging ? 'batch-drop dragging' : 'batch-drop'}
+              {...(!launch ? dropHandlers : {})}
+            >
+              <Files size={26} aria-hidden="true" />
+              <div>
+                <strong>{dragging ? 'Release to add PDFs' : 'Drop invoice PDFs here'}</strong>
+                <p aria-live={launch ? 'polite' : undefined}>
+                  {launch
+                    ? entries.length
+                      ? `${entries.length} ${entries.length === 1 ? 'PDF' : 'PDFs'} attached`
+                      : 'Up to 10 PDFs, 8 MiB each.'
+                    : 'Up to 8 MiB per file. Processed one at a time.'}
+                </p>
+              </div>
+              <input
+                type="file"
+                accept="application/pdf"
+                multiple
+                hidden
+                ref={input}
+                aria-label="Invoice PDFs"
+                onChange={(event) => {
+                  add(Array.from(event.currentTarget.files ?? []))
+                  event.currentTarget.value = ''
+                }}
+              />
+              <button
+                type="button"
+                className="button secondary"
+                ref={choose}
+                onClick={() => input.current?.click()}
+              >
+                <Upload size={17} aria-hidden="true" /> Choose PDFs
+              </button>
+            </div>
+          )}
+          {launch && files}
+          {launch && !started && (
+            <fieldset className="launch-tolerance" aria-describedby={label + '-tolerance-help'}>
+              <legend>Unit-price tolerance</legend>
+              <div className="launch-tolerance-options" data-tolerance={tolerance}>
+                {(['0.02', '0.05'] as const).map((choice) => (
+                  <label key={choice}>
+                    <input
+                      type="radio"
+                      name={label + '-tolerance'}
+                      value={choice}
+                      checked={choice === tolerance}
+                      onChange={() => setTolerance(choice)}
+                    />
+                    <span>{toleranceLabel(choice)}</span>
+                  </label>
+                ))}
+              </div>
+              <p id={label + '-tolerance-help'}>
+                Allowed unit-price variance for this batch. PO limits still apply.
+              </p>
+            </fieldset>
+          )}
+          {paused && (
+            <p className="inline-error intake-error" role="alert">
+              The last accepted invoice’s status is unavailable. Resume status checks to continue
+              without uploading it again.
+            </p>
+          )}
+          <div className="batch-actions">
+            {!started && (
+              <button
+                type="button"
+                className="button primary"
+                disabled={!entries.length}
+                onClick={() => {
+                  focusAfterAction.current = true
+                  setDeparting([])
+                  void process(launch ? tolerance : undefined)
+                }}
+              >
+                {launch ? 'Process invoices' : 'Process selected invoices'}
+              </button>
+            )}
+            {busy && <p className="intake-note">Keep this tab open while the batch runs.</p>}
+            {launch && busy && (
+              <button type="button" className="button primary" disabled>
+                <LoaderCircle className="composer-spinner" size={16} aria-hidden="true" />
+                Processing invoices
+              </button>
+            )}
+            {paused && (
+              <button type="button" className="button primary" onClick={() => void process()}>
+                Resume status checks
+              </button>
+            )}
+            {started && !busy && !paused && (
+              <button
+                type="button"
+                className="button secondary"
+                onClick={() => {
+                  focusAfterAction.current = true
+                  reset()
+                }}
+              >
+                Start another batch
+              </button>
+            )}
+            {started && (
+              <Link className="button secondary" to="/runs">
+                View invoice queue
+              </Link>
+            )}
+          </div>
         </section>
+        {!launch && (
+          <section className="ops-card batch-card" aria-labelledby={label}>
+            <div className="batch-heading">
+              <h2 id={label}>{started ? 'Invoice results' : 'Selected PDFs'}</h2>
+              <span>
+                {started ? `${entries.length} invoices` : `${entries.length} of ${LIMIT} selected`}
+              </span>
+            </div>
+            {!entries.length && (
+              <p className="intake-empty">Add PDFs to check the list before processing.</p>
+            )}
+            {files}
+          </section>
+        )}
       </div>
     </div>
   )

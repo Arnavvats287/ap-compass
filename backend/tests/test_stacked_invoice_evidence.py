@@ -106,3 +106,12 @@ def test_verified_unauthorized_stacked_line_does_not_clear():
     assert decision.outcome == "REVIEW_REQUIRED"
     finding = next(f for f in decision.findings if f.code == "LINE_MAPPING_UNRESOLVED")
     assert finding.owner == "Procurement"
+
+@pytest.mark.parametrize("field,value", [("invoice_number", "OUTSIDE-7"), ("po_reference", "FIELD-490")])
+def test_real_identifiers_do_not_verify_in_a_different_role(field, value):
+    pdf, invoice = specimen(unauthorized=True)
+    invoice[field] = value
+    next(ref for ref in invoice["evidence"] if ref["field"] == field).update(raw_value=value, quote=value)
+    states, decision = assess(pdf, invoice)
+    assert states[field] != "NATIVE_VERIFIED"
+    assert decision.outcome != "READY_FOR_AP"

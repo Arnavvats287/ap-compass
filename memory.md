@@ -2,11 +2,15 @@
 
 **Last reviewed:** 2026-11-20 (IST)
 **Repository status:** G.2 queue polish and earlier checkpoints are preserved. G.3 is isolated in a separate local worktree.
-**Current authorized segment:** Final source-grounding verification.
+**Current authorized segment:** Final independent review reconciliation.
 **Deadline:** Saturday 2026-11-21 (IST); target Friday evening feature freeze.
 **Maintainers:** Builder owns product decisions; Codex implements one authorized phase; architectural review gates further work.
 
 > Repo-local continuity. Status is evidence, not completion by assertion. Latest user acceptance/routing adjustment is recorded in ADR-016 and the handoff below.
+
+## Final independent reconciliation handoff
+
+Valid printed amount grouping now normalizes before strict validation, and provider failure logs retain safe HTTP status and elapsed processing time. Both successful live snapshots replayed identically, even with grouped wire values. All 26 sealed cases matched. 156 actual field substitutions and 203 quote variants produced no wrong native evidence or false Ready. 615 backend and 71 frontend tests and the production build passed. The local checkpoint includes the previously verified composer files. No Gemini calls, push or deployment. Proposed next live check is Northstar, Kaveri, and the Meridian scan, subject to separate approval. See [the reconciliation report](docs/FINAL_REVIEW_RECONCILIATION.md).
 
 ## Final source-grounding handoff
 
