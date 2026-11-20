@@ -31,16 +31,16 @@
   stroke-width: 11;
 }
 .orbit-track {
-  stroke: var(--hairline);
+  stroke: var(--color-forest-rule);
 }
 .orbit-ready {
-  stroke: var(--ready-text);
+  stroke: var(--color-mint);
 }
 .orbit-review {
-  stroke: var(--review-text);
+  stroke: var(--color-forest-review);
 }
 .orbit-blocked {
-  stroke: var(--blocked-text);
+  stroke: var(--color-forest-blocked);
 }
 .outcome-orbit > div {
   position: absolute;
@@ -59,13 +59,13 @@
 }
 .outcome-orbit span {
   font-size: var(--text-xs);
-  color: var(--muted);
+  color: var(--color-nav-muted);
 }
 .attention-hub .attention-value {
   grid-column: 1/-1;
   margin: 0;
   padding-top: var(--space-lg);
-  border-top: 1px solid var(--hairline);
+  border-top: 1px solid var(--color-forest-rule);
 }
 .overview-bento .distribution-bar {
   display: none;
@@ -97,7 +97,7 @@
 .decision-header h1 {
   grid-column: 2;
   margin: 0;
-  font-family: var(--font-body);
+  font-family: var(--font-editorial);
   font-weight: 400;
   font-size: var(--text-3xl);
 }
@@ -124,8 +124,8 @@
   position: sticky;
   top: 0;
   z-index: 4;
-  background: var(--surface);
-  border-bottom: 1px solid var(--hairline);
+  background: var(--color-paper);
+  border-bottom: 1px solid var(--color-rule);
   margin-bottom: var(--space-lg);
 }
 .case-nav a {
@@ -133,12 +133,12 @@
   align-items: center;
   min-height: 48px;
   font-size: var(--text-xs);
-  color: var(--ink-2);
+  color: var(--color-ink-2);
   border-bottom: 2px solid transparent;
 }
 .case-nav a:hover {
-  color: var(--accent);
-  border-color: var(--accent);
+  color: var(--color-accent);
+  border-color: var(--color-accent);
 }
 #case-decision,
 #evidence,
@@ -176,7 +176,7 @@
   gap: var(--space-xs);
 }
 .evidence-item {
-  border: 1px solid var(--hairline);
+  border: 1px solid var(--color-rule);
   border-radius: var(--radius-input);
   min-width: 0;
 }
@@ -201,7 +201,7 @@
 }
 .workspace-audit {
   margin-top: var(--space-lg);
-  border-top: 1px solid var(--hairline);
+  border-top: 1px solid var(--color-rule);
 }
 .workspace-audit > summary {
   padding: var(--space-md) 0;
@@ -308,7 +308,7 @@
   gap: var(--space-sm);
 }
 .case-recorded small {
-  color: var(--muted);
+  color: var(--color-muted);
   font-size: var(--text-xs);
 }
 .case-recorded .status {

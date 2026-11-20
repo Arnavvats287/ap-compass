@@ -1,31 +1,39 @@
 .ops-page {
   --ops-padding: clamp(16px, 1.85vw, 25px);
-  --ops-title: clamp(1.75rem, 2.3vw, 2.25rem);
+  --ops-title: clamp(2rem, 3.6vw, 3.3rem);
 }
 .ops-page .ops-heading {
   margin-bottom: var(--space-lg);
   align-items: end;
 }
 .ops-heading h1 {
-  font: 600 var(--ops-title)/1.16 var(--font-body);
-  letter-spacing: var(--tracking-display);
+  font: 400 var(--ops-title)/1.05 var(--font-editorial);
+  letter-spacing: -0.052em;
   text-wrap: balance;
+}
+.ops-heading h1 em {
+  font-weight: inherit;
+  color: var(--color-page-accent);
+  display: inline-block;
 }
 .ops-page .queue-basis {
   margin-bottom: var(--space-sm);
+}
+.ops-page :is(.button, .filter, .status) {
+  border-radius: var(--radius-pill);
 }
 .ops-heading .button {
   flex: none;
 }
 .header-inner .brand > svg {
-  border-radius: var(--radius-input);
+  border-radius: 12px;
   box-sizing: content-box;
-  padding: var(--space-xs);
-  color: var(--accent);
-  background: var(--accent-tint);
+  padding: 7px;
+  color: var(--color-page-accent);
+  background: var(--color-nav);
 }
 .app-header nav a {
-  border-radius: var(--radius-input);
+  border-radius: var(--radius-pill);
   border: 0;
   min-height: var(--control-height);
 }
@@ -54,9 +62,10 @@
 .ops-card,
 .ops-page :is(.queue-panel, .upload-panel) {
   min-width: 0;
-  border: 1px solid var(--hairline);
+  border: 1px solid var(--color-rule);
   border-radius: var(--radius-bento);
-  background: var(--surface);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-bento);
 }
 .ops-card {
   padding: var(--ops-padding);
@@ -67,7 +76,7 @@
   line-height: 1.2;
 }
 .ops-card > p {
-  color: var(--ink-2);
+  color: var(--color-ink-2);
   margin-top: var(--space-xs);
 }
 .ops-metric {
@@ -79,17 +88,18 @@
   row-gap: var(--space-xs);
   padding: clamp(12px, 1.45vw, 20px);
   text-decoration: none;
-  color: var(--ink);
+  color: var(--color-ink);
   transition:
     transform var(--dur-short) var(--ease-out),
+    box-shadow var(--dur-short),
     border-color var(--dur-short);
 }
 .ops-metric strong {
   grid-row: 1;
   grid-column: 2;
-  font: 600 var(--text-3xl)/1 var(--font-body);
+  font: 650 clamp(1.85rem, 2.6vw, 2.45rem)/1 var(--font-body);
   font-variant-numeric: tabular-nums;
-  letter-spacing: var(--tracking-display);
+  letter-spacing: -0.045em;
 }
 .ops-metric > span:last-child {
   grid-column: 1 / -1;
@@ -101,31 +111,31 @@
   inline-size: 34px;
   block-size: 34px;
   border-radius: var(--radius-pill);
-  background: var(--canvas);
+  background: var(--color-paper-2);
 }
 .ops-metric.ready .ops-metric-icon {
-  background: var(--ready-tint);
-  color: var(--ready-text);
+  background: var(--color-ready-bg);
+  color: var(--color-ready);
 }
 .ops-metric.review .ops-metric-icon {
-  background: var(--review-tint);
-  color: var(--review-text);
+  background: var(--color-review-bg);
+  color: var(--color-review);
 }
 .ops-metric.blocked .ops-metric-icon {
-  background: var(--blocked-tint);
-  color: var(--blocked-text);
+  background: var(--color-blocked-bg);
+  color: var(--color-blocked);
 }
 .ops-metric-arrow {
   grid-row: 1;
   grid-column: 3;
   align-self: start;
-  color: var(--muted);
+  color: var(--color-muted);
 }
 @media (hover: hover) and (pointer: fine) {
   a.ops-metric:hover {
-    transform: translateY(-1px);
-
-    border-color: var(--hairline);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-bento-hover);
+    border-color: var(--color-strong-rule);
   }
 }
 a.ops-metric:active {
@@ -133,9 +143,9 @@ a.ops-metric:active {
 }
 .ops-spotlight {
   grid-area: spotlight;
-  color: var(--ink);
-  background: var(--surface);
-  border-color: var(--hairline);
+  color: var(--color-ink);
+  background: var(--surface-spotlight);
+  border-color: var(--color-spotlight-rule);
 }
 .ops-spotlight-intro {
   display: flex;
@@ -146,21 +156,21 @@ a.ops-metric:active {
 }
 .ops-spotlight h2 {
   margin-block: var(--space-xs);
-  font: 600 var(--text-2xl)/1.2 var(--font-body);
-  letter-spacing: var(--tracking-display);
+  font: 400 clamp(1.85rem, 2.85vw, 3rem)/1.02 var(--font-editorial);
+  letter-spacing: -0.045em;
 }
 .ops-kicker {
   display: inline-flex;
   gap: var(--space-xs);
   align-items: center;
-  color: var(--muted);
-  font-weight: 600;
+  color: var(--color-accent);
+  font-weight: 650;
   font-size: var(--text-xs);
 }
 .ops-spotlight p,
 .ops-spotlight-footer,
 .ops-priority dt {
-  color: var(--ink-2);
+  color: var(--color-ink-2);
 }
 .ops-signal {
   flex: none;
@@ -168,15 +178,20 @@ a.ops-metric:active {
   place-items: center;
   min-width: 1.4em;
   min-height: 1.4em;
-  padding-inline: var(--space-xs);
-  border: 1px solid var(--hairline);
-  border-radius: var(--radius-card);
-  background: var(--surface);
-  color: var(--ink);
-  font-size: var(--text-3xl);
-  font-weight: 600;
+  padding-inline: 0.28em;
+  border: 1px solid var(--color-spotlight-rule);
+  border-radius: var(--radius-pill);
+  background: radial-gradient(
+    circle,
+    var(--surface-spotlight-signal) 0 54%,
+    var(--color-spotlight-rule) 55% 56%,
+    var(--surface-spotlight) 57%
+  );
+  color: var(--color-accent);
+  font-size: clamp(2.125rem, 4.4vw, 4.1rem);
+  font-weight: 650;
   line-height: 1;
-  letter-spacing: var(--tracking-display);
+  letter-spacing: -0.045em;
   font-variant-numeric: tabular-nums;
 }
 .ops-priority {
@@ -184,8 +199,8 @@ a.ops-metric:active {
   gap: var(--space-xs);
   justify-items: start;
   padding: clamp(14px, 2vw, 24px);
-  background: var(--surface);
-  border: 1px solid var(--hairline);
+  background: var(--surface-spotlight-inset);
+  border: 1px solid var(--color-spotlight-rule);
   border-radius: var(--radius-nested);
   overflow-wrap: anywhere;
 }
@@ -199,12 +214,12 @@ a.ops-metric:active {
 }
 .ops-priority-meta > .amount {
   font-size: var(--text-xl);
-  font-weight: 600;
+  font-weight: 650;
   max-width: 100%;
 }
 .ops-priority-meta > .amount small {
   margin-inline-start: var(--space-xs);
-  color: var(--ink-2);
+  color: var(--color-ink-2);
   font-size: var(--text-xs);
   font-weight: 400;
 }
@@ -216,15 +231,15 @@ a.ops-metric:active {
   border-radius: var(--radius-pill);
   border: 1px solid currentColor;
   font-size: var(--text-xs);
-  font-weight: 600;
+  font-weight: 650;
 }
 .ops-flag.is-blocked {
-  color: var(--blocked-text);
-  background: var(--blocked-tint);
+  color: var(--color-blocked);
+  background: var(--color-blocked-bg);
 }
 .ops-flag.is-review {
-  color: var(--review-text);
-  background: var(--review-tint);
+  color: var(--color-review);
+  background: var(--color-review-bg);
 }
 .ops-priority h3 {
   font-size: var(--text-xl);
@@ -251,17 +266,17 @@ a.ops-metric:active {
   margin-top: var(--space-2xs);
   padding-inline: var(--space-md);
   border: 1px solid transparent;
-  border-radius: var(--radius-input);
-  background: var(--ink);
-  color: var(--surface);
-  font-weight: 600;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+  font-weight: 700;
   text-decoration: none;
   transition:
     background-color var(--dur-short),
     transform var(--dur-short) var(--ease-out);
 }
 .ops-spotlight-action:hover {
-  background: var(--primary-hover);
+  background: var(--color-accent-hover);
 }
 .ops-spotlight-action:active {
   transform: scale(0.98);
@@ -291,7 +306,7 @@ a.ops-metric:active {
   list-style: none;
 }
 .ops-spotlight-footer li {
-  border-bottom: 1px solid var(--hairline);
+  border-bottom: 1px solid var(--color-spotlight-rule);
 }
 .ops-spotlight-footer a {
   min-height: var(--control-height);
@@ -301,7 +316,7 @@ a.ops-metric:active {
   justify-content: space-between;
   gap: var(--space-md);
   text-decoration: none;
-  color: var(--ink);
+  color: var(--color-ink);
 }
 .ops-spotlight-footer a:hover strong {
   text-decoration: underline;
@@ -316,20 +331,20 @@ a.ops-metric:active {
   overflow-wrap: anywhere;
 }
 .ops-spotlight-footer small {
-  color: var(--ink-2);
+  color: var(--color-ink-2);
   font-size: inherit;
 }
 .ops-distribution {
   grid-area: distribution;
-  background: var(--surface);
+  background: var(--surface-distribution);
   display: flex;
   flex-direction: column;
 }
 .ops-figure {
   margin-top: var(--space-lg);
-  font-size: var(--text-figure);
-  font-weight: 600;
-  letter-spacing: var(--tracking-display);
+  font-size: clamp(2.25rem, 3.8vw, 3.8rem);
+  font-weight: 650;
+  letter-spacing: -0.06em;
   line-height: 1;
 }
 .ops-figure,
@@ -339,13 +354,13 @@ a.ops-metric:active {
 }
 .ops-figure-label {
   margin-top: var(--space-xs);
-  color: var(--ink-2);
+  color: var(--color-ink-2);
 }
 .ops-outcome-bar {
   display: flex;
   inline-size: 100%;
   block-size: 14px;
-  border-radius: var(--radius-input);
+  border-radius: var(--radius-pill);
   overflow: hidden;
   margin-block: var(--space-lg) var(--space-xs);
 }
@@ -355,15 +370,15 @@ a.ops-metric:active {
 }
 .ops-outcome-bar .ready,
 .ops-outcome-list .ready {
-  background: var(--ready-dot);
+  background: var(--signal-ready);
 }
 .ops-outcome-bar .review,
 .ops-outcome-list .review {
-  background: var(--review-dot);
+  background: var(--signal-review);
 }
 .ops-outcome-bar .blocked,
 .ops-outcome-list .blocked {
-  background: var(--blocked-dot);
+  background: var(--signal-blocked);
 }
 .ops-outcome-list li,
 .ops-execution a {
@@ -381,22 +396,22 @@ a.ops-metric:active {
 .ops-outcome-list i {
   width: 10px;
   height: 10px;
-  border-radius: 50%;
+  border-radius: var(--radius-pill);
 }
 .ops-execution {
-  border-top: 1px solid var(--hairline);
+  border-top: 1px solid var(--color-rule);
   padding-top: var(--space-md);
 }
 .ops-outcome-list {
   padding-bottom: var(--space-lg);
 }
 .ops-execution h3 {
-  color: var(--ink-2);
+  color: var(--color-ink-2);
   font-size: var(--text-xs);
 }
 .ops-execution a {
   min-height: var(--control-height);
-  color: var(--ink);
+  color: var(--color-ink);
   text-decoration: none;
 }
 .ops-execution a:hover {
@@ -419,7 +434,7 @@ a.ops-metric:active {
 .ops-chart-empty {
   padding: var(--space-md);
   border-radius: var(--radius-nested);
-  background: var(--canvas);
+  background: var(--color-paper-2);
 }
 .ops-vendors {
   grid-area: vendors;
@@ -441,7 +456,7 @@ a.ops-metric:active {
 }
 .dashboard-table :is(th, td) {
   padding: 10px 8px;
-  border-bottom: 1px solid var(--hairline);
+  border-bottom: 1px solid var(--color-rule);
   vertical-align: middle;
   overflow-wrap: anywhere;
 }
@@ -467,8 +482,8 @@ a.ops-metric:active {
   border: 0;
 }
 .dashboard-table thead {
-  background: var(--canvas);
-  color: var(--ink-2);
+  background: var(--color-paper-2);
+  color: var(--color-ink-2);
   font-size: var(--text-xs);
 }
 .dashboard-table th:first-child {
@@ -492,15 +507,15 @@ a.ops-metric:active {
   border-bottom: 0;
 }
 .dashboard-table tbody tr:hover {
-  background: var(--surface);
+  background: var(--surface-sage);
 }
 .dashboard-table tbody th {
   background: transparent;
-  color: var(--ink);
-  font-weight: 600;
+  color: var(--color-ink);
+  font-weight: 650;
 }
 .dashboard-table a {
-  color: var(--accent);
+  color: var(--color-accent);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -511,27 +526,23 @@ a.ops-metric:active {
   min-width: 32px;
   min-height: 32px;
   border-radius: var(--radius-pill);
-  font-weight: 600;
+  font-weight: 650;
 }
 .dashboard-table .dashboard-count.review {
-  background: var(--review-tint);
-  color: var(--review-text);
+  background: var(--color-review-bg);
+  color: var(--color-review);
 }
 .dashboard-table .dashboard-count.blocked {
-  background: var(--blocked-tint);
-  color: var(--blocked-text);
+  background: var(--color-blocked-bg);
+  color: var(--color-blocked);
 }
 .dashboard-amount,
 .dashboard-meta {
   display: block;
 }
-.dashboard-table :is(td:not(:first-child), .dashboard-amount) {
-  color: var(--ink);
-  font-variant-numeric: tabular-nums;
-}
 .dashboard-amount small,
 .ops-card .dashboard-meta {
-  color: var(--muted);
+  color: var(--color-muted);
   font-size: var(--text-xs);
   font-weight: 400;
 }
@@ -549,7 +560,7 @@ a.ops-metric:active {
   align-items: baseline;
   gap: var(--space-sm);
   padding: 10px 0;
-  border-bottom: 1px solid var(--hairline);
+  border-bottom: 1px solid var(--color-rule);
   font-variant-numeric: tabular-nums;
 }
 .dashboard-findings li > span {
@@ -565,7 +576,7 @@ a.ops-metric:active {
   padding: var(--ops-padding);
 }
 .ops-support .upload-panel:not(.compact) .upload-heading h2 {
-  font-family: var(--font-body);
+  font-family: var(--font-editorial);
   font-size: var(--text-2xl);
 }
 .ops-support .upload-panel:not(.compact) .drop-copy {
@@ -576,8 +587,8 @@ a.ops-metric:active {
   justify-self: start;
 }
 .ops-support .upload-panel.dragging {
-  background: var(--surface);
-  border-color: var(--accent);
+  background: var(--surface-sage);
+  border-color: var(--color-accent);
 }
 .ops-support .drop-copy {
   border-radius: var(--radius-nested);
@@ -597,11 +608,11 @@ a.ops-metric:active {
   align-items: baseline;
   gap: var(--space-xs);
   padding-block: var(--space-xs);
-  border-top: 1px solid var(--hairline);
+  border-top: 1px solid var(--color-rule);
 }
 .ops-flagged dd {
   font-size: var(--text-xl);
-  font-weight: 600;
+  font-weight: 650;
   margin: 0;
   overflow-wrap: anywhere;
 }
@@ -618,7 +629,7 @@ a.ops-metric:active {
   gap: var(--space-sm);
 }
 .ops-queue-controls .search-input {
-  border-radius: var(--radius-input);
+  border-radius: var(--radius-pill);
 }
 .ops-queue-controls .search-input input {
   min-width: 0;
@@ -630,18 +641,18 @@ a.ops-metric:active {
 .ops-sort {
   display: grid;
   gap: var(--space-2xs);
-  color: var(--ink-2);
+  color: var(--color-ink-2);
   font-size: var(--text-xs);
 }
 .ops-sort select {
   min-height: var(--control-height);
   padding: 0 var(--space-sm);
-  color: var(--ink);
+  color: var(--color-ink);
   font: inherit;
   font-size: var(--text-sm);
-  border: 1px solid var(--hairline);
-  border-radius: var(--radius-input);
-  background-color: var(--surface);
+  border: 1px solid var(--color-strong-rule);
+  border-radius: var(--radius-pill);
+  background-color: var(--color-surface);
 }
 .ops-vendor-filter {
   display: flex;
@@ -655,11 +666,11 @@ a.ops-metric:active {
   border: 1px solid transparent;
 }
 .ops-queue .filter.selected {
-  background: var(--accent-tint);
-  color: var(--accent);
+  background: var(--color-nav);
+  color: var(--color-nav-text);
 }
 .ops-queue .table-scroll tbody tr:focus-within {
-  background: var(--canvas);
+  background: var(--surface-sage);
 }
 .ops-queue .table-scroll tbody td {
   padding-block: var(--space-sm);
@@ -668,14 +679,15 @@ a.ops-metric:active {
   text-underline-offset: 3px;
 }
 .ops-queue .table-scroll .amount {
-  font-weight: 600;
+  font-weight: 650;
 }
 .ops-loading > p {
-  color: var(--muted);
+  color: var(--color-page-muted);
   margin-bottom: var(--space-sm);
 }
 .ops-loading .ops-card {
-  background: var(--surface);
+  background: var(--color-paper-2);
+  box-shadow: none;
 }
 .ops-loading-grid {
   display: grid;

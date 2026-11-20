@@ -12,7 +12,9 @@ export default function Overview() {
     <div className="ops-page ops-overview">
       <div className="page-heading ops-heading">
         <div>
-          <h1>Invoice operations at a glance</h1>
+          <h1>
+            Invoice operations <em>at a glance</em>
+          </h1>
           <p>See what’s ready, what needs attention, and what happens next.</p>
         </div>
         <Link className="button primary" to="/runs/upload">

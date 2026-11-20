@@ -33,7 +33,7 @@ export default function FinancialOverview({
           const amounts = Object.entries(projection.by_currency)
           return (
             <section className={'financial-card financial-' + key} key={key} aria-label={title}>
-              <h3 className={key === 'submitted' ? undefined : 'financial-status'}>
+              <h3>
                 <Icon size={17} aria-hidden="true" />
                 {title}
               </h3>

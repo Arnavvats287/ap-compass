@@ -32,9 +32,9 @@
   top: var(--space-md);
   z-index: 4;
   padding: 8px;
-  border: 1px solid var(--hairline);
+  border: 1px solid var(--color-rule);
   border-radius: var(--radius-nested);
-  background: var(--surface);
+  background: var(--surface-sage);
 }
 
 .overview-sidebar ul {
@@ -55,12 +55,14 @@
   border: 0;
   border-radius: var(--radius-signature);
   background: transparent;
-  color: var(--ink-2);
+  color: var(--color-ink-2);
   text-align: start;
   font: inherit;
   font-size: 0.875rem;
   cursor: pointer;
-  transition: background-color var(--dur-micro);
+  transition:
+    background-color var(--dur-micro),
+    box-shadow var(--dur-micro);
 }
 
 .overview-section-link svg {
@@ -68,12 +70,13 @@
 }
 
 .overview-section-link:hover {
-  background: var(--canvas);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
 }
 
 .overview-section-link[aria-current='true'] {
-  background: var(--accent-tint);
-  color: var(--accent);
+  background: var(--color-nav);
+  color: var(--color-nav-text);
 }
 
 .overview-sidebar[data-collapsed='true'] :is(.invoice-sidebar-heading, .overview-section-link) {
@@ -96,11 +99,11 @@ html:has(.overview-focus[open]) {
   max-width: none;
   max-height: calc(100dvh - 32px);
   padding: 0;
-  border: 1px solid var(--hairline);
+  border: 1px solid var(--color-rule);
   border-radius: var(--radius-bento);
-  background: var(--surface);
-  color: var(--ink);
-
+  background: var(--color-surface);
+  color: var(--color-ink);
+  box-shadow: var(--shadow-bento);
   overscroll-behavior: contain;
 }
 
@@ -109,12 +112,12 @@ html:has(.overview-focus[open]) {
 }
 
 .overview-focus[open] {
-  animation: overview-focus-in var(--dur-short) var(--ease-out) both;
+  animation: overview-focus-in 320ms var(--ease-out) both;
 }
 
 .overview-focus::backdrop {
-  background: var(--veil);
-
+  background: var(--color-veil);
+  backdrop-filter: blur(7px);
   animation: overview-backdrop-in 260ms ease-out both;
 }
 
@@ -124,18 +127,19 @@ html:has(.overview-focus[open]) {
   z-index: 2;
   display: flex;
   justify-content: flex-end;
-  background: var(--surface);
+  background: var(--color-surface);
   padding: 6px 10px 0;
 }
 
 .overview-focus[data-section='distribution'] .overview-focus-toolbar {
-  background: var(--surface);
+  background: var(--surface-canvas);
 }
 
 .overview-focus > :is(.ops-card, .queue-panel) {
   margin: 0;
   border: none;
   border-radius: 0;
+  box-shadow: none;
 }
 
 .overview-focus > .ops-card {
@@ -164,7 +168,7 @@ html:has(.overview-focus[open]) {
 
 .ops-ring-total .ops-figure {
   margin: 0;
-  font-size: var(--text-figure);
+  font-size: 3rem;
 }
 
 .ops-ring-total .ops-figure-label {
@@ -180,15 +184,15 @@ html:has(.overview-focus[open]) {
 }
 
 .decision-ring .ready {
-  stroke: var(--ready-dot);
+  stroke: var(--signal-ready);
 }
 
 .decision-ring .review {
-  stroke: var(--review-dot);
+  stroke: var(--signal-review);
 }
 
 .decision-ring .blocked {
-  stroke: var(--blocked-dot);
+  stroke: var(--signal-blocked);
 }
 
 .decision-ring-static {
@@ -250,7 +254,7 @@ html:has(.overview-focus[open]) {
 
 @media (max-width: 480px) {
   .overview-focus .dashboard-table thead th {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
   }
 }
 

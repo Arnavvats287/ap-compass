@@ -93,11 +93,7 @@ function stageContext(stage: Stage, run?: Run) {
   if (stage.name === 'matching_records')
     return (
       <p>
-        Printed PO{' '}
-        <strong className={invoice?.po_reference ? 'invoice-reference' : undefined}>
-          {invoice?.po_reference || 'Not supplied'}
-        </strong>{' '}
-        ·{' '}
+        Printed PO <strong>{invoice?.po_reference || 'Not supplied'}</strong> ·{' '}
         {run.candidates.length
           ? 'Recorded candidates: ' + run.candidates.map((candidate) => candidate.po.id).join(', ')
           : 'No recorded candidates'}

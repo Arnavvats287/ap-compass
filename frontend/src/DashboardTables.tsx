@@ -124,7 +124,7 @@ export function ProcurementCapacity({ rows }: { rows: Dashboard['procurement_cap
               <th scope="row">
                 {row.vendor_name}
                 <small className="dashboard-meta">
-                  <span className="invoice-reference">{row.po_id}</span> · {row.currency}
+                  {row.po_id} · {row.currency}
                   {row.status !== 'OPEN' && ' · ' + row.status}
                 </small>
               </th>

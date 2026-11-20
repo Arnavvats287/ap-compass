@@ -273,11 +273,7 @@ export function RunTable({ runs }: { runs: RunSummary[] }) {
             >
               <td>
                 <Link className="invoice-link" to={`/runs/${run.id}`}>
-                  {run.invoice_number ? (
-                    <span className="invoice-reference">{run.invoice_number}</span>
-                  ) : (
-                    `Invoice ${run.id.slice(0, 8)}`
-                  )}
+                  {run.invoice_number || `Invoice ${run.id.slice(0, 8)}`}
                 </Link>
                 <span className="table-secondary">
                   {run.vendor_name || 'Supplier pending extraction'}

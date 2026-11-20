@@ -35,9 +35,9 @@
   min-height: 44px;
   padding: 6px 10px;
   border: 1px solid transparent;
-  border-radius: var(--radius-input);
+  border-radius: var(--radius-pill);
   background: transparent;
-  color: var(--ink);
+  color: var(--color-ink);
   text-align: start;
   cursor: pointer;
   transition:
@@ -46,19 +46,19 @@
 }
 
 .operations-decision[data-outcome='attention'] {
-  background: var(--surface);
-  border-color: var(--hairline);
-  color: var(--accent);
+  background: var(--surface-sage);
+  border-color: var(--color-rule);
+  color: var(--color-accent);
 }
 
 .operations-decision[data-outcome='blocked'] svg {
-  color: var(--blocked-text);
+  color: var(--color-blocked);
 }
 .operations-decision[data-outcome='review'] svg {
-  color: var(--review-text);
+  color: var(--color-review);
 }
 .operations-decision[data-outcome='ready'] svg {
-  color: var(--ready-text);
+  color: var(--color-ready);
 }
 
 .operations-decision-label {
@@ -77,8 +77,8 @@
 .operations-decision strong {
   min-width: 1.5em;
   padding: 2px 4px;
-  border-radius: var(--radius-input);
-  background: var(--canvas);
+  border-radius: var(--radius-pill);
+  background: var(--color-paper-2);
   font-size: 0.8125rem;
   line-height: 1.3;
   font-variant-numeric: tabular-nums;
@@ -86,26 +86,25 @@
 }
 
 .operations-decision:hover {
-  background: var(--canvas);
+  background: var(--surface-sage);
 }
 
 .operations-decision[data-outcome='attention']:hover {
-  border-color: var(--hairline);
+  border-color: var(--color-strong-rule);
 }
 
 .operations-decision[aria-pressed='true'] {
-  border-color: var(--accent);
-  background: var(--accent-tint);
-  color: var(--accent);
+  border-color: var(--color-accent);
+  background: var(--surface-sage);
 }
 
 .operations-decision[data-outcome='attention'][aria-pressed='true'] {
-  background: var(--accent-tint);
-  color: var(--accent);
+  background: var(--color-nav);
+  color: var(--color-nav-text);
 }
 
 .operations-decision[data-outcome='attention'][aria-pressed='true'] strong {
-  background: var(--surface);
+  background: var(--color-forest-raised);
 }
 
 .operations-decision:focus-visible {
@@ -113,7 +112,7 @@
 }
 
 .operations-decision[data-outcome='attention'][aria-pressed='true']:focus-visible {
-  outline-color: var(--accent);
+  outline-color: var(--color-nav-focus);
 }
 
 @media (min-width: 1280px) {
@@ -153,13 +152,13 @@
 
 .operations-queue-heading h2 {
   margin: 0;
-  font-family: var(--font-body);
+  font-family: var(--font-editorial);
   font-weight: 400;
   font-size: clamp(1.5rem, 2vw, 2rem);
 }
 
 .operations-queue-heading span {
-  color: var(--muted);
+  color: var(--color-muted);
   font-size: 0.875rem;
 }
 
@@ -171,6 +170,12 @@
 
 .ops-queue .operations-filters .filter {
   min-height: 44px;
+}
+.ops-queue .table-scroll tbody tr:has(td:nth-child(3) > .status.blocked) td:first-child {
+  box-shadow: inset 3px 0 var(--signal-blocked);
+}
+.ops-queue .table-scroll tbody tr:has(td:nth-child(3) > .status.review) td:first-child {
+  box-shadow: inset 3px 0 var(--signal-review);
 }
 
 .ops-queue .table-scroll tbody td {
@@ -213,20 +218,19 @@
 .intake-console {
   position: sticky;
   top: 16px;
-  background: var(--surface);
-  color: var(--ink);
-  border: 1px solid var(--hairline);
+  background: var(--color-nav);
+  color: var(--color-nav-text);
 }
 
 .intake-console h2,
 .intake-desk .batch-heading h2 {
-  font: 600 var(--text-xl)/1.2 var(--font-body);
+  font: 400 clamp(1.55rem, 2.3vw, 2.05rem)/1.12 var(--font-editorial);
   letter-spacing: var(--tracking-display);
   margin: 0;
 }
 
 .intake-console :focus-visible {
-  outline-color: var(--accent);
+  outline-color: var(--color-nav-focus);
 }
 
 .intake-console h2[tabindex] {
@@ -234,7 +238,7 @@
 }
 
 .intake-console h2[tabindex]:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: none;
 }
 
 .intake-console h2[tabindex]:focus-visible::before {
@@ -244,7 +248,7 @@
   inset-inline-start: -10px;
   inline-size: 3px;
   border-radius: 3px;
-  background: var(--accent);
+  background: var(--color-brand-on-dark);
 }
 
 .intake-console .batch-drop {
@@ -254,20 +258,20 @@
   margin-top: 18px;
   padding: 17px;
   min-width: 0;
-  border-color: var(--hairline);
-  background: var(--surface);
+  border-color: var(--color-forest-rule);
+  background: var(--color-forest-raised);
 }
 
 .intake-console .batch-drop > svg {
-  color: var(--ink-2);
+  color: var(--color-brand-on-dark);
 }
 .intake-console .batch-drop p,
 .intake-console .intake-note {
-  color: var(--muted);
+  color: var(--color-nav-muted);
 }
 .intake-console .batch-drop.dragging {
-  border-color: var(--accent);
-  background: var(--accent-tint);
+  border-color: var(--color-brand-on-dark);
+  background: var(--color-forest-hover);
 }
 
 .intake-console .batch-actions {
@@ -276,19 +280,12 @@
 }
 
 .intake-console .button.primary {
-  background: var(--ink);
-  color: var(--surface);
-}
-
-.intake-console .button.primary:hover:not(:disabled) {
-  background: var(--primary-hover);
+  background: var(--color-brand-on-dark);
+  color: var(--color-nav);
 }
 
 .intake-console .button.primary:disabled {
-  opacity: 1;
-  background: var(--canvas);
-  color: var(--muted);
-  border-color: var(--hairline);
+  opacity: 0.65;
 }
 .intake-console .button.secondary {
   justify-content: center;
@@ -299,7 +296,7 @@
 .intake-count {
   font-size: clamp(1.18rem, 2vw, 1.5rem);
   font-variant-numeric: tabular-nums;
-  color: var(--muted);
+  color: var(--color-nav-muted);
   margin-top: 10px;
 }
 
@@ -308,20 +305,16 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
   margin: 16px 0;
   padding-block: 13px;
-  border-block: 1px solid var(--hairline);
+  border-block: 1px solid var(--color-forest-rule);
 }
 
 .intake-outcomes > div + div {
-  border-inline-start: 1px solid var(--hairline);
+  border-inline-start: 1px solid var(--color-forest-rule);
   padding-inline-start: 11px;
 }
 
 .intake-outcomes dt {
-  width: fit-content;
-  max-width: 100%;
-  padding: var(--space-2xs) var(--space-xs);
   font-size: 0.875rem;
-  border-radius: var(--radius-pill);
 }
 .intake-outcomes dd {
   font-size: 1.6rem;
@@ -330,30 +323,27 @@
   margin: 2px 0 0;
 }
 .intake-outcomes [data-outcome='READY_FOR_AP'] dt {
-  color: var(--ready-text);
-  background: var(--ready-tint);
+  color: var(--color-mint);
 }
 .intake-outcomes [data-outcome='REVIEW_REQUIRED'] dt {
-  color: var(--review-text);
-  background: var(--review-tint);
+  color: var(--color-forest-review);
 }
 .intake-outcomes [data-outcome='BLOCKED'] dt {
-  color: var(--blocked-text);
-  background: var(--blocked-tint);
+  color: var(--color-forest-blocked);
 }
 
 .intake-desk .batch-heading {
   align-items: baseline;
-  border-bottom: 1px solid var(--hairline);
+  border-bottom: 1px solid var(--color-rule);
   padding-bottom: 14px;
   margin: 0;
 }
 .intake-desk .batch-heading > span {
-  color: var(--muted);
+  color: var(--color-muted);
   font-size: 0.875rem;
 }
 .intake-empty {
-  color: var(--muted);
+  color: var(--color-muted);
   margin: 18px 0 4px;
   max-width: 46ch;
 }
@@ -369,7 +359,7 @@
 }
 .intake-desk .batch-list li[data-phase='uploading'],
 .intake-desk .batch-list li:is([data-state='QUEUED'], [data-state='RUNNING']) {
-  background: var(--surface);
+  background: var(--surface-sage);
 }
 .intake-file-icon {
   display: grid;
@@ -377,8 +367,8 @@
   width: 34px;
   height: 38px;
   border-radius: var(--radius-card);
-  background: var(--surface);
-  color: var(--ink-2);
+  background: var(--surface-sage);
+  color: var(--color-accent);
 }
 .intake-desk .batch-state .text-link {
   text-decoration: underline;
@@ -439,15 +429,20 @@
   .operations-decision-label svg {
     width: 13px;
   }
-
+  .ops-queue .table-scroll tbody tr:has(td:nth-child(3) > .status.blocked) {
+    box-shadow: inset 3px 0 var(--signal-blocked);
+  }
+  .ops-queue .table-scroll tbody tr:has(td:nth-child(3) > .status.review) {
+    box-shadow: inset 3px 0 var(--signal-review);
+  }
   .ops-queue
     .table-scroll
     tbody
     tr:has(td:nth-child(3) > .status:is(.blocked, .review))
-    .ops-queue
-    .table-scroll
-    tbody
-    td {
+    td:first-child {
+    box-shadow: none;
+  }
+  .ops-queue .table-scroll tbody td {
     padding-block: 0;
   }
   .intake-desk .batch-card,

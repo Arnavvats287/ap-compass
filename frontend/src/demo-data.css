@@ -5,19 +5,19 @@
 }
 
 .launch-header .demo-library-trigger {
-  border: 1px solid var(--hairline);
-  border-radius: var(--radius-input);
-  background: var(--surface);
-  color: var(--ink);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-pill);
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
   white-space: nowrap;
 }
 
 .launch-header .demo-library-trigger:hover {
-  background: var(--canvas);
+  background: var(--color-accent-hover);
 }
 
 .launch-header .demo-library-trigger:focus-visible {
-  outline-color: var(--accent);
+  outline-color: var(--color-nav-focus);
   outline-offset: 3px;
 }
 
@@ -35,11 +35,12 @@ html:has(.demo-library[open]) {
   padding: clamp(16px, 4vw, 32px);
   overflow: auto;
   overscroll-behavior: contain;
-  border: 1px solid var(--hairline);
+  border: 1px solid var(--color-rule);
   border-radius: var(--radius-bento);
-  background: var(--surface);
-  color: var(--ink);
+  background: var(--color-surface);
+  color: var(--color-ink);
   text-align: left;
+  box-shadow: var(--shadow-bento);
 }
 
 .demo-library[open] {
@@ -47,7 +48,8 @@ html:has(.demo-library[open]) {
 }
 
 .demo-library::backdrop {
-  background: var(--veil);
+  background: var(--color-veil);
+  backdrop-filter: blur(7px);
 }
 
 .demo-library-header {
@@ -57,14 +59,14 @@ html:has(.demo-library[open]) {
 }
 
 .demo-library-header h2 {
-  font: 600 var(--text-2xl)/1.2 var(--font-body);
+  font: 400 clamp(1.8rem, 5vw, 2.6rem) / 1.1 var(--font-editorial);
   letter-spacing: var(--tracking-display);
 }
 
 .demo-library-header p,
 .demo-library-reference {
   margin-top: 8px;
-  color: var(--ink-2);
+  color: var(--color-ink-2);
   font-size: var(--text-sm);
 }
 
@@ -74,14 +76,14 @@ html:has(.demo-library[open]) {
   width: 44px;
   height: 44px;
   border: none;
-  border-radius: var(--radius-input);
-  background: var(--surface);
-  color: var(--accent);
+  border-radius: var(--radius-pill);
+  background: var(--surface-sage);
+  color: var(--color-accent);
   cursor: pointer;
 }
 
 .demo-library-close:hover {
-  background: var(--canvas);
+  background: var(--color-paper-3);
 }
 
 .demo-library-download {
@@ -89,21 +91,21 @@ html:has(.demo-library[open]) {
 }
 
 .demo-library-collection {
-  border: 1px solid var(--hairline);
+  border: 1px solid var(--color-rule);
   border-radius: var(--radius-nested);
   padding-inline: clamp(12px, 3vw, 20px);
 }
 
 .demo-library-collection summary {
   padding-block: 12px;
-  font-weight: 600;
+  font-weight: 650;
   cursor: pointer;
 }
 
 .demo-library-collection summary small {
   display: inline-block;
   margin-inline-start: 8px;
-  color: var(--muted);
+  color: var(--color-muted);
 }
 
 .demo-library-collection ul {
@@ -118,11 +120,11 @@ html:has(.demo-library[open]) {
   gap: 10px;
   align-items: center;
   padding-block: 11px;
-  border-top: 1px solid var(--hairline);
+  border-top: 1px solid var(--color-rule);
 }
 
 .demo-library-file-icon {
-  color: var(--accent);
+  color: var(--color-accent);
 }
 
 .demo-library-file :is(strong, span, p) {
@@ -131,7 +133,7 @@ html:has(.demo-library[open]) {
 
 .demo-library-file span,
 .demo-library-file p {
-  color: var(--ink-2);
+  color: var(--color-ink-2);
   font-size: var(--text-xs);
   overflow-wrap: anywhere;
 }
@@ -140,14 +142,14 @@ html:has(.demo-library[open]) {
   display: inline-block;
   margin-top: 4px;
   padding: 2px 7px;
-  border-radius: var(--radius-input);
-  background: var(--surface);
-  color: var(--accent);
+  border-radius: var(--radius-pill);
+  background: var(--surface-sage);
+  color: var(--color-accent);
 }
 
 .demo-library-reference strong {
   display: block;
-  color: var(--ink);
+  color: var(--color-ink);
 }
 
 @keyframes demo-library-enter {

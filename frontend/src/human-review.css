@@ -2,9 +2,9 @@
 .human-review {
   padding: var(--space-lg);
   margin-bottom: var(--space-lg);
-  background: var(--surface);
-  border: 1px solid var(--hairline);
-  border-top: var(--space-2xs) solid var(--accent);
+  background: var(--color-surface);
+  border: 1px solid var(--color-strong-rule);
+  border-top: var(--space-2xs) solid var(--color-accent);
   border-radius: var(--radius-signature);
 }
 .human-review p {
@@ -24,7 +24,7 @@
 .demo-identity,
 .review-test-note {
   font-size: var(--text-xs);
-  color: var(--muted);
+  color: var(--color-muted);
 }
 .review-outcomes {
   display: grid;
@@ -33,7 +33,7 @@
   margin-top: var(--space-lg);
 }
 .review-outcomes section {
-  border-top: 1px solid var(--hairline);
+  border-top: 1px solid var(--color-rule);
   padding-top: var(--space-sm);
   min-width: 0;
 }
@@ -45,7 +45,7 @@
   align-items: flex-start;
   gap: var(--space-sm);
   margin-top: var(--space-lg);
-  color: var(--ink);
+  color: var(--color-ink);
 }
 .review-saved svg {
   flex-shrink: 0;
@@ -60,7 +60,7 @@
 .review-action-facts dt,
 .review-provenance dt {
   font-size: var(--text-xs);
-  color: var(--muted);
+  color: var(--color-muted);
 }
 .review-action-facts dd,
 .review-provenance dd {
@@ -85,7 +85,7 @@
 .recorded-assessment-label,
 .queue-basis {
   font-size: var(--text-xs);
-  color: var(--muted);
+  color: var(--color-muted);
   margin-bottom: var(--space-sm);
 }
 .table-reviewed {
@@ -98,13 +98,14 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: var(--space-lg);
-  background: var(--surface);
-  color: var(--ink);
-  border: 1px solid var(--hairline);
+  background: var(--color-paper);
+  color: var(--color-ink);
+  border: 1px solid var(--color-strong-rule);
   border-radius: var(--radius-signature);
+  box-shadow: var(--shadow-interactive);
 }
 .po-review-dialog::backdrop {
-  background: var(--surface);
+  background: var(--color-nav);
   opacity: 0.65;
 }
 .po-review-dialog > .section-heading {
@@ -129,22 +130,22 @@
   align-items: flex-start;
   gap: var(--space-md);
   padding: var(--space-md);
-  border: 1px solid var(--hairline);
+  border: 1px solid var(--color-rule);
   border-radius: var(--radius-card);
-  background: var(--surface);
+  background: var(--color-surface);
   cursor: pointer;
 }
 .po-choice:has(:checked) {
-  border-color: var(--accent);
-  background: var(--accent-tint);
+  border-color: var(--color-accent);
+  background: var(--color-ready-bg);
 }
 .po-choice:has(:focus-visible) {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--color-focus);
   outline-offset: 2px;
 }
 .po-choice input {
   margin-top: var(--space-2xs);
-  accent-color: var(--accent);
+  accent-color: var(--color-accent);
   width: 20px;
   height: 20px;
   flex-shrink: 0;
@@ -156,7 +157,7 @@
   overflow-wrap: anywhere;
 }
 .po-choice small {
-  color: var(--muted);
+  color: var(--color-muted);
   font-size: var(--text-xs);
 }
 .review-field {
@@ -173,10 +174,10 @@
   font: inherit;
   font-size: var(--text-md);
   padding: var(--space-sm);
-  border: 1px solid var(--hairline);
+  border: 1px solid var(--color-strong-rule);
   border-radius: var(--radius-input);
-  background: var(--surface);
-  color: var(--ink);
+  background: var(--color-surface);
+  color: var(--color-ink);
 }
 .review-field textarea {
   resize: vertical;
@@ -191,8 +192,8 @@
 .po-review-dialog [role='alert'] {
   margin-top: var(--space-md);
   padding: var(--space-sm);
-  border: 1px solid var(--hairline);
-  color: var(--ink-2);
+  border: 1px solid var(--color-blocked);
+  color: var(--color-blocked);
 }
 @media (max-width: 600px) {
   .human-review {

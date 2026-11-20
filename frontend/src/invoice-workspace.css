@@ -21,8 +21,8 @@
   min-width: 0;
   padding: 8px;
   border-radius: var(--radius-nested);
-  background: var(--surface);
-  border: 1px solid var(--hairline);
+  background: var(--surface-sage);
+  border: 1px solid var(--color-rule);
   z-index: 4;
 }
 
@@ -33,7 +33,7 @@
   gap: 4px;
   padding-inline: 5px 0;
   margin-bottom: 6px;
-  color: var(--muted);
+  color: var(--color-muted);
   font-size: 0.85rem;
   font-weight: 600;
 }
@@ -47,7 +47,7 @@
   height: 44px;
   border: 0;
   border-radius: var(--radius-signature);
-  color: var(--accent);
+  color: var(--color-accent);
   background: transparent;
   cursor: pointer;
   transition:
@@ -57,7 +57,7 @@
 
 .invoice-sidebar-toggle:hover,
 .evidence-arrows button:hover:not(:disabled) {
-  background: var(--canvas);
+  background: var(--color-paper-3);
 }
 
 .invoice-sidebar ul {
@@ -79,13 +79,14 @@
   min-height: 44px;
   padding-inline: 12px 8px;
   border-radius: var(--radius-signature);
-  color: var(--ink-2);
+  color: var(--color-ink-2);
   font-size: 0.875rem;
   text-decoration: none;
   white-space: nowrap;
   transition:
     background-color var(--dur-micro),
-    transform var(--dur-micro);
+    transform var(--dur-micro),
+    box-shadow var(--dur-micro);
 }
 
 .invoice-sidebar li a svg {
@@ -93,12 +94,13 @@
 }
 
 .invoice-sidebar li a:hover {
-  background: var(--canvas);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
 }
 
 .invoice-sidebar li a[aria-current] {
-  background: var(--accent-tint);
-  color: var(--accent);
+  background: var(--color-nav);
+  color: var(--color-nav-text);
 }
 
 .invoice-sidebar li a:focus-visible {
@@ -136,36 +138,38 @@
   margin-inline: var(--content-inset);
 }
 
-/* Workspace section titles and audit records use the shared neutral palette. */
+/* These labels sit on the canvas. Evidence cards and focused panels keep their light surfaces. */
 .workspace-breadcrumb > :is(a:first-child, .quiet),
-.invoice-content
-  :is(
-    .invoice-evidence > h2,
-    .invoice-run-details > .section-heading h2,
-    .invoice-run-details > details > summary,
-    .invoice-run-details .diagnostics dd
-  ) {
-  color: var(--ink);
+.invoice-content :is(.invoice-evidence > h2, .invoice-run-details > .section-heading h2,
+  .invoice-run-details > details > summary, .invoice-run-details .diagnostics dd) {
+  color: var(--color-page-text);
 }
 
 .workspace-breadcrumb > .quiet:hover {
-  background: var(--accent-tint);
+  background: var(--color-nav-selected);
 }
 
-.invoice-content
-  :is(
-    .invoice-evidence > p,
-    .evidence-toolbar,
-    .recorded-assessment-label,
-    .invoice-demo-label,
-    .invoice-run-details .diagnostics dt,
-    .invoice-run-details .run-provenance
-  ) {
-  color: var(--muted);
+.invoice-content :is(.invoice-evidence > p, .evidence-toolbar, .recorded-assessment-label,
+  .invoice-demo-label, .invoice-run-details .diagnostics dt, .invoice-run-details .run-provenance) {
+  color: var(--color-page-muted);
 }
 
 .invoice-content :is(.invoice-run-details, .invoice-evidence, .invoice-run-details > details) {
-  border-color: var(--hairline);
+  border-color: var(--color-page-rule);
+}
+
+.invoice-content .workspace-audit,
+.invoice-content .workspace-audit .finding-disclosure summary::after,
+.invoice-content .workspace-audit :is(
+  .workspace-section > p:not(.review-note),
+  .finding-group-heading,
+  .disclosure-content,
+  .finding-values dt,
+  .reason-code,
+  .po-record .section-heading span,
+  .po-record p
+) {
+  color: var(--color-page-text);
 }
 
 .invoice-content > [id],
@@ -182,9 +186,8 @@
   min-width: 0;
   padding: clamp(18px, 2.25vw, 30px);
   border-radius: var(--workspace-radius);
-  background: var(--surface);
-  color: var(--ink);
-  border: 1px solid var(--hairline);
+  background: linear-gradient(110deg, var(--color-nav), var(--color-forest-raised));
+  color: var(--color-nav-text);
 }
 
 .invoice-hero-outcome {
@@ -196,28 +199,28 @@
 
 .invoice-hero-outcome > span:first-child:not(.status),
 .invoice-hero-amount > span {
-  color: var(--muted);
+  color: var(--color-nav-muted);
   font-size: 0.875rem;
 }
 
 .invoice-hero .invoice-policy-applied {
-  color: var(--ink-2);
-  background: var(--surface);
+  color: var(--color-ink-2);
+  background: var(--color-paper);
   padding: 4px 9px;
-  border-radius: var(--radius-input);
+  border-radius: var(--radius-pill);
   font-size: var(--text-xs);
 }
 
 .invoice-hero h1 {
   margin: 10px 0 2px;
-  font: 600 clamp(1.5rem, 2.1vw, 2rem)/1.2 var(--font-body);
+  font: 400 clamp(1.95rem, 3vw, 3rem)/1.06 var(--font-editorial);
   letter-spacing: var(--tracking-display);
   overflow-wrap: anywhere;
 }
 
 .invoice-hero .invoice-identity,
 .invoice-hero .invoice-meta {
-  color: var(--muted);
+  color: var(--color-nav-muted);
 }
 
 .invoice-hero .invoice-meta {
@@ -226,12 +229,12 @@
 }
 
 .invoice-hero .invoice-meta strong {
-  color: var(--ink);
+  color: var(--color-nav-text);
   overflow-wrap: anywhere;
 }
 
 .invoice-hero-amount {
-  border-left: 1px solid var(--hairline);
+  border-left: 1px solid var(--color-forest-rule);
   padding-left: clamp(16px, 2vw, 32px);
   text-align: right;
 }
@@ -239,7 +242,7 @@
 .invoice-hero-amount strong {
   display: block;
   margin-top: 4px;
-  font-size: var(--text-2xl);
+  font-size: clamp(1.7rem, 2.75vw, 2.9rem);
   line-height: 1.12;
   overflow-wrap: anywhere;
 }
@@ -260,10 +263,11 @@
 .invoice-workspace .decision-brief {
   border-radius: var(--radius-nested);
   padding: clamp(16px, 1.75vw, 24px);
+  box-shadow: var(--shadow-bento);
 }
 
 .invoice-workspace .decision-brief h2 {
-  font: 600 var(--text-xl)/1.2 var(--font-body);
+  font: 400 clamp(1.62rem, 2vw, 2.12rem)/1.12 var(--font-editorial);
   letter-spacing: -0.018em;
 }
 
@@ -278,7 +282,7 @@
   top: 16px;
   padding: 12px;
   border-radius: var(--radius-nested);
-  background: var(--surface);
+  background: var(--surface-canvas);
 }
 
 .invoice-workspace .document-panel .section-heading {
@@ -294,7 +298,7 @@
 .invoice-workspace .document-panel iframe {
   display: block;
   height: clamp(340px, 48vh, 500px);
-  border-radius: var(--radius-card);
+  border-radius: 8px;
 }
 
 .invoice-workspace .document-panel a {
@@ -310,11 +314,7 @@
   min-width: 0;
   margin-top: clamp(28px, 3vw, 44px);
   padding-top: clamp(18px, 2.4vw, 30px);
-  border-top: 1px solid var(--hairline);
-  padding: var(--space-md);
-  border: 1px solid var(--hairline);
-  border-radius: var(--radius-card);
-  background: var(--surface);
+  border-top: 1px solid var(--color-rule);
 }
 
 .decision-column .invoice-evidence {
@@ -330,13 +330,13 @@
 
 .invoice-evidence > h2,
 .invoice-run-details h2 {
-  font: 600 var(--text-xl)/1.2 var(--font-body);
+  font: 400 clamp(1.65rem, 2.4vw, 2.2rem)/1.12 var(--font-editorial);
   letter-spacing: var(--tracking-display);
 }
 
 .invoice-evidence > p {
   margin-top: 6px;
-  color: var(--ink-2);
+  color: var(--color-ink-2);
 }
 
 .evidence-toolbar {
@@ -344,7 +344,7 @@
   justify-content: space-between;
   align-items: center;
   margin-top: 10px;
-  color: var(--muted);
+  color: var(--color-muted);
   font-size: 0.875rem;
 }
 
@@ -354,8 +354,8 @@
 }
 
 .evidence-arrows button {
-  border: 1px solid var(--hairline);
-  background: var(--surface);
+  border: 1px solid var(--color-rule);
+  background: var(--color-surface);
 }
 
 .evidence-arrows button:disabled {
@@ -372,7 +372,7 @@
   overscroll-behavior-inline: contain;
   scroll-snap-type: x proximity;
   padding: 4px 4px 8px;
-  scrollbar-color: var(--hairline) transparent;
+  scrollbar-color: var(--color-strong-rule) transparent;
   scrollbar-width: thin;
 }
 
@@ -385,20 +385,22 @@
   min-height: 84px;
   padding: 9px 10px;
   font-size: var(--text-sm);
-  border: 1px solid var(--hairline);
+  border: 1px solid var(--color-rule);
   border-radius: var(--radius-nested);
   text-align: left;
-  color: var(--ink);
-  background: var(--surface);
+  color: var(--color-ink);
+  background: var(--color-surface);
   cursor: pointer;
   transition:
     transform var(--dur-micro),
-    background-color var(--dur-micro);
+    background-color var(--dur-micro),
+    box-shadow var(--dur-micro);
 }
 
 .evidence-tile[aria-pressed='true'] {
-  border-color: var(--accent);
-  background: var(--surface);
+  border-color: var(--color-accent);
+  background: var(--surface-sage);
+  box-shadow: inset 0 0 0 1px var(--color-accent);
 }
 
 .evidence-tile:focus-visible {
@@ -406,14 +408,11 @@
 }
 
 .evidence-tile-state {
-  display: inline-flex;
+  display: flex;
   gap: 5px;
   align-items: center;
   font-size: 0.8rem;
-  font-weight: 600;
-  justify-self: start;
-  padding: var(--space-2xs) var(--space-xs);
-  border-radius: var(--radius-pill);
+  font-weight: 650;
 }
 
 .evidence-tile-state svg {
@@ -421,20 +420,17 @@
 }
 
 .evidence-tile-state.is-ready {
-  color: var(--ready-text);
-  background: var(--ready-tint);
+  color: var(--color-ready);
 }
 .evidence-tile-state.is-review {
-  color: var(--review-text);
-  background: var(--review-tint);
+  color: var(--color-review);
 }
 .evidence-tile-state.is-missing {
-  color: var(--ink-2);
-  background: var(--canvas);
+  color: var(--color-ink-2);
 }
 
 .evidence-tile-value {
-  color: var(--ink-2);
+  color: var(--color-ink-2);
   font-variant-numeric: tabular-nums;
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -448,9 +444,8 @@
   gap: var(--space-md);
   padding: clamp(12px, 1.5vw, 18px);
   border-radius: var(--radius-nested);
-  background: var(--surface);
+  background: var(--surface-canvas);
   overflow-wrap: anywhere;
-  border: 1px solid var(--hairline);
 }
 
 .evidence-inspection h3 {
@@ -463,13 +458,13 @@
 }
 
 .evidence-inspection-quote blockquote {
-  border-left: 1px solid var(--hairline);
+  border-left: 2px solid var(--color-strong-rule);
   padding-left: 12px;
   white-space: pre-wrap;
 }
 
 .evidence-inspection-quote .reason-code {
-  color: var(--muted);
+  color: var(--color-muted);
 }
 
 .invoice-workspace .completed-trace {
@@ -484,19 +479,22 @@
   display: inline-flex;
   gap: 6px;
   align-items: center;
-  color: var(--muted);
+  color: var(--color-muted);
   font-size: 0.875rem;
 }
 
 .invoice-run-details .run-provenance {
   margin: 10px 0;
-  color: var(--ink-2);
+  color: var(--color-ink-2);
 }
 
 @media (hover: hover) {
   .invoice-sidebar li a:hover,
   .evidence-tile:hover {
     transform: translateY(-2px);
+  }
+  .evidence-tile:hover {
+    box-shadow: var(--shadow-interactive);
   }
 }
 
@@ -529,7 +527,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    color: var(--ink-2);
+    color: var(--color-ink-2);
   }
   .invoice-mobile-jump span {
     flex: none;
@@ -539,10 +537,10 @@
     flex: 1;
     min-height: 44px;
     padding-inline: 10px;
-    border: 1px solid var(--hairline);
-    border-radius: var(--radius-input);
-    color: var(--ink);
-    background: var(--surface);
+    border: 1px solid var(--color-strong-rule);
+    border-radius: 9px;
+    color: var(--color-ink);
+    background: var(--color-surface);
     font-size: 1rem;
   }
   .invoice-content > [id],
@@ -570,7 +568,7 @@
     margin-left: auto;
     padding-inline: 8px;
     border-radius: var(--radius-signature);
-    background: var(--surface);
+    background: var(--surface-sage);
   }
   .invoice-hero {
     grid-template-columns: minmax(0, 1fr);
@@ -583,7 +581,7 @@
     justify-content: space-between;
     gap: 4px 12px;
     border-left: 0;
-    border-top: 1px solid var(--hairline);
+    border-top: 1px solid var(--color-forest-rule);
     padding: 10px 0 0;
     text-align: left;
   }
