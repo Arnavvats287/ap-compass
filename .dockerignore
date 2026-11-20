@@ -18,6 +18,7 @@ evaluation
 tests
 backend/tests
 *.zip
+!frontend/public/demo-data/ap-compass-demo-invoices.zip
 **/*.pem
 **/*.key
 **/credentials*.json

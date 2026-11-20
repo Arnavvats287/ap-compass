@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowUpRight, Files, FileText, LoaderCircle, Upload, X } fro
 import { Link } from 'react-router-dom'
 import { api } from './api'
 import { Status } from './components'
+import DemoDataLibrary from './DemoDataLibrary'
 import { fileSize, toleranceLabel, words } from './format'
 import { active } from './queries'
 import type { ExecutionState, Outcome, PriceTolerance } from './types'
@@ -369,6 +370,7 @@ export default function BatchUpload({ launch = false }: { launch?: boolean }) {
             <p className="launch-description">
               Check invoices against purchase orders and see what needs review before payment.
             </p>
+            <DemoDataLibrary />
           </header>
         )}
         <section
