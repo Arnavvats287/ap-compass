@@ -99,8 +99,8 @@
 }
 
 .invoice-sidebar li a[aria-current] {
-  background: var(--color-nav);
-  color: var(--color-nav-text);
+  background: var(--color-nav-selected);
+  color: var(--color-accent-hover);
 }
 
 .invoice-sidebar li a:focus-visible {
@@ -140,8 +140,13 @@
 
 /* These labels sit on the canvas. Evidence cards and focused panels keep their light surfaces. */
 .workspace-breadcrumb > :is(a:first-child, .quiet),
-.invoice-content :is(.invoice-evidence > h2, .invoice-run-details > .section-heading h2,
-  .invoice-run-details > details > summary, .invoice-run-details .diagnostics dd) {
+.invoice-content
+  :is(
+    .invoice-evidence > h2,
+    .invoice-run-details > .section-heading h2,
+    .invoice-run-details > details > summary,
+    .invoice-run-details .diagnostics dd
+  ) {
   color: var(--color-page-text);
 }
 
@@ -149,8 +154,15 @@
   background: var(--color-nav-selected);
 }
 
-.invoice-content :is(.invoice-evidence > p, .evidence-toolbar, .recorded-assessment-label,
-  .invoice-demo-label, .invoice-run-details .diagnostics dt, .invoice-run-details .run-provenance) {
+.invoice-content
+  :is(
+    .invoice-evidence > p,
+    .evidence-toolbar,
+    .recorded-assessment-label,
+    .invoice-demo-label,
+    .invoice-run-details .diagnostics dt,
+    .invoice-run-details .run-provenance
+  ) {
   color: var(--color-page-muted);
 }
 
@@ -160,15 +172,17 @@
 
 .invoice-content .workspace-audit,
 .invoice-content .workspace-audit .finding-disclosure summary::after,
-.invoice-content .workspace-audit :is(
-  .workspace-section > p:not(.review-note),
-  .finding-group-heading,
-  .disclosure-content,
-  .finding-values dt,
-  .reason-code,
-  .po-record .section-heading span,
-  .po-record p
-) {
+.invoice-content
+  .workspace-audit
+  :is(
+    .workspace-section > p:not(.review-note),
+    .finding-group-heading,
+    .disclosure-content,
+    .finding-values dt,
+    .reason-code,
+    .po-record .section-heading span,
+    .po-record p
+  ) {
   color: var(--color-page-text);
 }
 
@@ -186,7 +200,8 @@
   min-width: 0;
   padding: clamp(18px, 2.25vw, 30px);
   border-radius: var(--workspace-radius);
-  background: linear-gradient(110deg, var(--color-nav), var(--color-forest-raised));
+  background: var(--color-surface);
+  border: 1px solid var(--color-rule);
   color: var(--color-nav-text);
 }
 

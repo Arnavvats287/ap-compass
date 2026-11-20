@@ -13,7 +13,7 @@
 }
 .ops-heading h1 em {
   font-weight: inherit;
-  color: var(--color-page-accent);
+  color: inherit;
   display: inline-block;
 }
 .ops-page .queue-basis {
@@ -181,12 +181,7 @@ a.ops-metric:active {
   padding-inline: 0.28em;
   border: 1px solid var(--color-spotlight-rule);
   border-radius: var(--radius-pill);
-  background: radial-gradient(
-    circle,
-    var(--surface-spotlight-signal) 0 54%,
-    var(--color-spotlight-rule) 55% 56%,
-    var(--surface-spotlight) 57%
-  );
+  background: var(--surface-spotlight-signal);
   color: var(--color-accent);
   font-size: clamp(2.125rem, 4.4vw, 4.1rem);
   font-weight: 650;

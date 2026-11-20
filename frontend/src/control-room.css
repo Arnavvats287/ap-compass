@@ -5,7 +5,7 @@
 
 /* Quiet application chrome; contrast is reserved for the working surfaces. */
 .app-header {
-  background: var(--color-page);
+  background: var(--color-surface);
   color: var(--color-page-text);
   border-bottom: 1px solid var(--color-page-rule);
 }
@@ -21,13 +21,10 @@
 .app-header nav a {
   color: var(--color-page-accent);
 }
-.app-header nav a.active {
-  background: var(--color-accent);
-  color: var(--color-accent-ink);
-}
+.app-header nav a.active,
 .app-header nav a:hover {
-  background: var(--color-accent-hover);
-  color: var(--color-accent-ink);
+  background: var(--color-nav-selected);
+  color: var(--color-accent-hover);
 }
 .app-header :focus-visible {
   outline-color: var(--color-nav-focus);
@@ -262,7 +259,7 @@
 .tolerance-options label:has(:checked) {
   background: transparent;
   border: 0;
-  color: var(--color-nav);
+  color: var(--color-accent-ink);
 }
 .tolerance-options label:has(:focus-visible) {
   outline-color: var(--color-citrus);

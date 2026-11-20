@@ -75,8 +75,8 @@
 }
 
 .overview-section-link[aria-current='true'] {
-  background: var(--color-nav);
-  color: var(--color-nav-text);
+  background: var(--color-nav-selected);
+  color: var(--color-accent-hover);
 }
 
 .overview-sidebar[data-collapsed='true'] :is(.invoice-sidebar-heading, .overview-section-link) {

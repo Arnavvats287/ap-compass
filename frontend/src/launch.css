@@ -1,16 +1,16 @@
 .app-shell:has(> .launch-header) {
-  --launch-canvas: var(--color-page, #101010);
-  --launch-text: var(--color-page-text, #f5f5f5);
-  --launch-muted: var(--color-page-muted, #c6c6c6);
-  --launch-highlight: var(--color-page-accent, #ffab73);
-  --launch-rule: var(--color-page-rule, #363636);
-  --launch-action: #b14912;
-  --launch-action-hover: #8d3509;
+  --launch-canvas: var(--color-page);
+  --launch-text: var(--color-page-text);
+  --launch-muted: var(--color-page-muted);
+  --launch-highlight: var(--color-page-accent);
+  --launch-rule: var(--color-page-rule);
+  --launch-action: var(--color-accent);
+  --launch-action-hover: var(--color-accent-hover);
   background: var(--launch-canvas);
 }
 
 .launch-header {
-  background: var(--launch-canvas);
+  background: var(--color-surface);
   border-bottom-color: var(--launch-rule);
 }
 
@@ -28,18 +28,18 @@
 }
 
 .launch-header nav a:hover {
-  background: var(--launch-action-hover);
-  color: var(--color-accent-ink);
+  background: var(--color-nav-selected);
+  color: var(--launch-action-hover);
 }
 
 .launch-header .demo-library-trigger {
-  border-color: var(--launch-action);
-  background: var(--launch-action);
-  color: var(--color-accent-ink);
+  border-color: var(--color-rule);
+  background: var(--color-surface);
+  color: var(--launch-action);
 }
 
 .launch-header .demo-library-trigger:hover {
-  background: var(--launch-action-hover);
+  background: var(--color-nav-selected);
 }
 
 .launch-header :focus-visible,
@@ -94,7 +94,7 @@
 }
 
 .launch-intro h1 span + span {
-  color: var(--launch-highlight);
+  color: inherit;
 }
 
 .launch-description {
@@ -119,9 +119,9 @@
   padding: clamp(18px, 2.65vw, 34px);
   border: 1px solid var(--color-rule);
   border-radius: var(--radius-bento);
-  background: #fcf9f4;
+  background: var(--color-surface);
   color: var(--color-ink);
-  box-shadow: 0 18px 50px rgb(0 0 0 / 24%);
+  box-shadow: var(--shadow-card);
 }
 
 .launch-intake .intake-console-heading {
@@ -129,12 +129,14 @@
 }
 
 .launch-intake .intake-console[data-started='false'] {
-  transition: border-color var(--dur-short), box-shadow var(--dur-short);
+  transition:
+    border-color var(--dur-short),
+    box-shadow var(--dur-short);
 }
 
 .launch-intake .intake-console[data-dragging='true'] {
   border-color: var(--launch-action);
-  box-shadow: 0 0 0 3px #ffd3b5;
+  box-shadow: 0 0 0 3px var(--color-nav-selected);
 }
 
 .launch-intake .intake-console :focus-visible {
@@ -174,14 +176,14 @@
   gap: var(--space-sm);
   padding: clamp(16px, 2.4vw, 26px);
   margin: 0 0 var(--space-md);
-  border: 1px dashed #c5a892;
+  border: 1px dashed var(--color-strong-rule);
   border-radius: var(--radius-nested);
   background: var(--color-surface);
 }
 
 .launch-intake .intake-console .batch-drop.dragging {
   border-color: var(--launch-action);
-  background: #fff0e3;
+  background: var(--color-nav-selected);
 }
 
 .launch-intake .batch-drop > svg {
@@ -294,7 +296,7 @@
 }
 
 .launch-intake .intake-file-icon {
-  background: #fff0e3;
+  background: var(--color-nav-selected);
   color: var(--launch-action);
 }
 
