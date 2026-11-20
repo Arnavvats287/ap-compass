@@ -5,14 +5,12 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   ScanLine,
-  SlidersHorizontal,
   Workflow,
 } from 'lucide-react'
 import { useLocation } from 'react-router-dom'
 
 const sections = [
   { id: 'case-decision', label: 'Decision summary', Icon: ClipboardList },
-  { id: 'case-policy', label: 'Policy impact', Icon: SlidersHorizontal },
   { id: 'evidence', label: 'Source evidence', Icon: FileSearch },
   { id: 'case-trace', label: 'Decision journey', Icon: Workflow },
   { id: 'case-details', label: 'Run details', Icon: ScanLine },
@@ -28,12 +26,11 @@ export default function WorkspaceNavigation({
   const { hash } = useLocation()
   const [collapsed, setCollapsed] = useState(false)
   const [active, setActive] = useState<string>('case-decision')
-  const available = sections.filter(
-    ({ id }) => (id !== 'case-policy' || hasDecision) && (id !== 'evidence' || hasEvidence),
-  )
+  const available = sections.filter(({ id }) => id !== 'evidence' || hasEvidence)
 
   useEffect(() => {
-    const destination = hash && document.getElementById(hash.slice(1))
+    const target = hash === '#case-policy' ? 'case-decision' : hash.slice(1)
+    const destination = target && document.getElementById(target)
     if (destination) destination.scrollIntoView?.()
   }, [hash, hasEvidence, hasDecision])
 

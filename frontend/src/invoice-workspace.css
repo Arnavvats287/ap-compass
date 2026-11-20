@@ -135,7 +135,6 @@
 }
 
 .invoice-content > [id],
-.invoice-workspace #case-policy,
 .invoice-workspace #source-document,
 .invoice-workspace #case-trace {
   scroll-margin-top: 20px;
@@ -164,6 +163,14 @@
 .invoice-hero-amount > span {
   color: var(--color-nav-muted);
   font-size: 0.875rem;
+}
+
+.invoice-hero .invoice-policy-applied {
+  color: var(--color-ink-2);
+  background: var(--color-paper);
+  padding: 4px 9px;
+  border-radius: var(--radius-pill);
+  font-size: var(--text-xs);
 }
 
 .invoice-hero h1 {
@@ -229,24 +236,6 @@
 .invoice-workspace .comparison-primary .amount,
 .invoice-workspace .comparison-context .amount {
   overflow-wrap: anywhere;
-}
-
-.invoice-workspace #case-policy {
-  margin-top: 14px;
-}
-
-.invoice-workspace .policy-impact {
-  margin: 0;
-  border-radius: var(--radius-nested);
-}
-
-.invoice-workspace .policy-impact > summary,
-.invoice-workspace .policy-compare {
-  gap: 10px;
-}
-
-.invoice-workspace .policy-compare > section {
-  padding: var(--space-md);
 }
 
 .invoice-workspace .document-panel {
@@ -505,7 +494,6 @@
     font-size: 1rem;
   }
   .invoice-content > [id],
-  .invoice-workspace #case-policy,
   .invoice-workspace #source-document,
   .invoice-workspace #case-trace {
     scroll-margin-top: 66px;
@@ -519,15 +507,6 @@
   }
   .invoice-workspace .document-panel {
     position: static;
-  }
-  .invoice-workspace .policy-compare {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-@container (max-width: 460px) {
-  .invoice-workspace .policy-compare {
-    grid-template-columns: minmax(0, 1fr);
   }
 }
 

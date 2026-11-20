@@ -379,7 +379,11 @@ describe('connected operations views', () => {
     )
     expect(api.run).toHaveBeenCalledTimes(1)
     expect(document.querySelector('#case-trace')).not.toBeNull()
-    expect(document.querySelector('#case-policy')).not.toBeNull()
+    expect(nav.queryByRole('link', { name: 'Policy impact' })).not.toBeInTheDocument()
+    expect(document.querySelector('#case-policy')).toBeNull()
+    for (const link of nav.getAllByRole('link')) {
+      expect(document.querySelector(link.getAttribute('href')!)).toBeInTheDocument()
+    }
   })
   it('renders unknown future findings using supplied business content', () => {
     renderPage(

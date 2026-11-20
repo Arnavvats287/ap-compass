@@ -14,10 +14,9 @@ import { useEffect, useState } from 'react'
 import { ApiError, api } from './api'
 import { active, useRun } from './queries'
 import { ErrorState, Loading, Status, statusInfo } from './components'
-import { date, elapsed, money, unknown, words } from './format'
+import { date, elapsed, money, toleranceLabel, unknown, words } from './format'
 import DecisionTrace, { stageLabels } from './DecisionTrace'
 import { ExceptionValues, FindingValues } from './FindingValues'
-import PolicyImpact from './PolicyImpact'
 import HumanPOReview from './HumanPOReview'
 export { StageTimeline } from './DecisionTrace'
 import EvidenceList from './EvidenceRail'
@@ -304,6 +303,7 @@ export default function Workspace() {
   if (!run) return null
   const invoice = run.extracted_invoice
   const page = sourcePage?.runId === run.id ? sourcePage.number : undefined
+  const appliedTolerance = run.policy_snapshot?.price_tolerance_pct
   const sourceUrl = api.documentUrl(run.id)
   const pending = active(run.execution_state)
   const failed =
@@ -356,6 +356,13 @@ export default function Workspace() {
               <div className="invoice-hero-outcome">
                 {run.decision && <span>Recorded decision</span>}
                 <Status state={run.execution_state} outcome={run.decision?.outcome} />
+                {run.decision && (
+                  <span className="invoice-policy-applied">
+                    {appliedTolerance
+                      ? `Policy applied: ${toleranceLabel(appliedTolerance)} unit-price tolerance`
+                      : 'Applied unit-price tolerance unavailable'}
+                  </span>
+                )}
               </div>
               <h1>
                 {invoice?.vendor_name_raw ||
@@ -438,11 +445,6 @@ export default function Workspace() {
                   <FindingDetails finding={finding} currency={invoice?.currency} />
                 )}
               />
-              {run.decision && (
-                <div id="case-policy" tabIndex={-1}>
-                  <PolicyImpact key={run.id} run={run} />
-                </div>
-              )}
             </div>
             <section
               className="document-panel"

@@ -142,8 +142,7 @@
 }
 #case-decision,
 #evidence,
-#case-trace,
-#case-policy {
+#case-trace {
   scroll-margin-top: var(--space-3xl);
 }
 .document-panel {
@@ -213,16 +212,8 @@
 .workspace-audit:not([open]) > div {
   display: none;
 }
-#case-trace,
-#case-policy {
+#case-trace {
   margin-top: var(--space-xl);
-}
-.policy-compare {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
-}
-.policy-compare > section,
-.policy-compare > section + section {
-  padding: var(--space-xl);
 }
 @media (max-width: 1100px) {
   .attention-hub {
@@ -275,13 +266,6 @@
   }
   .document-panel {
     position: static;
-  }
-  .policy-compare {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  .policy-compare > section,
-  .policy-compare > section + section {
-    padding: var(--space-lg);
   }
 }
 /* Second rendered iteration: tighter case framing, a denser attention plane, readable orbit at laptop width. */
