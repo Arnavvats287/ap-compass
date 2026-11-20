@@ -21,6 +21,10 @@ function fieldName(field: string) {
   )
 }
 
+function isIdentifier(field: string) {
+  return field === 'invoice_number' || field === 'po_reference'
+}
+
 const states = {
   NATIVE_VERIFIED: { label: 'Source verified', tone: 'ready', Icon: ShieldCheck },
   SOURCE_LOCATED_UNVERIFIED: { label: 'Source needs review', tone: 'review', Icon: TriangleAlert },
@@ -114,7 +118,15 @@ export default function EvidenceList({
                 {label}
               </span>
               <strong>{fieldName(item.field)}</strong>
-              <span className="evidence-tile-value">{item.normalized_value ?? unknown}</span>
+              <span
+                className={
+                  isIdentifier(item.field)
+                    ? 'evidence-tile-value invoice-reference'
+                    : 'evidence-tile-value'
+                }
+              >
+                {item.normalized_value ?? unknown}
+              </span>
             </button>
           )
         })}
@@ -122,7 +134,9 @@ export default function EvidenceList({
       <div className="evidence-inspection" id={id} aria-label={fieldName(ref.field)} role="region">
         <div className="evidence-inspection-meta">
           <h3>{fieldName(ref.field)}</h3>
-          <p>{ref.normalized_value ?? unknown}</p>
+          <p className={isIdentifier(ref.field) ? 'invoice-reference' : undefined}>
+            {ref.normalized_value ?? unknown}
+          </p>
           {ref.page && onShowPage ? (
             <button
               className="button secondary"

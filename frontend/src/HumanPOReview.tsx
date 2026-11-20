@@ -270,7 +270,7 @@ export default function HumanPOReview({
                     required
                   />
                   <span>
-                    <strong>{candidate.po.id}</strong>
+                    <strong className="invoice-reference">{candidate.po.id}</strong>
                     <span>
                       {data.canonical_vendor_name} · {candidate.po.vendor_id}
                     </span>

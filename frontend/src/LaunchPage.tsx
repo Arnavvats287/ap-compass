@@ -10,7 +10,7 @@ export default function LaunchPage() {
   return (
     <div className="launch-page">
       <header className="launch-intro">
-        <p className="launch-eyebrow">ACCOUNTS PAYABLE / REVIEW WORKSPACE</p>
+        <p className="launch-eyebrow">Accounts payable review workspace</p>
         <h1>
           <span>Understand the invoice.</span> <span>Verify the decision.</span>
         </h1>

@@ -87,7 +87,12 @@ function Spotlight({
           <h3>{finding?.title ?? reasonLabel(priority.primary_reason_code)}</h3>
           <p>
             {priority.vendor_name ?? 'Supplier unavailable'}
-            {priority.invoice_number && ' · ' + priority.invoice_number}
+            {priority.invoice_number && (
+              <>
+                {' '}
+                · <span className="invoice-reference">{priority.invoice_number}</span>
+              </>
+            )}
           </p>
           <dl>
             <div>

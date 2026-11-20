@@ -13,27 +13,34 @@
 .financial-card {
   min-width: 0;
   padding: var(--space-md);
-  border: 1px solid var(--color-rule);
+  border: 1px solid var(--hairline);
   border-radius: var(--radius-nested);
-  background: var(--surface-canvas);
-}
-.financial-ready {
-  background: var(--color-ready-bg);
-  color: var(--color-ready);
-}
-.financial-review_required {
-  background: var(--color-review-bg);
-  color: var(--color-review);
-}
-.financial-blocked {
-  background: var(--color-blocked-bg);
-  color: var(--color-blocked);
+  background: var(--surface);
 }
 .financial-card h3 {
   display: flex;
   align-items: center;
   gap: var(--space-xs);
   font-size: var(--text-sm);
+}
+.financial-card .financial-status {
+  width: fit-content;
+  max-width: 100%;
+  border-radius: var(--radius-pill);
+  padding: var(--space-2xs) var(--space-xs);
+  font-size: var(--text-xs);
+}
+.financial-ready .financial-status {
+  background: var(--ready-tint);
+  color: var(--ready-text);
+}
+.financial-review_required .financial-status {
+  background: var(--review-tint);
+  color: var(--review-text);
+}
+.financial-blocked .financial-status {
+  background: var(--blocked-tint);
+  color: var(--blocked-text);
 }
 .financial-card h3 svg {
   flex: none;
@@ -47,18 +54,18 @@
 .financial-card dl > div + div {
   margin-top: var(--space-xs);
   padding-top: var(--space-xs);
-  border-top: 1px solid var(--color-rule);
+  border-top: 1px solid var(--hairline);
 }
 .financial-card dt,
 .financial-card small,
 .financial-card p {
-  color: var(--color-ink-2);
+  color: var(--ink-2);
   font-size: var(--text-xs);
 }
 .financial-card dd {
   margin: 0;
   font-size: clamp(1.2rem, 2.35vw, var(--text-3xl));
-  font-weight: 650;
+  font-weight: 600;
   letter-spacing: var(--tracking-display);
 }
 .financial-card small,
@@ -75,11 +82,11 @@
   --journey-line-time: 235ms;
   margin-block: var(--space-lg);
   padding: clamp(16px, 3vw, 36px);
-  border: 1px solid var(--color-rule);
+  border: 1px solid var(--hairline);
   border-radius: var(--radius-bento);
-  background: var(--surface-canvas);
-  color: var(--color-ink);
-  box-shadow: var(--shadow-bento);
+  background: var(--surface);
+  color: var(--ink);
+
   scroll-margin-block-start: 6rem;
 }
 .journey-heading {
@@ -91,16 +98,16 @@
   margin-bottom: var(--space-lg);
 }
 .journey-heading h2 {
-  font: 400 clamp(1.65rem, 3vw, 2.5rem)/1.13 var(--font-editorial);
+  font: 600 var(--text-2xl)/1.2 var(--font-body);
   letter-spacing: var(--tracking-display);
 }
 .journey-heading p {
   margin-top: var(--space-2xs);
-  color: var(--color-ink-2);
+  color: var(--ink-2);
   font-size: var(--text-xs);
 }
 .journey-heading .button {
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-input);
 }
 .journey-stages {
   list-style: none;
@@ -119,7 +126,7 @@
   inset-block: 22px -22px;
   width: 2px;
   overflow: hidden;
-  background: var(--color-strong-rule);
+  background: var(--hairline);
 }
 .journey-stages:last-child .journey-stage:last-child .journey-connector {
   inset-block-end: -24px;
@@ -127,26 +134,23 @@
 .journey-connector > span {
   display: block;
   height: 100%;
-  background: var(--color-ready);
+  background: var(--ink-2);
   opacity: 0;
   transform-origin: top;
 }
 .journey-stage:is(.stage-passed, .stage-warning, .stage-failed) .journey-connector > span {
   opacity: 1;
 }
-.journey-stage.stage-warning .journey-connector > span {
-  background: var(--color-review);
-}
 .journey-stage.stage-failed .journey-connector > span {
-  background: var(--color-interrupted);
+  background: var(--muted);
 }
 .journey-stage.stage-skipped .journey-connector {
   background: none;
-  border-inline-start: 2px dashed var(--color-strong-rule);
+  border-inline-start: 2px dashed var(--hairline);
 }
 .journey-stage.stage-running .journey-connector > span {
   height: 40%;
-  background: var(--color-processing);
+  background: var(--ink-2);
   opacity: 1;
   animation: journey-live 1.3s linear infinite;
 }
@@ -166,40 +170,40 @@
   place-items: center;
   width: 40px;
   height: 40px;
-  color: var(--color-ink-2);
-  background: var(--color-surface);
-  border: 1px solid var(--color-strong-rule);
+  color: var(--ink-2);
+  background: var(--surface);
+  border: 1px solid var(--hairline);
   border-radius: var(--radius-pill);
 }
 .journey-stage.stage-passed .journey-stage-icon {
-  color: var(--color-ready);
-  background: var(--color-ready-bg);
-  border-color: var(--signal-ready);
+  color: var(--ready-text);
+  background: var(--ready-tint);
+  border-color: var(--ready-dot);
 }
 .journey-stage.stage-running .journey-stage-icon {
-  color: var(--color-processing);
-  background: var(--color-processing-bg);
+  color: var(--ink-2);
+  background: var(--canvas);
   border-color: currentColor;
 }
 .journey-stage.stage-warning .journey-stage-icon {
-  color: var(--color-review);
-  background: var(--color-review-bg);
+  color: var(--review-text);
+  background: var(--review-tint);
 }
 .journey-stage.stage-failed .journey-stage-icon {
-  color: var(--color-interrupted);
-  background: var(--color-interrupted-bg);
+  color: var(--muted);
+  background: var(--canvas);
   border-color: currentColor;
 }
 .journey-node {
   min-width: 0;
-  border: 1px solid var(--color-rule);
+  border: 1px solid var(--hairline);
   border-radius: var(--radius-nested);
-  background: var(--color-surface);
+  background: var(--surface);
 }
 .journey-node[open],
 .journey-stage.stage-running .journey-node {
-  border-color: var(--color-spotlight-rule);
-  background: var(--surface-spotlight-inset);
+  border-color: var(--hairline);
+  background: var(--surface);
 }
 .journey-node summary {
   display: grid;
@@ -217,13 +221,13 @@
   display: none;
 }
 .journey-node summary:hover {
-  background: var(--surface-sage);
+  background: var(--surface);
 }
 .journey-node summary strong {
   overflow-wrap: anywhere;
 }
 .journey-chevron {
-  color: var(--color-muted);
+  color: var(--muted);
   transition: transform var(--dur-short) var(--ease-out);
 }
 .journey-node[open] .journey-chevron {
@@ -231,7 +235,7 @@
 }
 .journey-status,
 .journey-duration {
-  color: var(--color-ink-2);
+  color: var(--ink-2);
   font-size: var(--text-xs);
 }
 .journey-duration {
@@ -239,14 +243,14 @@
   font-variant-numeric: tabular-nums;
 }
 .journey-stage.stage-running .journey-status {
-  color: var(--color-processing);
-  font-weight: 650;
+  color: var(--ink-2);
+  font-weight: 600;
 }
 .journey-details {
   margin-inline: var(--space-md);
   padding-block: var(--space-sm) var(--space-md);
-  border-top: 1px solid var(--color-rule);
-  color: var(--color-ink-2);
+  border-top: 1px solid var(--hairline);
+  color: var(--ink-2);
   overflow-wrap: anywhere;
 }
 .journey-details > * + * {
@@ -269,7 +273,7 @@
 .journey-times dt,
 .journey-owner dt {
   font-size: var(--text-xs);
-  color: var(--color-ink-2);
+  color: var(--ink-2);
 }
 .journey-times dd,
 .journey-owner dd {
@@ -284,21 +288,21 @@
   padding-inline-start: var(--journey-indent);
 }
 .journey-result {
-  --result-ink: var(--color-interrupted);
-  --result-surface: var(--color-interrupted-bg);
+  --result-ink: var(--muted);
+  --result-surface: var(--canvas);
   overflow-wrap: anywhere;
 }
 .journey-ready {
-  --result-ink: var(--color-ready);
-  --result-surface: var(--color-ready-bg);
+  --result-ink: var(--ready-text);
+  --result-surface: var(--ready-tint);
 }
 .journey-review {
-  --result-ink: var(--color-review);
-  --result-surface: var(--color-review-bg);
+  --result-ink: var(--review-text);
+  --result-surface: var(--review-tint);
 }
 .journey-blocked {
-  --result-ink: var(--color-blocked);
-  --result-surface: var(--color-blocked-bg);
+  --result-ink: var(--blocked-text);
+  --result-surface: var(--blocked-tint);
 }
 .journey-result-icon {
   position: absolute;
@@ -321,8 +325,8 @@
 .journey-result-body {
   padding: var(--space-md);
   border-radius: var(--radius-nested);
-  border: 1px solid var(--color-rule);
-  background: var(--result-surface);
+  border: 1px solid var(--hairline);
+  background: var(--surface);
 }
 .journey-result-top {
   display: flex;
@@ -332,9 +336,9 @@
   gap: var(--space-xs);
 }
 .journey-result-top p {
-  color: var(--result-ink);
+  color: var(--ink-2);
   font-size: var(--text-xs);
-  font-weight: 650;
+  font-weight: 600;
 }
 .journey-result h3 {
   font-size: var(--text-xl);
@@ -351,13 +355,13 @@
   display: flex;
   align-items: center;
   gap: var(--space-xs);
-  color: var(--color-ink-2);
+  color: var(--ink-2);
   min-height: 44px;
 }
 .journey-wait > svg {
   position: absolute;
   inset-inline-start: calc(var(--journey-axis) - 9px);
-  background: var(--surface-canvas);
+  background: var(--surface);
   z-index: 1;
 }
 

@@ -251,7 +251,7 @@ function SupportingRecords({ run }: { run: Run }) {
           run.candidates.map((candidate) => (
             <div className="po-record" key={candidate.po.id}>
               <div className="section-heading">
-                <h3>{candidate.po.id}</h3>
+                <h3 className="invoice-reference">{candidate.po.id}</h3>
                 <span>{candidate.po.status}</span>
               </div>
               <dl className="finding-values">
@@ -403,14 +403,21 @@ export default function Workspace() {
                         : 'Supplier not available')}
                 </h1>
                 <p className="invoice-identity">
-                  {invoice?.invoice_number || `Run ${run.id.slice(0, 8)}`}
+                  {invoice?.invoice_number ? (
+                    <span className="invoice-reference">{invoice.invoice_number}</span>
+                  ) : (
+                    `Run ${run.id.slice(0, 8)}`
+                  )}
                 </p>
                 <div className="invoice-meta">
                   <span>
                     Invoice date <strong>{date(invoice?.invoice_date)}</strong>
                   </span>
                   <span>
-                    Purchase order <strong>{invoice?.po_reference ?? unknown}</strong>
+                    Purchase order{' '}
+                    <strong className={invoice?.po_reference ? 'invoice-reference' : undefined}>
+                      {invoice?.po_reference ?? unknown}
+                    </strong>
                   </span>
                 </div>
               </div>

@@ -16,7 +16,7 @@
   gap: var(--space-2xs);
 }
 .export-invoices small {
-  color: var(--color-page-muted);
+  color: var(--muted);
   font-size: var(--text-xs);
 }
 .export-invoices > p {
@@ -27,7 +27,7 @@
   margin-inline: auto;
 }
 .batch-back {
-  color: var(--color-page-text);
+  color: var(--ink);
   margin-bottom: var(--space-lg);
   min-height: var(--control-height);
 }
@@ -36,16 +36,16 @@
   margin-bottom: var(--space-md);
 }
 .batch-heading p {
-  color: var(--color-accent);
-  font-weight: 650;
+  color: var(--ink-2);
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 .batch-drop {
   justify-content: space-between;
   padding: var(--space-md);
-  border: 1px dashed var(--color-strong-rule);
+  border: 1px dashed var(--hairline);
   border-radius: var(--radius-nested);
-  background: var(--surface-canvas);
+  background: var(--surface);
   transition:
     background-color var(--dur-short),
     border-color var(--dur-short);
@@ -53,12 +53,12 @@
 .batch-drop p,
 .batch-file small,
 .batch-actions p {
-  color: var(--color-ink-2);
+  color: var(--ink-2);
   font-size: var(--text-xs);
 }
 .batch-drop.dragging {
-  background: var(--surface-sage);
-  border-color: var(--color-focus);
+  background: var(--surface);
+  border-color: var(--accent);
 }
 .batch-list {
   list-style: none;
@@ -72,10 +72,10 @@
   gap: var(--space-sm);
   min-width: 0;
   padding: var(--space-sm) 0;
-  border-bottom: 1px solid var(--color-rule);
+  border-bottom: 1px solid var(--hairline);
 }
 .batch-list li > svg {
-  color: var(--color-accent);
+  color: var(--ink-2);
 }
 .batch-list li > .icon-button {
   inline-size: var(--control-height);
@@ -101,7 +101,7 @@
   margin-top: var(--space-md);
 }
 .batch-item-error {
-  color: var(--color-blocked);
+  color: var(--ink-2);
   margin-top: var(--space-2xs);
   font-size: var(--text-xs);
 }

@@ -16,7 +16,15 @@ export function FindingValues({
       {finding.values.map((value, index) => (
         <div key={`${value.name}-${index}`}>
           <dt>{valueLabels[value.name] ?? words(value.name)}</dt>
-          <dd className={isMoney(value.name) ? 'amount' : ''}>
+          <dd
+            className={
+              isMoney(value.name)
+                ? 'amount'
+                : value.name === 'po_id'
+                  ? 'invoice-reference'
+                  : undefined
+            }
+          >
             {value.value === null
               ? unknown
               : isMoney(value.name)

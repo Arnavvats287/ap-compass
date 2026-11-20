@@ -5,40 +5,40 @@
 
 /* Quiet application chrome; contrast is reserved for the working surfaces. */
 .app-header {
-  background: var(--color-page);
-  color: var(--color-page-text);
-  border-bottom: 1px solid var(--color-page-rule);
+  background: var(--surface);
+  color: var(--ink);
+  border-bottom: 1px solid var(--hairline);
 }
 .brand {
-  font-family: var(--font-editorial);
-  font-weight: 400;
+  font-family: var(--font-body);
+  font-weight: 600;
   font-size: var(--text-2xl);
 }
 .brand small {
-  color: var(--color-page-muted);
+  color: var(--muted);
   font-family: var(--font-body);
 }
 .app-header nav a {
-  color: var(--color-page-accent);
+  color: var(--ink-2);
 }
 .app-header nav a.active {
-  background: var(--color-accent);
-  color: var(--color-accent-ink);
+  background: var(--accent-tint);
+  color: var(--accent);
 }
 .app-header nav a:hover {
-  background: var(--color-accent-hover);
-  color: var(--color-accent-ink);
+  background: var(--accent-tint);
+  color: var(--accent-hover);
 }
 .app-header :focus-visible {
-  outline-color: var(--color-nav-focus);
+  outline-color: var(--accent);
 }
 .environment-label {
-  color: var(--color-muted);
+  color: var(--muted);
 }
 .page-heading h1 {
-  font-family: var(--font-editorial);
+  font-family: var(--font-body);
   font-size: var(--text-editorial);
-  font-weight: 400;
+  font-weight: 600;
   letter-spacing: var(--tracking-display);
 }
 
@@ -55,11 +55,12 @@
 }
 .attention-hub {
   grid-area: attention;
-  background: var(--color-nav);
-  color: var(--color-nav-text);
+  background: var(--surface);
+  color: var(--ink);
   border-radius: var(--radius-signature);
   padding: var(--space-lg) var(--space-xl);
   min-width: 0;
+  border: 1px solid var(--hairline);
 }
 .attention-heading {
   display: flex;
@@ -68,13 +69,13 @@
   align-items: baseline;
 }
 .attention-heading h2 {
-  font-family: var(--font-editorial);
+  font-family: var(--font-body);
   font-size: var(--text-3xl);
   font-weight: 400;
 }
 .attention-heading > span {
   font-size: var(--text-xs);
-  color: var(--color-nav-muted);
+  color: var(--muted);
 }
 .attention-workload {
   display: grid;
@@ -109,12 +110,12 @@
   transform: translate(2px, -2px);
 }
 .attention-workload .metric {
-  border-bottom: 1px solid var(--color-forest-rule);
+  border-bottom: 1px solid var(--hairline);
   padding-bottom: var(--space-md);
 }
 .attention-workload .metric span,
 .attention-workload .metric svg {
-  color: var(--color-nav-text);
+  color: var(--ink);
 }
 .attention-workload .metric strong {
   font-size: var(--text-attention);
@@ -122,13 +123,13 @@
   letter-spacing: var(--tracking-display);
 }
 .attention-workload .metric.review strong {
-  color: var(--color-forest-review);
+  color: var(--ink);
 }
 .attention-workload .metric.blocked strong {
-  color: var(--color-forest-blocked);
+  color: var(--ink);
 }
 .attention-workload .metric:focus-visible {
-  outline-color: var(--color-brand-on-dark);
+  outline-color: var(--accent);
   outline-offset: var(--space-2xs);
 }
 .attention-hub .attention-value {
@@ -151,7 +152,7 @@
 .attention-hub .flagged-amounts strong {
   font-size: var(--text-3xl);
   font-weight: 500;
-  color: var(--color-citrus);
+  color: var(--ink);
 }
 .attention-hub .attention-value > small {
   margin-top: var(--space-xs);
@@ -159,41 +160,40 @@
 .overview-bento > .upload-panel {
   grid-area: upload;
   padding: var(--space-lg);
-  border: 1px solid var(--color-rule);
+  border: 1px solid var(--hairline);
   border-radius: var(--radius-signature);
-  box-shadow: var(--shadow-card);
 }
 .overview-bento .upload-heading h2 {
-  font-family: var(--font-editorial);
+  font-family: var(--font-body);
   font-size: var(--text-2xl);
   font-weight: 400;
 }
 .overview-bento .drop-copy {
-  border: 1px dashed var(--color-strong-rule);
+  border: 1px dashed var(--hairline);
   padding: var(--space-md);
   border-radius: var(--radius-card);
-  background: var(--color-paper);
+  background: var(--surface);
   margin-top: var(--space-md);
 }
 .overview-bento .drop-copy .button {
   width: 100%;
 }
 .overview-bento > .upload-panel.dragging {
-  background: var(--color-ready-bg);
-  box-shadow: var(--shadow-interactive);
+  background: var(--surface);
+  border-color: var(--accent);
 }
 .supporting-metrics {
   grid-area: support;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  border: 1px solid var(--color-rule);
+  border: 1px solid var(--hairline);
   border-radius: var(--radius-signature);
-  background: var(--color-surface);
+  background: var(--surface);
   padding: var(--space-md);
   gap: var(--space-md);
 }
 .supporting-metrics .metric {
-  border-right: 1px solid var(--color-rule);
+  border-right: 1px solid var(--hairline);
   padding-right: var(--space-sm);
 }
 .supporting-metrics .metric:last-child {
@@ -229,7 +229,7 @@
   gap: 0;
   padding: 0 0 0 var(--space-lg);
   border-top: 0;
-  border-left: 1px solid var(--color-rule);
+  border-left: 1px solid var(--hairline);
   justify-content: center;
 }
 .overview-bento .technical-counts a {
@@ -241,9 +241,9 @@
   isolation: isolate;
   gap: 0;
   padding: var(--space-2xs);
-  border: 1px solid var(--color-forest-rule);
+  border: 1px solid var(--hairline);
   border-radius: var(--radius-card);
-  background: var(--color-forest-raised);
+  background: var(--surface);
   margin-top: var(--space-md);
 }
 .tolerance-options label {
@@ -255,17 +255,17 @@
   border: 0;
   border-radius: var(--radius-input);
   background: transparent;
-  color: var(--color-nav-text);
+  color: var(--ink);
   min-height: var(--control-height);
   font-size: var(--text-lg);
 }
 .tolerance-options label:has(:checked) {
   background: transparent;
   border: 0;
-  color: var(--color-nav);
+  color: var(--accent);
 }
 .tolerance-options label:has(:focus-visible) {
-  outline-color: var(--color-citrus);
+  outline-color: var(--accent);
   outline-offset: var(--space-2xs);
 }
 .tolerance-options input {
@@ -282,7 +282,7 @@
   bottom: var(--space-2xs);
   left: var(--space-2xs);
   width: calc((100% - var(--space-xs)) / 2);
-  background: var(--color-forest-raised);
+  background: var(--surface);
   border-radius: var(--radius-input);
   opacity: 1;
   transform: translateX(0);
@@ -291,30 +291,30 @@
     opacity var(--dur-micro) var(--ease-out);
 }
 .tolerance-options[data-choice='0.02'] .tolerance-thumb {
-  background: var(--color-brand-on-dark);
+  background: var(--accent-tint);
   opacity: 1;
 }
 .tolerance-options[data-choice='0.05'] .tolerance-thumb {
-  background: var(--color-brand-on-dark);
+  background: var(--accent-tint);
   opacity: 1;
   transform: translateX(100%);
 }
 
 /* Execution control room: actual state owns all emphasis and ongoing movement. */
 .processing-panel {
-  background: var(--color-nav);
-  color: var(--color-nav-text);
-  border: 0;
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--hairline);
   border-radius: var(--radius-signature);
   padding: var(--space-xl);
 }
 .processing-panel > h2 {
-  font-family: var(--font-editorial);
+  font-family: var(--font-body);
   font-size: var(--text-3xl);
   font-weight: 400;
 }
 .processing-panel > p {
-  color: var(--color-nav-muted);
+  color: var(--muted);
 }
 .button:hover:not(:disabled) {
   transform: translateY(-1px);
@@ -380,7 +380,7 @@
   }
   .overview-bento .technical-counts {
     border-left: 0;
-    border-top: 1px solid var(--color-rule);
+    border-top: 1px solid var(--hairline);
     padding: var(--space-sm) 0 0;
     flex-direction: row;
     gap: var(--space-lg);
