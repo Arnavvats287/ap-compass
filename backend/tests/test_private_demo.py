@@ -113,7 +113,9 @@ def test_concurrent_admission_keeps_reads_and_review_writes_available(tmp_path, 
             historical = complete(app)
             async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url=ORIGIN, auth=private,
                                          headers={"Origin": ORIGIN}) as client:
-                responses = await asyncio.gather(*(upload(client) for _ in range(7)))
+                raw = (ROOT / "tests/fixtures/HAPPY_CLEAN.pdf").read_bytes()
+                responses = await asyncio.gather(*(upload(client, data=raw + b"\n" * index)
+                                                   for index in range(7)))
                 assert sorted(r.status_code for r in responses) == [202] * 2 + [429] * 5
                 await asyncio.wait_for(slow.entered.wait(), 3)
                 assert slow.calls == 1 and len(app.state.runs.tasks) == 2
@@ -184,7 +186,7 @@ def test_failed_creation_rolls_back_rows_and_discards_only_new_document(tmp_path
                 raise RuntimeError("Private injected storage failure detail")
 
         event.listen(app.state.engine, "before_cursor_execute", fail_stages)
-        failed = client.post("/api/runs", files=upload_data)
+        failed = client.post("/api/runs", files={"file": ("file.pdf", raw + b"\n", "application/pdf")})
         client.portal.call(app.state.runs.idle)
         assert failed.status_code == 503 and "injected" not in failed.text
         assert list((tmp_path / "docs").iterdir()) == [saved] and saved.read_bytes() == raw

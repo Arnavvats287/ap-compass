@@ -19,3 +19,8 @@ def migrate(engine):
             WHEN EXISTS (SELECT 1 FROM review_action WHERE id=NEW.id OR run_id=NEW.run_id)
             BEGIN SELECT RAISE(ABORT, 'Review actions are append-only'); END"""))
         connection.execute(text('INSERT OR IGNORE INTO schema_migration(version) VALUES (:version)'),{'version':VERSION})
+        columns = {row.name for row in connection.execute(text('PRAGMA table_info(invoice_run)'))}
+        if 'document_sha256' not in columns:
+            connection.execute(text('ALTER TABLE invoice_run ADD COLUMN document_sha256 VARCHAR(64)'))
+        connection.execute(text('CREATE INDEX IF NOT EXISTS ix_invoice_run_document_sha256 ON invoice_run (document_sha256)'))
+        connection.execute(text("INSERT OR IGNORE INTO schema_migration(version) VALUES ('003-upload-fingerprint')"))

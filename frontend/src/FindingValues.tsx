@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { decimal, money, toleranceLabel, unknown, valueLabels, words } from './format'
 import type { Finding } from './types'
 
@@ -17,15 +18,21 @@ export function FindingValues({
         <div key={`${value.name}-${index}`}>
           <dt>{valueLabels[value.name] ?? words(value.name)}</dt>
           <dd className={isMoney(value.name) ? 'amount' : ''}>
-            {value.value === null
-              ? unknown
-              : isMoney(value.name)
-                ? money(value.value, currency)
-                : value.name === 'tolerance_pct'
-                  ? toleranceLabel(value.value)
-                  : value.name.endsWith('_qty') || value.name === 'qty'
-                    ? decimal(value.value)
-                    : value.value}
+            {value.value === null ? (
+              unknown
+            ) : value.name === 'prior_run_id' && finding.code === 'ALREADY_SUBMITTED' ? (
+              <Link className="text-link" to={'/runs/' + encodeURIComponent(value.value)}>
+                Open earlier invoice
+              </Link>
+            ) : isMoney(value.name) ? (
+              money(value.value, currency)
+            ) : value.name === 'tolerance_pct' ? (
+              toleranceLabel(value.value)
+            ) : value.name.endsWith('_qty') || value.name === 'qty' ? (
+              decimal(value.value)
+            ) : (
+              value.value
+            )}
           </dd>
         </div>
       ))}

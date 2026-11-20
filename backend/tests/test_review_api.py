@@ -180,10 +180,15 @@ def test_additive_migration_on_populated_old_database(tmp_path):
     from app.orchestration.repository import RunRepository
     repo=RunRepository(engine); run_id=repo.create('a'*32).id
     before=authority(engine),rows(engine)
+    with engine.begin() as c:
+        c.execute(text('ALTER TABLE invoice_run DROP COLUMN document_sha256'))
     initialize(engine);initialize(engine)
     assert (authority(engine),rows(engine))==before
     with engine.connect() as c:
-        assert c.execute(text('SELECT version FROM schema_migration')).scalars().all()==['002-human-po-review']
+        assert c.execute(text('SELECT version FROM schema_migration ORDER BY version')).scalars().all()==[
+            '002-human-po-review', '003-upload-fingerprint',
+        ]
+        assert c.execute(text('SELECT document_sha256 FROM invoice_run WHERE id=:id'), {'id': run_id}).scalar() is None
         assert c.execute(text('SELECT COUNT(*) FROM review_action')).scalar()==0
     engine.dispose()
 

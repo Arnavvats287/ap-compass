@@ -25,7 +25,7 @@ def submit(client, app, case, tolerance=None):
 
 def test_intake_policy_records_real_price_decisions_without_rewriting_history(tmp_path):
     extractor = Extractor("PRICE_3PCT")
-    # Two analyses of one unposted fixture. Duplicate authority is the unchanged billed ledger.
+    # The second explicit policy still runs, but the known submission requires review.
     extractor.provider = FakeProvider([json.dumps(wire("PRICE_3PCT"))] * 2)
     app = create_app(tmp_path / "runs.db", document_dir=tmp_path / "pdfs", extractor=extractor)
     with TestClient(app) as client:
@@ -36,7 +36,10 @@ def test_intake_policy_records_real_price_decisions_without_rewriting_history(tm
         assert original["policy_snapshot"] == default
         assert original["decision"]["outcome"] == "REVIEW_REQUIRED"
         assert original["decision"]["primary_reason_code"] == "PRICE_VARIANCE"
-        assert relaxed["decision"]["outcome"] == "READY_FOR_AP"
+        assert relaxed["decision"]["outcome"] == "REVIEW_REQUIRED"
+        relaxed_codes = {finding["code"] for finding in relaxed["decision"]["findings"]}
+        assert "PRICE_VARIANCE" not in relaxed_codes
+        assert "ALREADY_SUBMITTED" in relaxed_codes
         assert relaxed["decision"]["policy_version"] == relaxed["policy_snapshot"]["version"]
         assert relaxed["policy_snapshot"]["version"] != default["version"]
         assert relaxed["policy_snapshot"]["price_tolerance_pct"] == "0.05"
@@ -47,16 +50,16 @@ def test_intake_policy_records_real_price_decisions_without_rewriting_history(tm
         assert client.get("/api/runs/" + original["id"]).json() == original
         assert client.get("/api/policy").json() == default
         dash = client.get("/api/dashboard").json()
-        assert (dash["ready"], dash["review_required"], dash["blocked"]) == (1, 1, 0)
+        assert (dash["ready"], dash["review_required"], dash["blocked"]) == (0, 2, 0)
         totals = dash["invoice_gross"]
-        assert Decimal(totals["ready"]["by_currency"]["INR"]) == Decimal("12154")
-        assert Decimal(totals["review_required"]["by_currency"]["INR"]) == Decimal("12154")
+        assert totals["ready"]["by_currency"] == {}
+        assert Decimal(totals["review_required"]["by_currency"]["INR"]) == Decimal("24308")
         assert Decimal(totals["submitted"]["by_currency"]["INR"]) == Decimal("24308")
         assert authority(app.state.engine) == ledger
         sheet = load_workbook(BytesIO(client.get("/api/exports/invoices.xlsx").content))["Invoice Register"]
         assert sheet["O4"].value == "Recorded unit-price tolerance"
         assert {(row[8], row[14]) for row in sheet.iter_rows(min_row=5, values_only=True)} == {
-            ("Needs review", "2%"), ("Ready to process", "5%"),
+            ("Needs review", "2%"), ("Needs review", "5%"),
         }
 
 

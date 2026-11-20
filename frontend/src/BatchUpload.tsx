@@ -19,6 +19,7 @@ type AcceptedRun = {
   state: ExecutionState
   outcome?: Outcome
   errorCode?: string
+  reused?: boolean
 }
 
 type Entry = { key: number; file: File } & (
@@ -104,7 +105,12 @@ function useBatchState() {
           update({ ...base, phase: 'uploading' })
           try {
             const accepted = await api.upload(entry.file)
-            run = { id: accepted.run_id, state: accepted.execution_state }
+            run = {
+              id: accepted.run_id,
+              state: accepted.execution_state,
+              outcome: accepted.outcome ?? undefined,
+              reused: accepted.reused,
+            }
           } catch (error) {
             update({ ...base, phase: 'upload-failed', message: uploadError(error) })
             continue
@@ -118,7 +124,7 @@ function useBatchState() {
           try {
             const snapshot = await api.run(run.id, AbortSignal.timeout(10_000))
             run = {
-              id: run.id,
+              ...run,
               state: snapshot.execution_state,
               outcome: snapshot.decision?.outcome,
               errorCode: snapshot.execution_error_code ?? undefined,
@@ -270,6 +276,9 @@ export default function BatchUpload({ launch = false }: { launch?: boolean }) {
                     )}
                     {entry.phase === 'accepted' && entry.run.errorCode && (
                       <p className="batch-item-error">{words(entry.run.errorCode)}</p>
+                    )}
+                    {entry.phase === 'accepted' && entry.run.reused && (
+                      <small>Already uploaded · using the existing run</small>
                     )}
                   </div>
                   {!started ? (

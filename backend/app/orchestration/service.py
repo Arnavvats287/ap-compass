@@ -1,11 +1,14 @@
 """Coordinate existing adapters and pure engine; no financial or matching rules."""
 import asyncio
 import logging
+from hashlib import sha256
 from time import perf_counter
 
 from app.contracts import EXECUTION_ERROR_CODES, PolicyV1, TimingV1, UsageV1
 from app.documents.types import ExtractionError
 from app.domain import build_context, evaluate
+from app.domain.controls import submitted_duplicate
+from app.domain.decisions import aggregate
 from .policies import with_price_tolerance
 
 logger = logging.getLogger(__name__)
@@ -61,18 +64,26 @@ class RunService:
     def store_run(self, raw, policy):
         document_id = self.documents.write(raw)
         try:
-            return self.repository.create(document_id, policy_snapshot=policy)
+            snapshot = self.repository.create(document_id, policy_snapshot=policy,
+                                              document_sha256=sha256(raw).hexdigest())
         except Exception:
             try:
                 self.documents.discard_uncommitted(document_id)
             except OSError:
                 logger.error("stage=upload_cleanup error=DOCUMENT_CLEANUP_FAILED")
             raise
+        reused = snapshot.document_id != document_id
+        if reused:
+            try:
+                self.documents.discard_uncommitted(document_id)
+            except OSError:
+                logger.error("stage=upload_cleanup error=DOCUMENT_CLEANUP_FAILED")
+        return snapshot, reused
 
     async def accept_and_process(self, raw, ready, policy):
         persistence = asyncio.create_task(asyncio.to_thread(self.store_run, raw, policy))
         try:
-            snapshot = await asyncio.shield(persistence)
+            snapshot, reused = await asyncio.shield(persistence)
         except asyncio.CancelledError:
             # Let the file/DB pair settle before disposal. Startup will interrupt any queued row.
             await asyncio.gather(persistence, return_exceptions=True)
@@ -81,8 +92,9 @@ class RunService:
             logger.error("stage=upload_persistence error=UPLOAD_STORAGE_UNAVAILABLE")
             ready.set_result(None)
             return
-        ready.set_result(snapshot)
-        await self.process(snapshot.id)
+        ready.set_result((snapshot, reused))
+        if not reused:
+            await self.process(snapshot.id)
 
     async def close(self):
         pending = tuple(self.tasks)
@@ -128,6 +140,10 @@ class RunService:
                 began = perf_counter()
                 policy = self.repository.policy(snapshot.policy_snapshot or self.current_policy)
                 decision = evaluate(context, policy)
+                prior_id = self.repository.prior_verified_submission(run_id, context.canonical_vendor,
+                                                                     context.invoice, vendors)
+                if prior_id is not None:
+                    decision = aggregate((*decision.findings, submitted_duplicate(prior_id)), policy)
                 timings.append(TimingV1(name="evaluation", milliseconds=int((perf_counter()-began)*1000)))
                 self.repository.update(run_id, policy_snapshot=policy, timings=tuple(timings),
                     stages={active: "PASSED", "finalizing": "RUNNING"})

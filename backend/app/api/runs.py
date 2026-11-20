@@ -22,6 +22,8 @@ router = APIRouter(prefix="/api")
 class CreatedRun(BaseModel):
     run_id: str
     execution_state: str = "QUEUED"
+    reused: bool = False
+    outcome: str | None = None
 
 
 class RunSummary(BaseModel):
@@ -100,10 +102,12 @@ async def create_run(request: Request, price_tolerance_pct: Literal["0.02", "0.0
         service.release_upload()
         raise
     # A disconnected caller must not cancel an accepted file/row pair or free its slot.
-    snapshot = await asyncio.shield(ready)
-    if snapshot is None:
+    result = await asyncio.shield(ready)
+    if result is None:
         raise HTTPException(503, "Invoice storage is temporarily unavailable; no run was confirmed")
-    return CreatedRun(run_id=snapshot.id)
+    snapshot, reused = result
+    return CreatedRun(run_id=snapshot.id, execution_state=snapshot.execution_state, reused=reused,
+                      outcome=snapshot.decision.outcome if snapshot.decision else None)
 
 
 @router.get("/runs", response_model=list[RunSummary])

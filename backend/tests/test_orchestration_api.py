@@ -144,7 +144,8 @@ def test_live_progress_and_serial_capacity(tmp_path):
             async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
                 first = (await upload(client)).json()["run_id"]
                 await asyncio.wait_for(entered.wait(), 5)
-                second = (await upload(client)).json()["run_id"]
+                second = (await upload(client, data=(ROOT / "tests/fixtures/HAPPY_CLEAN.pdf").read_bytes()
+                                       + b"\n")).json()["run_id"]
                 state = (await client.get("/api/runs/"+first)).json()
                 assert state["execution_state"] == "RUNNING"
                 assert state["stages"][1]["state"] == "RUNNING"
@@ -187,7 +188,9 @@ def test_filename_does_not_choose_storage(tmp_path, filename):
         app = create_app(tmp_path/"db", document_dir=tmp_path/"docs", extractor=extractor)
         async with app.router.lifespan_context(app):
             async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
-                ids = [(await upload(client, filename=filename)).json()["run_id"] for _ in range(2)]
+                raw = (ROOT / "tests/fixtures/HAPPY_CLEAN.pdf").read_bytes()
+                ids = [(await upload(client, filename=filename, data=raw + b"\n" * index)).json()["run_id"]
+                       for index in range(2)]
                 await app.state.runs.idle()
                 documents = [app.state.runs.repository.load(identifier).document_id for identifier in ids]
                 assert len(set(documents)) == 2

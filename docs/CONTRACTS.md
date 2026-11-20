@@ -28,6 +28,8 @@ orchestrator (persisted stages)    document adapter (PyMuPDF/Gemini)
 - `PolicyV1`: immutable snapshot including `price_tolerance_pct` (Decimal, default `0.02`), `require_explicit_po` (true), `amount_rounding_allowance` (`1.00` INR), `commitment_overrun_allowance` (`0.00`), plus version and effective timestamp. Other fixed gates live in the documented domain rules, not component conditions.
 - `FindingV1`: `{code, severity, title, explanation, source_type, evidence_refs[], owner?, next_action?, values?}`; severity `PASS|INFO|REVIEW|BLOCK`, descriptions must be understandable to a nontechnical AP analyst.
 - `DecisionV1`: `{outcome: READY_FOR_AP|REVIEW_REQUIRED|BLOCKED, findings[], primary_reason_code?, next_action?, owner?, policy_version}`; exactly one outcome after a completed analysis.
+- Repeat-upload receipts from `POST /api/runs` can return an existing `run_id` and its current state and outcome with `reused: true`. Exact PDF reuse applies to the same effective policy and skips failed or interrupted runs. The stored SHA-256 stays internal.
+- A separate completed run with the same verified invoice number and approved supplier identity contributes an `ALREADY_SUBMITTED` Review finding with a `prior_run_id`. Confirmed prior billing retains its separate `EXACT_DUPLICATE` Block.
 - `RunSnapshotV1`: `{id, execution_state, decision|null, stages[], extracted_invoice|null, candidates[], document_id, execution_error_code?, source_route?, timings?, usage?, created_at, updated_at}`. Do not mix an incomplete run with a business decision.
 - `RunExecutionState`: `QUEUED|RUNNING|COMPLETED|PROCESSING_FAILED|INTERRUPTED`. `StageState`: `QUEUED|RUNNING|PASSED|WARNING|FAILED|SKIPPED`.
 

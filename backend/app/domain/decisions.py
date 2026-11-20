@@ -80,3 +80,9 @@ def evaluate_with_rules(context: EvaluationContextV1, policy: PolicyV1,
 
 def evaluate(context: EvaluationContextV1, policy: PolicyV1) -> DecisionV1:
     return evaluate_with_rules(context, policy)
+
+
+def preserve_submission_finding(decision: DecisionV1, recorded: DecisionV1, policy: PolicyV1) -> DecisionV1:
+    """Carry the original submission-history finding into a reassessment."""
+    additional = tuple(f for f in recorded.findings if f.code == "ALREADY_SUBMITTED")
+    return aggregate((*decision.findings, *additional), policy) if additional else decision

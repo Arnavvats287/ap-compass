@@ -39,6 +39,26 @@ afterEach(() => {
   vi.unstubAllGlobals()
 })
 
+it('labels an identical PDF and links to its existing completed run', async () => {
+  vi.spyOn(api, 'upload').mockResolvedValue({
+    run_id: 'original',
+    execution_state: 'COMPLETED',
+    reused: true,
+    outcome: 'READY_FOR_AP',
+  })
+  const getRun = vi.spyOn(api, 'run')
+  setup()
+  await choose([pdf('repeat.pdf')])
+  await userEvent.click(start())
+  const row = result('repeat.pdf')
+  expect(await row.findByText('Already uploaded · using the existing run')).toBeInTheDocument()
+  expect(row.getByRole('link', { name: 'Open repeat.pdf' })).toHaveAttribute(
+    'href',
+    '/runs/original',
+  )
+  expect(getRun).not.toHaveBeenCalled()
+})
+
 it('reports intake readiness and submits every file with the server default policy', async () => {
   const upload = vi
     .spyOn(api, 'upload')

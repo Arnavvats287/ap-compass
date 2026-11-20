@@ -13,6 +13,7 @@ from app.contracts import DecisionV1, PolicyV1, RunSnapshotV1, POCandidateV1
 from app.db.models import InvoiceRun, ReviewAction
 from app.domain import build_context
 from app.domain.common import normalized
+from app.domain.decisions import preserve_submission_finding
 from app.domain.human_resolution import POConfirmation, InvalidConfirmation, evaluate_with_confirmed_po
 from .repository import load_authority
 
@@ -114,6 +115,7 @@ class ReviewService:
                 if po_id not in {c.po.id for c in context.candidates}:
                     raise InvalidConfirmation('PO was not a retained deterministic candidate')
                 decision=evaluate_with_confirmed_po(context,snapshot.policy_snapshot,POConfirmation(po_id,rationale))
+                decision=preserve_submission_finding(decision,snapshot.decision,snapshot.policy_snapshot)
                 candidate=next(c for c in context.candidates if c.po.id==po_id)
                 action=ReviewActionSnapshot(id=uuid4().hex,source_run_id=run_id,client_action_id=client_action_id,
                     selected_po_id=po_id,reviewer_label=reviewer_label,rationale=rationale,

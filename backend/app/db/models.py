@@ -60,6 +60,7 @@ class InvoiceRun(Base):
     # Validated RunSnapshotV1 JSON is the versioned analysis boundary.
     # No hooks, relationships, or balance-consumption writes.
     payload: Mapped[dict] = mapped_column(JSON)
+    document_sha256: Mapped[str | None] = mapped_column(String(64))
 
 class RunStage(Base):
     __tablename__ = "run_stage"

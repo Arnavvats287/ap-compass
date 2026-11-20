@@ -92,6 +92,7 @@ export function reasonLabel(code?: string | null): string {
     PO_BALANCE_EXCEEDED: 'PO commitment exceeded',
     PO_QUANTITY_EXCEEDED: 'PO quantity exceeded',
     EXACT_DUPLICATE: 'Previously billed invoice',
+    ALREADY_SUBMITTED: 'Previously submitted invoice',
     SOURCE_EVIDENCE_MISSING: 'Source evidence needs review',
     TOTAL_RECONCILIATION_FAILED: 'Invoice totals do not reconcile',
   }

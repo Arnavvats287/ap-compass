@@ -2,13 +2,16 @@
 from datetime import datetime, timezone
 from uuid import uuid4
 
-from sqlalchemy import select
+from sqlalchemy import select, text
 from sqlalchemy.orm import Session
 
 from app.contracts import (RunSnapshotV1, RunStageV1, PolicyV1, VendorV1,
-                           PurchaseOrderV1, PriorBilledInvoiceV1)
+                           PurchaseOrderV1, PriorBilledInvoiceV1, ExtractedInvoiceV1)
 from app.db.models import (InvoiceRun, RunStage, PolicySnapshot, Vendor,
                            PurchaseOrder, PriorBilledInvoice, ReviewAction)
+from app.domain.controls import verified_invoice_number
+from app.domain.common import normalized
+from app.domain.matching import resolve_vendor
 
 def load_authority(session):
     return tuple(tuple(contract.model_validate(row.payload) for row in session.scalars(select(model).order_by(model.id)))
@@ -27,12 +30,23 @@ class RunRepository:
     def __init__(self, engine):
         self.engine = engine
 
-    def create(self, document_id, *, policy_snapshot=None):
+    def create(self, document_id, *, policy_snapshot=None, document_sha256=None):
         timestamp = now()
         snapshot = RunSnapshotV1(id=uuid4().hex, execution_state="QUEUED", document_id=document_id,
                                  policy_snapshot=policy_snapshot, created_at=timestamp, updated_at=timestamp)
         with Session(self.engine) as session, session.begin():
-            session.add(InvoiceRun(id=snapshot.id, payload=snapshot.model_dump(mode="json")))
+            if document_sha256 is not None:
+                # Serialize the lookup and insert so simultaneous repeats share one run.
+                session.execute(text("BEGIN IMMEDIATE"))
+                existing = session.scalar(select(InvoiceRun.payload).where(
+                    InvoiceRun.document_sha256 == document_sha256,
+                    InvoiceRun.payload["policy_snapshot"]["version"].as_string() == policy_snapshot.version,
+                    InvoiceRun.payload["execution_state"].as_string().in_(("QUEUED", "RUNNING", "COMPLETED")),
+                ).order_by(InvoiceRun.payload["created_at"].as_string(), InvoiceRun.id).limit(1))
+                if existing is not None:
+                    return RunSnapshotV1.model_validate({**existing, "stages": ()})
+            session.add(InvoiceRun(id=snapshot.id, payload=snapshot.model_dump(mode="json"),
+                                   document_sha256=document_sha256))
             session.flush()
             for name in STAGES:
                 stage = RunStageV1(name=name, state="PASSED" if name == "received" else "QUEUED",
@@ -41,6 +55,27 @@ class RunRepository:
                 session.add(RunStage(id=f"{snapshot.id}:{name}", run_id=snapshot.id,
                                      payload=stage.model_dump(mode="json")))
         return snapshot
+
+    def prior_verified_submission(self, current_id, vendor, invoice, vendors):
+        number = verified_invoice_number(invoice)
+        if vendor is None or not vendor.approved or not number:
+            return None
+        # Include pre-migration submissions and the full history, beyond the UI list limit.
+        statement = select(InvoiceRun.id, InvoiceRun.payload["extracted_invoice"]).where(
+            InvoiceRun.id != current_id,
+            InvoiceRun.payload["execution_state"].as_string() == "COMPLETED",
+        ).order_by(InvoiceRun.payload["created_at"].as_string(), InvoiceRun.id)
+        with Session(self.engine) as session:
+            for run_id, payload in session.execute(statement.execution_options(yield_per=100)):
+                if payload is None or normalized(payload.get("invoice_number")) != number:
+                    continue
+                earlier = ExtractedInvoiceV1.model_validate(payload)
+                if verified_invoice_number(earlier) != number:
+                    continue
+                earlier_vendor = resolve_vendor(earlier.vendor_name_raw, vendors)
+                if earlier_vendor is not None and earlier_vendor.id == vendor.id:
+                    return run_id
+        return None
 
     def load(self, run_id):
         with Session(self.engine) as session:

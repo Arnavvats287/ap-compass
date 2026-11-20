@@ -7,6 +7,8 @@ import type {
   RunSummary,
   PolicyPreview,
   PriceTolerance,
+  ExecutionState,
+  Outcome,
 } from './types'
 
 export class ApiError extends Error {
@@ -35,7 +37,12 @@ export const api = {
   upload: (file: File) => {
     const form = new FormData()
     form.append('file', file)
-    return request<{ run_id: string; execution_state: 'QUEUED' }>('/runs', {
+    return request<{
+      run_id: string
+      execution_state: ExecutionState
+      reused?: boolean
+      outcome?: Outcome | null
+    }>('/runs', {
       method: 'POST',
       body: form,
     })

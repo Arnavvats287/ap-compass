@@ -5,6 +5,20 @@ from app.contracts import EvaluationContextV1, PolicyV1
 from .common import finding, normalized, verified
 
 
+def verified_invoice_number(invoice):
+    if verified(invoice, "vendor_name_raw") and verified(invoice, "invoice_number"):
+        return normalized(invoice.invoice_number) or None
+    return None
+
+
+def submitted_duplicate(prior_run_id):
+    return finding("ALREADY_SUBMITTED", "REVIEW", "Invoice already submitted",
+                   "The approved supplier and verified invoice number match an earlier AP Compass submission.",
+                   source="submission_history",
+                   action="Compare with the earlier submission before proceeding.",
+                   prior_run_id=prior_run_id)
+
+
 def billed_duplicates(context: EvaluationContextV1, policy: PolicyV1):
     vendor, invoice = context.canonical_vendor, context.invoice
     if vendor is None or not normalized(invoice.invoice_number):
