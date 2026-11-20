@@ -395,11 +395,15 @@
 }
 
 .launch-intro,
-.launch-intake .intake-console {
+.launch-intake .intake-console,
+.ops-overview > :is(.ops-heading, .ops-loading),
+.ops-overview > .overview-layout > :is(.overview-sidebar, .overview-content) {
   animation: launch-enter 420ms var(--ease-out) backwards;
 }
 
-.launch-intake .intake-console {
+.launch-intake .intake-console,
+.ops-overview > .ops-loading,
+.ops-overview > .overview-layout > :is(.overview-sidebar, .overview-content) {
   animation-delay: 55ms;
 }
 
@@ -513,6 +517,8 @@
 @media (prefers-reduced-motion: reduce) {
   .launch-intro,
   .launch-intake .intake-console,
+  .ops-overview > :is(.ops-heading, .ops-loading),
+  .ops-overview > .overview-layout > :is(.overview-sidebar, .overview-content),
   .launch-intake .intake-console[data-started='false'] .batch-list li:not([data-leaving]),
   .composer-spinner,
   .launch-steps[data-entered='true'] li {
