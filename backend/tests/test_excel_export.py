@@ -1,6 +1,8 @@
 from decimal import Decimal
 from io import BytesIO
 from secrets import token_urlsafe
+from xml.etree import ElementTree
+from zipfile import ZipFile
 
 from fastapi.testclient import TestClient
 from openpyxl import load_workbook
@@ -24,10 +26,14 @@ def open_export(response):
     book = load_workbook(BytesIO(response.content))
     assert book.sheetnames == ["Invoice Register", "Exceptions", "Evidence Summary"]
     for sheet in book:
-        assert sheet.freeze_panes == "C5"
+        assert sheet.freeze_panes is None
+        assert sheet.sheet_view.pane is None
         assert sheet.auto_filter.ref.startswith("A4:")
-        assert sheet["A4"].fill.fgColor.rgb.endswith("225646")
+        assert sheet["A4"].fill.fgColor.rgb.endswith("252422")
         assert "Latest 100" in sheet["A2"].value
+        assert not sheet.merged_cells.ranges
+        assert sheet.row_dimensions[4].height >= 39
+        assert all(cell.alignment.wrap_text for cell in sheet[4])
     return book
 
 
@@ -75,7 +81,13 @@ def test_workbook_reads_stored_assessments_without_writes_or_inference(tmp_path)
         def capture(conn, cursor, statement, parameters, context, many):
             statements.append(statement)
 
-        book = open_export(client.get(EXPORT))
+        response = client.get(EXPORT)
+        book = open_export(response)
+        with ZipFile(BytesIO(response.content)) as archive:
+            root = ElementTree.fromstring(archive.read("xl/worksheets/sheet1.xml"))
+            warning = root.find("./{*}ignoredErrors/{*}ignoredError")
+            assert warning is not None
+            assert warning.attrib == {"sqref": "F5:H7 O5:O7", "numberStoredAsText": "1"}
         assert len(statements) == 1
         assert statements[0].lstrip().startswith("SELECT")
         assert authority(app.state.engine) == ledger
@@ -90,7 +102,13 @@ def test_workbook_reads_stored_assessments_without_writes_or_inference(tmp_path)
                                       blocked["extracted_invoice"]["total"], "Blocked")
         assert register["B6"].data_type == "s"
         assert register["F6"].data_type == "s" and register["F6"].number_format == "@"
+        assert register["F6"].alignment.horizontal == "right"
+        assert register["F6"].alignment.wrap_text
         assert register["I6"].fill.fgColor.rgb != register["I7"].fill.fgColor.rgb
+        assert register["A5"].fill.fgColor.rgb.endswith("F5F5F8")
+        assert register["A6"].fill.fgColor.rgb.endswith("FFF1EF")
+        assert register["A7"].fill.fgColor.rgb.endswith("FFF9E7")
+        assert register["J7"].fill.fgColor.rgb.endswith("BCE8CD")
         assert reviewed_row[8:10] == ("Needs review", "Ready to process")
         exceptions = list(book["Exceptions"].iter_rows(min_row=5, values_only=True))
         assert any(row[4] == "PO_BALANCE_EXCEEDED" and "requested net:" in row[8] for row in exceptions)
