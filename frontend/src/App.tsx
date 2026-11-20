@@ -6,6 +6,7 @@ import Queue from './Queue'
 import Workspace from './Workspace'
 import BatchUpload, { BatchUploadProvider } from './BatchUpload'
 import LaunchPage from './LaunchPage'
+import DemoDataLibrary from './DemoDataLibrary'
 
 export default function App() {
   const location = useLocation()
@@ -40,14 +41,17 @@ export default function App() {
       </a>
       <header className={isLaunch ? 'app-header launch-header' : 'app-header'}>
         <div className="header-inner">
-          <Link className="brand" to="/" aria-label="AP Compass home">
-            <Compass size={30} aria-hidden="true" />
-            {!isLaunch && (
-              <span>
-                AP Compass<small>Invoice Operations & Exception Resolution</small>
-              </span>
-            )}
-          </Link>
+          <div className="header-start">
+            <Link className="brand" to="/" aria-label="AP Compass home">
+              <Compass size={30} aria-hidden="true" />
+              {!isLaunch && (
+                <span>
+                  AP Compass<small>Invoice Operations & Exception Resolution</small>
+                </span>
+              )}
+            </Link>
+            {isLaunch && <DemoDataLibrary />}
+          </div>
           <nav aria-label="Main navigation">
             <NavLink end to="/overview">
               <LayoutDashboard size={17} aria-hidden="true" />

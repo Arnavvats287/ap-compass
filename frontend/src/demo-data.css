@@ -1,5 +1,24 @@
-.demo-library-trigger {
-  margin-top: var(--space-sm);
+.header-start {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.launch-header .demo-library-trigger {
+  border: 1px solid #111;
+  border-radius: var(--radius-pill);
+  background: #111;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.launch-header .demo-library-trigger:hover {
+  background: #292929;
+}
+
+.launch-header .demo-library-trigger:focus-visible {
+  outline-color: #111;
+  outline-offset: 3px;
 }
 
 html:has(.demo-library[open]) {

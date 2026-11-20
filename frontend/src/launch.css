@@ -474,6 +474,17 @@
 }
 
 @media (max-width: 520px) {
+  .launch-header .header-inner {
+    flex-wrap: wrap;
+    padding-block: 8px;
+    row-gap: 4px;
+  }
+
+  .launch-header nav {
+    flex-basis: 100%;
+    margin-left: 0;
+  }
+
   .launch-steps,
   .launch-intake .intake-console[data-started='false'] .batch-list {
     grid-template-columns: minmax(0, 1fr);

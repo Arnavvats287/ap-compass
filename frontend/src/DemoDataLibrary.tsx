@@ -75,7 +75,7 @@ export default function DemoDataLibrary() {
       <button
         ref={opener}
         type="button"
-        className="button quiet demo-library-trigger"
+        className="button demo-library-trigger"
         aria-haspopup="dialog"
         onClick={() => dialog.current?.showModal()}
       >
