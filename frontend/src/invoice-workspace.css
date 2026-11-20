@@ -311,6 +311,7 @@
 }
 
 .invoice-workspace .document-panel iframe {
+  outline: 2px solid transparent;
   display: block;
   height: clamp(340px, 48vh, 500px);
   border-radius: 8px;
@@ -379,6 +380,7 @@
 }
 
 .evidence-rail {
+  position: relative;
   display: grid;
   grid-auto-columns: clamp(145px, 28cqi, 184px);
   grid-auto-flow: column;

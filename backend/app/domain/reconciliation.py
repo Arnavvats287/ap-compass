@@ -106,6 +106,7 @@ def item_mapping(context: EvaluationContextV1, policy: PolicyV1):
     vendor = context.canonical_vendor
     matched_vendor = bool(po and vendor and vendor.approved and po.vendor_id == vendor.id)
     outside_scope, unclear = [], []
+    scope_evidence = []
     for index, line in enumerate(context.invoice.lines):
         code = normalized(line.item_code)
         if code in known:
@@ -113,6 +114,9 @@ def item_mapping(context: EvaluationContextV1, policy: PolicyV1):
         target = (outside_scope if matched_vendor and code and verified(context.invoice, f"lines[{index}].item_code")
                   else unclear)
         target.append(str(index + 1))
+        if target is outside_scope:
+            scope_evidence.extend(ref for ref in context.invoice.evidence
+                                  if ref.field == f"lines[{index}].item_code")
     if not (outside_scope or unclear):
         return ()
     notes = []
@@ -127,7 +131,8 @@ def item_mapping(context: EvaluationContextV1, policy: PolicyV1):
     action = " ".join(text for text, needed in ((authorization, outside_scope), (clarification, unclear)) if needed)
     title = "Invoice items are not mapped to authorized PO scope" if outside_scope else "Item or PO details need verification"
     return (finding("LINE_MAPPING_UNRESOLVED", "REVIEW", title,
-                    ". ".join(notes), source="procurement", owner="Procurement" if outside_scope else "AP", action=action),)
+                    ". ".join(notes), source="procurement", owner="Procurement" if outside_scope else "AP",
+                    action=action, evidence=scope_evidence),)
 
 
 def remaining_quantities(context: EvaluationContextV1, policy: PolicyV1):

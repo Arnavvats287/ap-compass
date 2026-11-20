@@ -207,7 +207,8 @@ def test_unmapped_line_cannot_pass(code):
     invoice = evidence_for(invoice.model_copy(update={"lines": (line,)}))
     decision = evaluate(context_from(invoice), PolicyV1())
     assert decision.outcome != "READY_FOR_AP"
-    assert "LINE_MAPPING_UNRESOLVED" in codes(decision)
+    scope = next(f for f in decision.findings if f.code == "LINE_MAPPING_UNRESOLVED")
+    assert [ref.field for ref in scope.evidence_refs] == (["lines[0].item_code"] if code else [])
 
 
 def test_split_lines_are_aggregated_for_quantity_and_commitment():

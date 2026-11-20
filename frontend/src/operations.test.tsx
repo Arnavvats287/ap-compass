@@ -713,6 +713,38 @@ it('preserves identifier values and unknown future value strings verbatim', () =
   expect(screen.getByText('000099')).toBeInTheDocument()
 })
 
+it('opens a finding’s stored PDF page and selects its evidence field', async () => {
+  defaults()
+  const prior = run.extracted_invoice!.evidence[0]
+  const evidence = {
+    ...prior,
+    field: 'lines[0].item_code',
+    page: 2,
+    quote: 'Item code: AS-SERVICE-01',
+  }
+  const findingWithSource = { ...finding, evidence_refs: [evidence] }
+  vi.mocked(api.run).mockResolvedValue({
+    ...run,
+    extracted_invoice: { ...run.extracted_invoice!, evidence: [prior, evidence] },
+    decision: { ...run.decision!, findings: [findingWithSource] },
+  })
+  renderPage(
+    <Routes>
+      <Route path="/runs/:runId" element={<Workspace />} />
+    </Routes>,
+    '/runs/test-run',
+  )
+  const decision = await screen.findByRole('region', { name: finding.title })
+  const action = within(decision).getByRole('button', { name: 'Show source' })
+  action.focus()
+  await userEvent.keyboard('{Enter}')
+  expect(screen.getByTitle('Original invoice PDF').getAttribute('src')).toContain('#page=2&')
+  expect(
+    screen.getByRole('button', { name: /Line 1: item code/i, pressed: true }),
+  ).toBeInTheDocument()
+  await waitFor(() => expect(screen.getByRole('region', { name: 'Source invoice' })).toHaveFocus())
+})
+
 it('shows scan arithmetic and source uncertainty as independent findings', async () => {
   defaults()
   const source = {
@@ -751,6 +783,7 @@ it('shows scan arithmetic and source uncertainty as independent findings', async
     '/runs/test-run',
   )
   const brief = await screen.findByRole('region', { name: source.title })
+  expect(within(brief).queryByRole('button', { name: /source/i })).not.toBeInTheDocument()
   expect(within(brief).getByText('₹3,600')).toBeInTheDocument()
   expect(within(brief).getByText(/not been independently source verified/)).toBeInTheDocument()
   expect(within(brief).getByRole('heading', { name: arithmetic.title })).toBeInTheDocument()

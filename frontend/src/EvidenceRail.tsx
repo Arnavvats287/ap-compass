@@ -40,9 +40,11 @@ const motionPreference = '(prefers-reduced-motion: reduce)'
 export default function EvidenceList({
   evidence,
   onShowPage,
+  sourceSelection,
 }: {
   evidence: Evidence[]
   onShowPage?: (page: number) => void
+  sourceSelection?: { evidenceIndex?: number } | null
 }) {
   const id = useId()
   const [selectedIndex, setSelectedIndex] = useState(0)
@@ -71,12 +73,16 @@ export default function EvidenceList({
         if (container.scrollLeft) container.scrollTo({ left: 0, behavior: 'instant' })
         return
       }
-      const bounds = container.getBoundingClientRect()
-      const item = target.getBoundingClientRect()
-      const offset = item.left - bounds.left
-      if (offset && (automatic || item.left < bounds.left || item.right > bounds.right)) {
-        container.scrollBy({
-          left: offset,
+      const left = target.offsetLeft
+      const right = left + target.offsetWidth
+      if (
+        left !== container.scrollLeft &&
+        (automatic ||
+          left < container.scrollLeft ||
+          right > container.scrollLeft + container.clientWidth)
+      ) {
+        container.scrollTo({
+          left,
           behavior: automatic ? 'smooth' : 'instant',
         })
       }
@@ -84,6 +90,10 @@ export default function EvidenceList({
     },
     [evidence.length],
   )
+
+  useEffect(() => {
+    if (sourceSelection?.evidenceIndex !== undefined) select(sourceSelection.evidenceIndex)
+  }, [select, sourceSelection])
 
   useEffect(() => {
     const preference = window.matchMedia?.(motionPreference)

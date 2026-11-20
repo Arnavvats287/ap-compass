@@ -24,17 +24,48 @@ import EvidenceList from './EvidenceRail'
 import WorkspaceNavigation from './WorkspaceNavigation'
 import WorkspaceFocusSection from './WorkspaceFocusSection'
 import FocusDialog from './FocusDialog'
-import type { Finding, Run } from './types'
+import type { Evidence, Finding, Run } from './types'
 export { default as EvidenceList } from './EvidenceRail'
 
 export { FindingValues } from './FindingValues'
 
+type ShowFindingSource = (reference: Evidence) => void
+
+function FindingSource({
+  finding,
+  onShowSource,
+}: {
+  finding: Finding
+  onShowSource?: ShowFindingSource
+}) {
+  const located =
+    finding.evidence_refs.find(
+      (ref) => ref.page && ref.page > 0 && ref.evidence_state === 'NATIVE_VERIFIED',
+    ) ??
+    finding.evidence_refs.find(
+      (ref) => ref.page && ref.page > 0 && ref.evidence_state === 'SOURCE_LOCATED_UNVERIFIED',
+    )
+  if (!located || !onShowSource) return null
+  return (
+    <button
+      className="button secondary finding-source-action"
+      type="button"
+      onClick={() => onShowSource(located)}
+    >
+      <FileText size={16} aria-hidden="true" />
+      {located.evidence_state === 'NATIVE_VERIFIED' ? 'Show source' : 'Inspect unverified source'}
+    </button>
+  )
+}
+
 export function FindingDetails({
   finding,
   currency,
+  onShowSource,
 }: {
   finding: Finding
   currency?: string | null
+  onShowSource?: ShowFindingSource
 }) {
   return (
     <details className="finding-disclosure">
@@ -53,6 +84,7 @@ export function FindingDetails({
       <div className="disclosure-content">
         <p>{finding.explanation}</p>
         <FindingValues finding={finding} currency={currency} />
+        <FindingSource finding={finding} onShowSource={onShowSource} />
         {finding.owner && (
           <p>
             <strong>Owner:</strong> {finding.owner}
@@ -126,7 +158,7 @@ export function Diagnostics({ run }: { run: Run }) {
     </details>
   )
 }
-function BusinessDecision({ run }: { run: Run }) {
+function BusinessDecision({ run, onShowSource }: { run: Run; onShowSource: ShowFindingSource }) {
   const decision = run.decision!
   const invoice = run.extracted_invoice
   const primary = decision.findings.find((finding) => finding.code === decision.primary_reason_code)
@@ -179,6 +211,7 @@ function BusinessDecision({ run }: { run: Run }) {
             {primary && primary.code !== 'SOURCE_EVIDENCE_MISSING' && (
               <ExceptionValues finding={primary} currency={invoice?.currency} />
             )}
+            {primary && <FindingSource finding={primary} onShowSource={onShowSource} />}
             {arithmetic && arithmetic !== primary && (
               <div className="related-financial">
                 <h3>{arithmetic.title}</h3>
@@ -206,7 +239,7 @@ function BusinessDecision({ run }: { run: Run }) {
     </>
   )
 }
-function SupportingRecords({ run }: { run: Run }) {
+function SupportingRecords({ run, onShowSource }: { run: Run; onShowSource: ShowFindingSource }) {
   const decision = run.decision!
   const invoice = run.extracted_invoice
   return (
@@ -233,6 +266,7 @@ function SupportingRecords({ run }: { run: Run }) {
                   key={`${finding.code}-${index}`}
                   finding={finding}
                   currency={invoice?.currency}
+                  onShowSource={onShowSource}
                 />
               ))}
             </div>
@@ -290,19 +324,32 @@ export default function Workspace() {
   } | null>(null)
   const focusTarget = useRef<HTMLDivElement>(null)
   const focus = focused?.runId === runId ? focused : null
-  const showSourcePage = (number: number) => {
-    setSourcePage({ runId, number })
+  const sourceAnimation = useRef<Animation | undefined>(undefined)
+  const showSourcePage = (number: number, evidenceIndex?: number) => {
+    setSourcePage({ runId, number, evidenceIndex })
     setFocused(null)
     window.location.hash = 'source-document'
     requestAnimationFrame(() => {
       const source = document.getElementById('source-document')
       source?.scrollIntoView?.({ block: 'nearest' })
       source?.focus({ preventScroll: true })
+      const frame = source?.querySelector('iframe')
+      sourceAnimation.current?.cancel()
+      if (!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+        sourceAnimation.current = frame?.animate?.(
+          [{ outlineColor: 'var(--color-accent)' }, { outlineColor: 'transparent' }],
+          { duration: 400, easing: 'ease-out' },
+        )
+      }
     })
   }
   const [copied, setCopied] = useState(false)
   const [copyError, setCopyError] = useState(false)
-  const [sourcePage, setSourcePage] = useState<{ runId: string; number: number } | null>(null)
+  const [sourcePage, setSourcePage] = useState<{
+    runId: string
+    number: number
+    evidenceIndex?: number
+  } | null>(null)
   useEffect(() => {
     setCopied(false)
     setCopyError(false)
@@ -324,6 +371,18 @@ export default function Workspace() {
   if (!run) return null
   const invoice = run.extracted_invoice
   const page = sourcePage?.runId === run.id ? sourcePage.number : undefined
+  const showFindingSource: ShowFindingSource = (reference) => {
+    if (!reference.page) return
+    const index =
+      invoice?.evidence.findIndex(
+        (item) =>
+          item.field === reference.field &&
+          item.page === reference.page &&
+          item.evidence_state === reference.evidence_state &&
+          item.quote === reference.quote,
+      ) ?? -1
+    showSourcePage(reference.page, index >= 0 ? index : undefined)
+  }
   const appliedTolerance = run.policy_snapshot?.price_tolerance_pct
   const sourceUrl = api.documentUrl(run.id)
   const pending = active(run.execution_state)
@@ -471,7 +530,7 @@ export default function Workspace() {
                     {!invoice?.po_reference?.trim() && (
                       <p className="recorded-assessment-label">Original automated decision</p>
                     )}
-                    <BusinessDecision run={run} />
+                    <BusinessDecision run={run} onShowSource={showFindingSource} />
                     <FollowUpAction key={run.id} run={run} />
                   </>
                 )}
@@ -479,7 +538,11 @@ export default function Workspace() {
                   key={run.id}
                   run={run}
                   renderFinding={(finding) => (
-                    <FindingDetails finding={finding} currency={invoice?.currency} />
+                    <FindingDetails
+                      finding={finding}
+                      currency={invoice?.currency}
+                      onShowSource={showFindingSource}
+                    />
                   )}
                 />
               </WorkspaceFocusSection>
@@ -497,6 +560,7 @@ export default function Workspace() {
                       key={run.id}
                       evidence={invoice.evidence}
                       onShowPage={showSourcePage}
+                      sourceSelection={sourcePage?.runId === run.id ? sourcePage : null}
                     />
                   </section>
                 </WorkspaceFocusSection>
@@ -568,7 +632,7 @@ export default function Workspace() {
                 <details className="workspace-audit" open={run.candidates.length > 1}>
                   <summary>All controls & procurement records</summary>
                   <div>
-                    <SupportingRecords run={run} />
+                    <SupportingRecords run={run} onShowSource={showFindingSource} />
                   </div>
                 </details>
               )}
