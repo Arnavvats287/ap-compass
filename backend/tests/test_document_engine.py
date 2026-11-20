@@ -107,7 +107,7 @@ def test_exact_schema_rejects_invalid_or_authoritative_model_fields(edit):
     elif edit == "claimed_verification": output["evidence"][0]["evidence_state"] = "NATIVE_VERIFIED"
     elif edit == "partial_bank": output["bank_instructions"] = {"account": None, "ifsc": "TEST"}
     else: del output["tax"]
-    with pytest.raises(ExtractionError, match="INVALID_RESPONSE"):
+    with pytest.raises(ExtractionError, match="MODEL_OUTPUT_SCHEMA"):
         parse_response(json.dumps(output))
 
 
@@ -246,7 +246,7 @@ def test_one_quality_escalation_uses_same_schema(kind, reason):
 def test_invalid_stronger_response_is_not_repeated():
     primary = FakeProvider(["bad JSON"])
     strong = FakeProvider(["bad JSON"], model="TEST_ONLY-strong")
-    with pytest.raises(ExtractionError, match="INVALID_RESPONSE") as error:
+    with pytest.raises(ExtractionError, match="MODEL_OUTPUT_JSON") as error:
         run((ROOT / "tests/fixtures/HAPPY_CLEAN.pdf").read_bytes(), primary, escalation_provider=strong)
     assert error.value.calls == 2 and len(strong.calls) == 1
 
@@ -446,10 +446,10 @@ def test_private_schema_bounds_still_apply_after_generation_simplification():
     assert 'maxLength' not in json.dumps(schema) and 'pattern' not in json.dumps(schema)
     output=wire()
     output['net']='1' * 19
-    with pytest.raises(ExtractionError,match='INVALID_RESPONSE'):parse_response(json.dumps(output))
+    with pytest.raises(ExtractionError,match='MODEL_OUTPUT_SCHEMA'):parse_response(json.dumps(output))
     output=wire()
     output['lines']=output['lines'] * 51
-    with pytest.raises(ExtractionError,match='INVALID_RESPONSE'):parse_response(json.dumps(output))
+    with pytest.raises(ExtractionError,match='MODEL_OUTPUT_SCHEMA'):parse_response(json.dumps(output))
 
 
 def test_configured_adapter_wires_only_environment_models(monkeypatch):
@@ -501,7 +501,7 @@ def test_visible_bank_instructions_cannot_be_silently_declared_absent():
     output['bank_instructions']=None
     output['evidence']=[claim for claim in output['evidence'] if not claim['field'].startswith('bank_instructions.')]
     provider=FakeProvider([json.dumps(output),json.dumps(output)])
-    with pytest.raises(ExtractionError,match='INVALID_RESPONSE') as error:
+    with pytest.raises(ExtractionError,match='MODEL_OUTPUT_UNUSABLE') as error:
         run(native_case(CASES['BANK_CHANGED']),provider)
     assert error.value.calls==2
 
@@ -644,7 +644,7 @@ def test_empty_structured_primary_is_unusable_not_a_review_result():
     for key in output:
         output[key]=[] if key in ('lines','evidence') else None
     provider=FakeProvider([json.dumps(output),json.dumps(output)])
-    with pytest.raises(ExtractionError,match='INVALID_RESPONSE') as error:
+    with pytest.raises(ExtractionError,match='MODEL_OUTPUT_UNUSABLE') as error:
         run((ROOT/'tests/fixtures/HAPPY_CLEAN.pdf').read_bytes(),provider)
     assert error.value.calls==2
 

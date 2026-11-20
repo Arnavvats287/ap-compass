@@ -9,6 +9,9 @@ from .schema import parse_response
 from .types import ExtractionError, ExtractionMetadata, ExtractionResult, ModelAttempt, TokenUsage
 
 
+MODEL_OUTPUT_ERRORS = {"MODEL_OUTPUT_JSON", "MODEL_OUTPUT_SCHEMA", "MODEL_OUTPUT_UNUSABLE"}
+
+
 def quality_failure(invoice, route):
     """Extraction quality only; never inspect amounts for financial eligibility."""
     fields = ("vendor_name_raw", "invoice_number", "invoice_date", "currency", "net", "tax", "total")
@@ -75,7 +78,7 @@ async def extract_pdf(raw: bytes, provider: ExtractionProvider, *,
             invoice, claims = parse_response(reply.json_text)
             invoice = ground_evidence(invoice, claims, document)
             if not usable_extraction(invoice):
-                raise ExtractionError("INVALID_RESPONSE")
+                raise ExtractionError("MODEL_OUTPUT_UNUSABLE")
             attempts.append(ModelAttempt(number, chosen.model_id, int((perf_counter() - began) * 1000), None, reply.model_id, reply.usage))
             quality = quality_failure(invoice, document.route)
             if (quality and number < max_attempts and escalation_provider
@@ -91,13 +94,15 @@ async def extract_pdf(raw: bytes, provider: ExtractionProvider, *,
         except ExtractionError as caught:
             error = caught
         except Exception:
+            if reply is not None:
+                raise  # Unexpected application error; orchestration logs only INTERNAL_ERROR.
             error = ExtractionError("PROVIDER_REJECTED")
         finally:
             inference_tracker.reset(tracking_token)
         attempts.append(ModelAttempt(number, chosen.model_id, int((perf_counter() - began) * 1000), error.code,
                                      reply.model_id if reply else None, reply.usage if reply else TokenUsage(),
                                      error.provider_status, reply is not None or (error.inference_attempted and tracker.called)))
-        retry = error.retryable or error.code == "INVALID_RESPONSE"
+        retry = error.retryable or error.code in MODEL_OUTPUT_ERRORS
         stronger_already_attempted = escalation_provider and chosen.model_id == escalation_provider.model_id
         if (stronger_already_attempted and primary_candidate is not None
                 and error.code in ("PROVIDER_UNAVAILABLE", "PROVIDER_TIMEOUT", "RATE_LIMIT")):
@@ -105,7 +110,7 @@ async def extract_pdf(raw: bytes, provider: ExtractionProvider, *,
         if number == max_attempts or not retry or stronger_already_attempted:
             raise ExtractionError(error.code, calls=sum(attempt.inference_called for attempt in attempts), attempts=tuple(attempts),
                                   elapsed_ms=int((perf_counter() - start) * 1000), provider_status=error.provider_status) from None
-        if error.code == "INVALID_RESPONSE" and escalation_provider and chosen.model_id != escalation_provider.model_id:
+        if error.code in MODEL_OUTPUT_ERRORS and escalation_provider and chosen.model_id != escalation_provider.model_id:
             escalation_reason = "INVALID_STRUCTURED_RESPONSE"
             chosen = escalation_provider
         await asyncio.sleep(.25)  # One bounded retry; never triggered by arithmetic findings.

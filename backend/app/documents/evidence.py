@@ -8,6 +8,7 @@ from app.contracts import EvidenceRefV1, ExtractedInvoiceV1
 from .consistency import HEADER_LABELS, PAYABLE_ALIASES, QUALIFIER, disputed_headers, inline_amount, parse_printed_amount
 from .schema import SourceClaim
 from .source_layout import GENERIC_PAYABLE_LABEL, SUMMARY, flat, layout_quote, rows_for, split_headers, table_rows, unique_quotes
+from .stacked_layout import CHARGE_FIELDS, currency_summary, invoice_metadata, stacked_charges
 from .types import DocumentInspection, ExtractionError
 
 LABELS = {
@@ -175,17 +176,105 @@ def layout_support(invoice, field, value, claim, quote, headers, table, unique_r
     return False
 
 
+HYBRID_HEADERS = {"invoice_number", "invoice_date", "po_reference", "currency", "net", "tax", "total"}
+
+
+def independently_supported_header(value, claim, quote, pair, currency):
+    """Use the parser-owned association when the claim quotes its actual value row.
+
+    The entire row must be recognizable from PDF text. Only the corresponding
+    labelled cell supplies the fact, never another numeric cell on that row.
+    """
+    if not pair.source_quote or quote not in (pair.quotes | pair.context_quotes):
+        return False
+    if isinstance(value, Decimal):
+        printed = parse_printed_amount(pair.value)
+        raw = parse_printed_amount(claim.raw_value)
+        return bool(printed and raw and printed[0] == raw[0] == value
+                    and supported_amount(pair.value, value, pair.value, currency)
+                    and (raw[1] is None or raw[1] == printed[1]))
+    return supported_cell(pair.value, value, claim)
+
+
+def stacked_row_proofs(invoice, charges):
+    """Prove the entire row mapping before using a short field quote."""
+    if not charges or len(charges) != len(invoice.lines):
+        return ()
+    # An identical printed charge cannot anchor one row rather than the other.
+    if len({tuple(flat(value) for value in row.values) for row in charges}) != len(charges):
+        return ()
+    for row, line in zip(charges, invoice.lines):
+        if row.currency and row.currency != invoice.currency:
+            return ()
+        for field, printed in zip(CHARGE_FIELDS, row.values):
+            fact = getattr(line, field)
+            if isinstance(fact, Decimal):
+                if not supported_amount(printed, fact, printed, invoice.currency, quantity=field == "qty"):
+                    return ()
+            elif fact is None or not printed_value(printed, fact):
+                return ()
+    return charges
+
+
+def source_cell_proof(field, value, claim, invoice, pairs, charges):
+    """A short exact cell quote is sufficient only inside this independently mapped layout."""
+    if field in HYBRID_HEADERS and len(pairs) == 1 and pairs[0].source_quote:
+        candidate = pairs[0]
+        quotes = {layout_quote(candidate.value), *candidate.quotes, *candidate.context_quotes}
+        printed, source_quote = candidate.value, candidate.source_quote
+    elif (line := LINE_FIELD.fullmatch(field)) and charges:
+        charge = charges[int(line[1])]
+        printed = charge.values[CHARGE_FIELDS.index(line[2])]
+        source_quote = charge.source_quote
+        quotes = {layout_quote(printed), layout_quote(source_quote)}
+    else:
+        return None
+    if isinstance(value, Decimal):
+        # Permit omission of the code when the rest of this printed cell matches
+        # exactly. The independently associated source still controls currency.
+        source = parse_printed_amount(printed)
+        raw = parse_printed_amount(claim.raw_value)
+        if not source or not raw or source[0] != raw[0] or raw[1] not in (None, source[1]):
+            return None
+        if source[1] and raw[1] is None and flat(printed).endswith(flat(claim.raw_value)):
+            quotes.add(layout_quote(claim.raw_value))
+        valid = supported_amount(printed, value, printed, invoice.currency, quantity=field.endswith(".qty"))
+    else:
+        valid = supported_cell(printed, value, claim)
+    if valid and layout_quote(claim.quote) in quotes:
+        return printed, source_quote
+    return None
+
+
 def ground_evidence(invoice: ExtractedInvoiceV1, claims: tuple[SourceClaim, ...],
                     inspection: DocumentInspection) -> ExtractedInvoiceV1:
     pages = {page.number: page for page in inspection.pages}
     native_pages = {number: page for number, page in pages.items() if page.route == "native_text"}
     layouts = {number: rows_for(page) for number, page in native_pages.items()}
     summary_payables = []
-    headers = {number: split_headers(rows, summary_payables=summary_payables) for number, rows in layouts.items()}
     tables = {number: table_rows(rows) for number, rows in layouts.items()}
+    stacked_page = None
+    charge_proofs = ()
+    summary_currency = None
+    supplemental = defaultdict(list)
     recognized_tables = [table for table in tables.values() if table is not None]
+    if inspection.route == "native_text" and len(layouts) == 1:
+        number, rows = next(iter(layouts.items()))
+        charges = stacked_charges(rows)
+        if charges is not None:
+            stacked_page = number
+            extra, summary_currency = currency_summary(rows)
+            for field, pairs in (*invoice_metadata(rows).items(), *extra.items()):
+                supplemental[field].extend(pairs)
+            if not recognized_tables:
+                charge_proofs = stacked_row_proofs(invoice, charges)
+    headers = {
+        number: split_headers(rows, summary_payables=summary_payables,
+                              supplemental=supplemental if number == stacked_page else None)
+        for number, rows in layouts.items()
+    }
     eligible_table = ()
-    if len(recognized_tables) == 1:
+    if len(recognized_tables) == 1 and stacked_page is None:
         table = recognized_tables[0]
         if len(table) == len(invoice.lines) and all(
             line.item_code and printed_value(row.values["item_code"], line.item_code)
@@ -208,7 +297,7 @@ def ground_evidence(invoice: ExtractedInvoiceV1, claims: tuple[SourceClaim, ...]
         if bank_claimed or bank_printed or bank_split:
             # A detected native instruction or explicit claim makes this omission
             # an invalid extraction response. Never backfill credentials.
-            raise ExtractionError("INVALID_RESPONSE")
+            raise ExtractionError("MODEL_OUTPUT_UNUSABLE")
     disputed = disputed_headers(inspection.pages, headers.values(), summary_payables=summary_payables)
     sources = {number: flat(page.native_text) for number, page in native_pages.items()}
     line_counts = {number: Counter(flat(text) for text, _ in page.lines) for number, page in native_pages.items()}
@@ -221,6 +310,7 @@ def ground_evidence(invoice: ExtractedInvoiceV1, claims: tuple[SourceClaim, ...]
         claim = matches[0] if matches else None
         page = pages.get(claim.page) if claim else None
         state = "MISSING"
+        native_proof = None
         if value is not None and claim and page and claim.quote and claim.raw_value:
             if page.route != "native_text":
                 state = "SOURCE_LOCATED_UNVERIFIED"
@@ -228,13 +318,25 @@ def ground_evidence(invoice: ExtractedInvoiceV1, claims: tuple[SourceClaim, ...]
                 source, quote = sources[page.number], flat(claim.quote)
                 occurrences = source.count(quote) if quote else 0
                 normalized_quote = layout_quote(claim.quote)
-                if occurrences or normalized_quote in located_quotes[page.number]:
+                splits = headers[page.number]
+                # The alternate quote can span adjacent cells or native column layout.
+                # Restrict it to a unique parser-owned header on a single native page.
+                pairs = splits.get(field, ())
+                eligible = field not in disputed and len(matches) == 1 and not (
+                    summary_currency and field in {"net", "tax", "total"} and summary_currency != invoice.currency
+                )
+                if (eligible and inspection.route == "native_text" and len(pages) == 1
+                        and field in HYBRID_HEADERS and len(pairs) == 1
+                        and not layout_support(invoice, field, value, claim, normalized_quote, splits, (), ())
+                        and independently_supported_header(value, claim, normalized_quote, pairs[0], invoice.currency)):
+                    native_proof = (pairs[0].value, pairs[0].source_quote)
+                    state = "NATIVE_VERIFIED"
+                if state != "NATIVE_VERIFIED" and (occurrences or normalized_quote in located_quotes[page.number]):
                     state = "SOURCE_LOCATED_UNVERIFIED"
-                    if field not in disputed and len(matches) == 1:
+                    if eligible:
                         table = eligible_table if tables[page.number] is eligible_table else ()
-                        split = headers[page.number]
-                        if field in split or (LINE_FIELD.fullmatch(field) and recognized_tables):
-                            supported = layout_support(invoice, field, value, claim, normalized_quote, split, table, distinct_rows)
+                        if field in splits or (LINE_FIELD.fullmatch(field) and (recognized_tables or stacked_page is not None)):
+                            supported = layout_support(invoice, field, value, claim, normalized_quote, splits, table, distinct_rows)
                         else:
                             # A complete source line is distinct from its substring in a longer
                             # statement label. Duplicate complete lines still fail closed.
@@ -242,10 +344,14 @@ def ground_evidence(invoice: ExtractedInvoiceV1, claims: tuple[SourceClaim, ...]
                             supported = unique and local_support(invoice, field, value, page, claim)
                         if supported:
                             state = "NATIVE_VERIFIED"
+                if state != "NATIVE_VERIFIED" and eligible and page.number == stacked_page and charge_proofs:
+                    native_proof = source_cell_proof(field, value, claim, invoice, pairs, charge_proofs)
+                    if native_proof:
+                        state = "NATIVE_VERIFIED"
         grounded.append(EvidenceRefV1(
-            field=field, raw_value=claim.raw_value if claim else None,
+            field=field, raw_value=native_proof[0] if native_proof else claim.raw_value if claim else None,
             normalized_value=None if value is None else str(value),
-            page=claim.page if claim else None, quote=claim.quote if claim else None,
+            page=claim.page if claim else None, quote=native_proof[1] if native_proof else claim.quote if claim else None,
             route=page.route if page else None, evidence_state=state,
         ))
     lines = list(invoice.lines)

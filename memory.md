@@ -2,11 +2,23 @@
 
 **Last reviewed:** 2026-11-20 (IST)
 **Repository status:** G.2 queue polish and earlier checkpoints are preserved. G.3 is isolated in a separate local worktree.
-**Current authorized segment:** Phase G.3 launch and intake policy only.
+**Current authorized segment:** Final source-grounding verification.
 **Deadline:** Saturday 2026-11-21 (IST); target Friday evening feature freeze.
 **Maintainers:** Builder owns product decisions; Codex implements one authorized phase; architectural review gates further work.
 
 > Repo-local continuity. Status is evidence, not completion by assertion. Latest user acceptance/routing adjustment is recorded in ADR-016 and the handoff below.
+
+## Final source-grounding handoff
+
+The single-page native verifier independently associates top metadata, coherent labelled totals and complete charge rows with a stacked SKU. Saved Orion and Northstar extractions both improved from 1/13 native references and Review to 13/13 and Ready. Aster preserved its three hard Block findings. 274 focused backend tests and all 26 sealed comparisons passed offline. Financial rules and working frontend stayed as they were. No Gemini calls. Live Orion and Aster validation awaits separate approval. See [the grounding report](docs/FINAL_SOURCE_GROUNDING_REPORT.md).
+
+## Targeted Gemini wire-schema handoff
+
+The decoder records redacted validation paths, constraint names and value shapes. The original rejected payloads were never retained. Two new live structured replies passed unchanged strict validation and reached Review for source evidence. Aster failed at the provider before wire validation. The three-attempt budget was spent without retries. Frozen controlled decisions and financial controls held. No commit or deployment. See [the wire verification report](docs/FINAL_GEMINI_WIRE_SCHEMA_REPORT.md).
+
+## Final hybrid extraction handoff
+
+The existing G.3 composer and historical observations were preserved. The normal upload path has one generation and distinguishes malformed JSON, wire-schema rejection and unusable extraction from provider failures. A bounded native header association moved one development fixture from Review to Ready, and sealed controlled decisions stayed unchanged across 26 cases. The same four historical live claims gained nine independently verified references offline. The three authorized live submissions all reached Gemini and failed wire-schema string-pattern validation. The subsequent explicit format descriptions have offline coverage only. Release stays blocked. See [the hybrid report](docs/FINAL_HYBRID_EXTRACTION_REPORT.md).
 
 ## Phase G.3 launch handoff
 

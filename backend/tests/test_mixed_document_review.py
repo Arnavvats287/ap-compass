@@ -30,7 +30,7 @@ def with_logo(raw):
 @pytest.mark.parametrize("flag", [[], None, ["RASTER_CONTENT_UNRESOLVED"]])
 def test_provider_cannot_set_or_clear_integrity(flag):
     assert "document_integrity_flags" not in provider_schema()["properties"]
-    with pytest.raises(ExtractionError, match="INVALID_RESPONSE"):
+    with pytest.raises(ExtractionError, match="MODEL_OUTPUT_SCHEMA"):
         parse_response(json.dumps({**wire(), "document_integrity_flags": flag}))
 
 
@@ -58,10 +58,10 @@ def test_mixed_run_persists_and_reassesses(tmp_path, case, variant, expected, ha
             error = "INVALID_PDF"
         elif variant == "malformed_reply":
             text = "{"
-            error = "INVALID_RESPONSE"
+            error = "MODEL_OUTPUT_JSON"
         elif variant == "unusable_reply":
             text = json.dumps({key: [] if key in ("lines", "evidence") else None for key in reply})
-            error = "INVALID_RESPONSE"
+            error = "MODEL_OUTPUT_UNUSABLE"
         provider = FakeProvider([text], model="TEST_ONLY-mixed-review")
 
         async def extract(raw):

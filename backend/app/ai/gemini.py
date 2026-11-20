@@ -197,7 +197,7 @@ async def extract_runtime_pdf(raw: bytes):
         raise ExtractionError("CONFIGURATION", inference_attempted=False)
     client = make_client(settings)
     try:
-        return await extract_pdf(raw, GeminiProvider(client, settings.primary_model))
+        return await extract_pdf(raw, GeminiProvider(client, settings.primary_model), max_attempts=1)
     finally:
         await client.aio.aclose()
         client.close()

@@ -1,7 +1,7 @@
 # AP Compass — Project Status / Gate Register
 
 **Updated:** 2026-11-20 IST.
-**Current gate:** Phase G.3 launch and intake policy verified for local review.
+**Current gate:** Native source grounding passed offline. Saved Orion and Northstar facts now verify and reach Ready, Aster retains its Blocks, and all 26 sealed cases held. Live validation awaits separate approval. See the [grounding report](docs/FINAL_SOURCE_GROUNDING_REPORT.md).
 **Base:** e5e8a183ad7063b815310b7f2e2234048ec6564d.
 **Branch:** codex/phase-g3-launch-intake. **Checkpoint:** phase-g3-launch-intake.
 See the [Phase G.3 report](docs/PHASE_G3_LAUNCH_EXPERIENCE_REPORT.md) for the Chrome review, recorded intake policy comparison and regression evidence.

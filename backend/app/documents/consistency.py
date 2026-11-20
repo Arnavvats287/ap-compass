@@ -4,8 +4,8 @@ import re
 
 
 # Keep invoice-specific labels distinct from generic payment and balance labels.
-INVOICE_DUE_LABEL = r"(?:current\s+)?invoice\s+amount\s+due"
-GENERIC_PAYABLE = r"(?:total\s+(?:amount\s+)?payable|amount\s+payable)"
+INVOICE_DUE_LABEL = r"(?:(?:current\s+)?invoice\s+amount\s+due|payable\s+for\s+this\s+invoice)"
+GENERIC_PAYABLE = r"(?:total\s+(?:amount\s+)?payable|amount\s+payable|total\s+due)"
 PAYABLE_ALIASES = rf"(?:{INVOICE_DUE_LABEL}|gross\s+payable|{GENERIC_PAYABLE})"
 HEADER_LABELS = {
     "invoice_number": r"invoice\s*(?:number|no\.?|#)",

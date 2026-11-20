@@ -79,6 +79,8 @@ class Pair:
     value: str
     quotes: frozenset[str] = frozenset()
     cell: Cell | None = None
+    source_quote: str = ""
+    context_quotes: frozenset[str] = frozenset()
 
 
 def rows_for(page):
@@ -187,7 +189,7 @@ def adjacent(rows, row_index, col, label, field):
         wide_tax = field == "tax" and 185 < gap <= 225 and aligned_tax_summary(rows, row_index, label, right)
         if (4 <= gap <= 185 or wide_tax) and not (
                 (field == "total" or wide_tax) and has_amount_column_label_above(rows, row_index, right)):
-            options.append(right)
+            options.append((right, row))
     for index in range(row_index + 1, len(rows)):
         below = rows[index]
         if min(cell.y for cell in below) - label.y > 29:
@@ -195,15 +197,19 @@ def adjacent(rows, row_index, col, label, field):
         aligned = [(i, cell) for i, cell in enumerate(below) if abs(cell.rect[0] - label.rect[0]) <= 7]
         if aligned:
             if clean(below):
-                options.extend(cell for i, cell in aligned
+                options.extend((cell, below) for i, cell in aligned
                                if cell.rect[1] >= label.rect[3] and not has_left_label(below, i))
             break
     return tuple(Pair(cell.text, quote_forms((label.text, cell.text))
-                      | {layout_quote(f"{label.text.rstrip(':')}: {cell.text}")}, cell) for cell in options
+                      | {layout_quote(f"{label.text.rstrip(':')}: {cell.text}")}, cell,
+                      source_quote=f"{label.text} {cell.text}",
+                      context_quotes=quote_forms(tuple(part.text for part in context))
+                      if 2 <= len(context) <= 6 else frozenset())
+                 for cell, context in options
                  if not matches(cell.text, HEADER_PATTERNS) and header_shape(field, cell.text))
 
 
-def split_headers(rows, *, summary_payables=None):
+def split_headers(rows, *, summary_payables=None, supplemental=None):
     observations = defaultdict(list)
     inline_fields = set()
     summary = False
@@ -231,6 +237,8 @@ def split_headers(rows, *, summary_payables=None):
                 # An invoice-specific restatement can show a conflict. Its
                 # placement in the account section cannot supply positive support.
                 summary_payables.append(adjacent(rows, index, col, label, field))
+    for field, pairs in (supplemental or {}).items():
+        observations[field].extend(pairs)
     used_cells = Counter(pair.cell for pairs in observations.values() for pair in pairs if pair.cell is not None)
     for field, pairs in observations.items():
         if field in inline_fields or any(used_cells[pair.cell] > 1 for pair in pairs):
