@@ -42,6 +42,13 @@ const samples = [
     current: false,
   },
   {
+    file: 'brightpath-advisory-049.pdf',
+    supplier: 'Brightpath Consulting',
+    scenario: 'Conflicting payable totals',
+    description: 'Compare the invoice payable with a competing amount in its payment advice.',
+    current: true,
+  },
+  {
     file: '08-northstar-supplies.pdf',
     supplier: 'Northstar Supplies',
     scenario: 'Previously billed invoice',

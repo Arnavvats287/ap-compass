@@ -8,6 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PUBLIC = ROOT / "frontend/public/demo-data"
 BUNDLE = "ap-compass-demo-invoices.zip"
 PDFS = {
+    "brightpath-advisory-049.pdf": "f5e4026e6c6a3986e6b9a694e98ce50e026020b1c0268aca6a75dc2c5e48c36b",
     "08-northstar-supplies.pdf": "7b35c99758e70703dc23c80fc1b3eb4683c1ae3499e83cc9ea333258586a8005",
     "AS-2611-632.pdf": "230016e9c6a655f754eb5b990a7204a64470dced3c14b5c22bd51efdfd2e992f",
     "KLG-2611-876.pdf": "2aa415f106cdbe6216bd8bb59126650a38d8f8c492a2933125c346e152fa3746",

@@ -27,6 +27,7 @@ it('offers only the curated PDF downloads and a single sample ZIP', async () => 
     'AS-2611-632.pdf',
     'MCL-26-4681.pdf',
     'MCL-26-4573.pdf',
+    'brightpath-advisory-049.pdf',
     '08-northstar-supplies.pdf',
     'OOP-2611-617.pdf',
   ])
