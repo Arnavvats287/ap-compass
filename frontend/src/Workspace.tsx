@@ -18,6 +18,7 @@ import { date, elapsed, money, toleranceLabel, unknown, words } from './format'
 import DecisionTrace, { stageLabels } from './DecisionTrace'
 import { ExceptionValues, FindingValues } from './FindingValues'
 import HumanPOReview from './HumanPOReview'
+import FollowUpAction from './FollowUpAction'
 export { StageTimeline } from './DecisionTrace'
 import EvidenceList from './EvidenceRail'
 import WorkspaceNavigation from './WorkspaceNavigation'
@@ -471,6 +472,7 @@ export default function Workspace() {
                       <p className="recorded-assessment-label">Original automated decision</p>
                     )}
                     <BusinessDecision run={run} />
+                    <FollowUpAction key={run.id} run={run} />
                   </>
                 )}
                 <HumanPOReview

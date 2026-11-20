@@ -50,7 +50,14 @@ export interface Invoice {
   evidence: Evidence[]
 }
 export interface Candidate {
-  po: { id: string; vendor_id: string; authorized_net: string; currency: string; status: string }
+  po: {
+    id: string
+    vendor_id: string
+    authorized_net: string
+    currency: string
+    status: string
+    lines?: { item_code: string }[]
+  }
   selection_provenance: string
   rank: number | null
 }
