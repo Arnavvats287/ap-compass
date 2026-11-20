@@ -5,9 +5,9 @@ import { ArrowLeft, ArrowUpRight, Files, FileText, LoaderCircle, Upload, X } fro
 import { Link } from 'react-router-dom'
 import { api } from './api'
 import { Status } from './components'
-import { fileSize, toleranceLabel, words } from './format'
+import { fileSize, words } from './format'
 import { active } from './queries'
-import type { ExecutionState, Outcome, PriceTolerance } from './types'
+import type { ExecutionState, Outcome } from './types'
 import { uploadError, validatePdf } from './uploadValidation'
 
 const LIMIT = 10
@@ -44,8 +44,6 @@ function useBatchState() {
   const [started, setStarted] = useState(false)
   const [busy, setBusy] = useState(false)
   const [paused, setPaused] = useState(false)
-  const [tolerance, setTolerance] = useState<PriceTolerance>('0.02')
-  const [batchTolerance, setBatchTolerance] = useState<PriceTolerance>()
   const locked = useRef(false)
   const nextKey = useRef(0)
 
@@ -82,11 +80,9 @@ function useBatchState() {
     setErrors([])
   }
 
-  async function process(tolerance?: PriceTolerance) {
+  async function process() {
     if (locked.current || !entries.some((entry) => !settled(entry))) return
     locked.current = true
-    const capturedTolerance = started ? batchTolerance : tolerance
-    setBatchTolerance(capturedTolerance)
     setStarted(true)
     setBusy(true)
     setPaused(false)
@@ -107,7 +103,7 @@ function useBatchState() {
         } else {
           update({ ...base, phase: 'uploading' })
           try {
-            const accepted = await api.upload(entry.file, capturedTolerance)
+            const accepted = await api.upload(entry.file)
             run = { id: accepted.run_id, state: accepted.execution_state }
           } catch (error) {
             update({ ...base, phase: 'upload-failed', message: uploadError(error) })
@@ -151,7 +147,6 @@ function useBatchState() {
     setEntries([])
     setStarted(false)
     setPaused(false)
-    setBatchTolerance(undefined)
     setErrors([])
   }
 
@@ -161,9 +156,6 @@ function useBatchState() {
     started,
     busy,
     paused,
-    tolerance,
-    setTolerance,
-    batchTolerance,
     add,
     remove,
     process,
@@ -195,19 +187,7 @@ export default function BatchUpload({ launch = false }: { launch?: boolean }) {
     else choose.current?.focus()
   }, [started])
   if (!batch) throw new Error('Batch upload requires its application provider')
-  const {
-    entries,
-    errors,
-    busy,
-    paused,
-    tolerance,
-    setTolerance,
-    batchTolerance,
-    add,
-    remove,
-    process,
-    reset,
-  } = batch
+  const { entries, errors, busy, paused, add, remove, process, reset } = batch
   const finished = entries.filter(settled)
   const outcomes = batchOutcomes.map(({ outcome, label }) => ({
     outcome,
@@ -237,15 +217,16 @@ export default function BatchUpload({ launch = false }: { launch?: boolean }) {
     },
   }
 
+  const fileWarnings = errors.length > 0 && (
+    <ul className="inline-error batch-errors" role="alert">
+      {errors.map((error, index) => (
+        <li key={index}>{error}</li>
+      ))}
+    </ul>
+  )
   const files = (
     <>
-      {errors.length > 0 && (
-        <ul className="inline-error batch-errors" role="alert">
-          {errors.map((error, index) => (
-            <li key={index}>{error}</li>
-          ))}
-        </ul>
-      )}
+      {!launch && fileWarnings}
       {(entries.length > 0 || (!started && departing.length > 0)) && (
         <ul
           className="batch-list"
@@ -383,12 +364,6 @@ export default function BatchUpload({ launch = false }: { launch?: boolean }) {
               <p className="intake-count" role="status">
                 {finished.length} of {entries.length} finished
               </p>
-              {launch && (
-                <p className="launch-policy-record">
-                  Unit-price tolerance{' '}
-                  {batchTolerance ? toleranceLabel(batchTolerance) : 'from the default policy'}
-                </p>
-              )}
               <dl className="intake-outcomes" aria-label="Recorded batch outcomes">
                 {outcomes.map(({ outcome, label, count }) => (
                   <div key={outcome} data-outcome={outcome}>
@@ -441,27 +416,29 @@ export default function BatchUpload({ launch = false }: { launch?: boolean }) {
             </div>
           )}
           {launch && files}
-          {launch && !started && (
-            <fieldset className="launch-tolerance" aria-describedby={label + '-tolerance-help'}>
-              <legend>Unit-price tolerance</legend>
-              <div className="launch-tolerance-options" data-tolerance={tolerance}>
-                {(['0.02', '0.05'] as const).map((choice) => (
-                  <label key={choice}>
-                    <input
-                      type="radio"
-                      name={label + '-tolerance'}
-                      value={choice}
-                      checked={choice === tolerance}
-                      onChange={() => setTolerance(choice)}
-                    />
-                    <span>{toleranceLabel(choice)}</span>
-                  </label>
-                ))}
-              </div>
-              <p id={label + '-tolerance-help'}>
-                Allowed unit-price variance for this batch. PO limits still apply.
+          {launch && !started && (entries.length > 0 || errors.length > 0) && (
+            <section className="intake-readiness" aria-labelledby={label + '-readiness'}>
+              <h3 id={label + '-readiness'}>Intake readiness</h3>
+              <dl>
+                <div>
+                  <dt>Selected PDFs</dt>
+                  <dd>{entries.length}</dd>
+                </div>
+                <div>
+                  <dt>Total size</dt>
+                  <dd>{fileSize(entries.reduce((total, { file }) => total + file.size, 0))}</dd>
+                </div>
+                <div>
+                  <dt>Valid files</dt>
+                  <dd>{entries.length}</dd>
+                </div>
+              </dl>
+              <p role="status">
+                {entries.length ? 'Ready to submit.' : 'Choose a valid PDF to continue.'}
+                {errors.length > 0 && ' Files listed below were not added.'}
               </p>
-            </fieldset>
+              {fileWarnings}
+            </section>
           )}
           {paused && (
             <p className="inline-error intake-error" role="alert">
@@ -478,10 +455,14 @@ export default function BatchUpload({ launch = false }: { launch?: boolean }) {
                 onClick={() => {
                   focusAfterAction.current = true
                   setDeparting([])
-                  void process(launch ? tolerance : undefined)
+                  void process()
                 }}
               >
-                {launch ? 'Process invoices' : 'Process selected invoices'}
+                {launch
+                  ? entries.length
+                    ? `Process ${entries.length} ${entries.length === 1 ? 'invoice' : 'invoices'}`
+                    : 'Process invoices'
+                  : 'Process selected invoices'}
               </button>
             )}
             {busy && <p className="intake-note">Keep this tab open while the batch runs.</p>}

@@ -32,11 +32,10 @@ export const api = {
   runs: (signal?: AbortSignal) => request<RunSummary[]>('/runs?limit=100', { signal }),
   run: (id: string, signal?: AbortSignal) =>
     request<Run>(`/runs/${encodeURIComponent(id)}`, { signal }),
-  upload: (file: File, tolerance?: PriceTolerance) => {
+  upload: (file: File) => {
     const form = new FormData()
     form.append('file', file)
-    const query = tolerance ? '?' + new URLSearchParams({ price_tolerance_pct: tolerance }) : ''
-    return request<{ run_id: string; execution_state: 'QUEUED' }>('/runs' + query, {
+    return request<{ run_id: string; execution_state: 'QUEUED' }>('/runs', {
       method: 'POST',
       body: form,
     })

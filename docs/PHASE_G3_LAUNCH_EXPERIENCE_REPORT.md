@@ -1,5 +1,7 @@
 # Phase G.3 · Launch and intake policy
 
+This report documents the earlier G.3 interface. The current homepage shows Intake readiness and uses the server default. The 2%/5% selector described below was removed from the homepage. The invoice workspace still shows the policy recorded on each run.
+
 ## Design
 
 I considered a centered upload-first page and an editorial split. The split gives AP Compass a recognizable identity and keeps a single upload area and policy selector beside it. The file ledger spans the width immediately below them. On tablet and phone the same content stacks in reading order.

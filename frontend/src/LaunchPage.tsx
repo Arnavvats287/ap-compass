@@ -19,7 +19,19 @@ export default function LaunchPage() {
           and see which exceptions need AP review.
         </p>
       </header>
-      <BatchUpload launch />
+      <div className="launch-tools">
+        <BatchUpload launch />
+        <section className="launch-checks" aria-labelledby="launch-checks-title">
+          <h2 id="launch-checks-title">Checks performed</h2>
+          <p>AP Compass runs these checks after you submit.</p>
+          <ul>
+            <li>Supplier and purchase-order validation</li>
+            <li>Unit prices, quantities and remaining PO capacity</li>
+            <li>Duplicate invoices and prior billing</li>
+            <li>Evidence from the original PDF</li>
+          </ul>
+        </section>
+      </div>
       <section className="launch-story" aria-labelledby="launch-story-title">
         <h2 className="sr-only" id="launch-story-title">
           Review workflow

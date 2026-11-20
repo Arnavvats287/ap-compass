@@ -39,7 +39,7 @@ afterEach(() => {
   vi.unstubAllGlobals()
 })
 
-it('captures the homepage tolerance for every file in a serial batch', async () => {
+it('reports intake readiness and submits every file with the server default policy', async () => {
   const upload = vi
     .spyOn(api, 'upload')
     .mockResolvedValueOnce({ run_id: 'one', execution_state: 'QUEUED' })
@@ -58,24 +58,32 @@ it('captures the homepage tolerance for every file in a serial batch', async () 
   ).toBeInTheDocument()
   const composer = within(screen.getByRole('region', { name: 'Invoice intake' }))
   expect(composer.getByRole('heading', { name: 'Start a review' })).toBeInTheDocument()
-  const process = composer.getByRole('button', { name: 'Process invoices' })
-  expect(process).toBeDisabled()
-  expect(composer.getByRole('radio', { name: '2%' })).toBeChecked()
-  await userEvent.click(screen.getByRole('radio', { name: '5%' }))
-  await choose([pdf('one.pdf'), pdf('two.pdf')])
+  expect(composer.getByRole('button', { name: 'Process invoices' })).toBeDisabled()
+  expect(composer.queryByRole('radio')).not.toBeInTheDocument()
+  expect(screen.getByRole('region', { name: 'Checks performed' })).toHaveTextContent(
+    'AP Compass runs these checks after you submit.',
+  )
+  const one = pdf('one.pdf')
+  const two = pdf('two.pdf')
+  await choose([one])
+  expect(composer.getByRole('button', { name: 'Process 1 invoice' })).toBeEnabled()
+  await choose([two])
   expect(composer.getByRole('list', { name: 'Selected invoices' })).toHaveTextContent(
     /one.pdf.*two.pdf/,
   )
-  expect(process).toBeEnabled()
-  await userEvent.click(process)
+  const readiness = within(composer.getByRole('region', { name: 'Intake readiness' }))
+  expect(readiness.getByText('Selected PDFs').nextElementSibling).toHaveTextContent('2')
+  expect(readiness.getByText('Valid files').nextElementSibling).toHaveTextContent('2')
+  expect(readiness.getByText('Total size').nextElementSibling).toHaveTextContent('18 B')
+  expect(readiness.getByRole('status')).toHaveTextContent('Ready to submit.')
+  await userEvent.click(composer.getByRole('button', { name: 'Process 2 invoices' }))
   await waitFor(() => expect(result('one.pdf').getByText('Queued')).toBeInTheDocument())
   expect(composer.getByRole('button', { name: 'Processing invoices' })).toBeDisabled()
-  expect(screen.queryByRole('radio', { name: '5%' })).not.toBeInTheDocument()
-  expect(screen.getByText('Unit-price tolerance 5%')).toBeInTheDocument()
+  expect(composer.queryByRole('region', { name: 'Intake readiness' })).not.toBeInTheDocument()
   expect(upload).toHaveBeenCalledTimes(1)
   await act(async () => finish(run))
   await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('2 of 2 finished'))
-  expect(upload.mock.calls.map(([, tolerance]) => tolerance)).toEqual(['0.05', '0.05'])
+  expect(upload.mock.calls).toEqual([[one], [two]])
 })
 
 it('accepts multiple files, ignores duplicate selections, supports drag and allows keyboard removal', async () => {
@@ -100,7 +108,7 @@ it('accepts multiple files, ignores duplicate selections, supports drag and allo
 
 it('rejects non-PDF, empty and oversized files without blocking valid PDFs in the same drop', () => {
   const upload = vi.spyOn(api, 'upload')
-  setup()
+  setup(true)
   fireEvent.drop(screen.getByText('Drop invoice PDFs here').parentElement!, {
     dataTransfer: {
       files: [
@@ -112,8 +120,21 @@ it('rejects non-PDF, empty and oversized files without blocking valid PDFs in th
     },
   })
   expect(screen.getByRole('alert')).toHaveTextContent(/wrong.txt.*empty.pdf.*large.pdf/)
+  expect(screen.getByRole('alert')).toHaveTextContent('8 MiB')
   expect(screen.getByText('okay.pdf')).toBeInTheDocument()
+  expect(screen.getByRole('status')).toHaveTextContent('Files listed below were not added.')
+  expect(screen.getByRole('button', { name: 'Process 1 invoice' })).toBeEnabled()
   expect(upload).not.toHaveBeenCalled()
+})
+
+it('reports the 10-file limit and updates readiness when a PDF is removed', async () => {
+  setup(true)
+  await choose(Array.from({ length: 11 }, (_, index) => pdf(`sample-${index + 1}.pdf`)))
+  expect(screen.getByRole('alert')).toHaveTextContent('Select up to 10 PDFs per batch.')
+  expect(screen.getByRole('button', { name: 'Process 10 invoices' })).toBeEnabled()
+  await userEvent.click(screen.getByRole('button', { name: 'Remove sample-1.pdf' }))
+  expect(screen.getByRole('button', { name: 'Process 9 invoices' })).toBeEnabled()
+  expect(screen.getByText('Total size').nextElementSibling).toHaveTextContent('81 B')
 })
 
 it('waits for each persisted terminal state, skips a 429, and refreshes both data views without resubmission', async () => {

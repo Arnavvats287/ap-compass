@@ -4,6 +4,8 @@ AP Compass is an invoice operations and exception-resolution workspace for the Z
 
 A PDF upload creates a persisted run. The bounded document adapter extracts typed invoice facts and independently checks source support. The deterministic evaluator applies vendor, PO, billed-history and policy controls. The dashboard and queue link to the source PDF, real decision trace and findings. A demo reviewer can confirm an eligible missing PO with a recorded reason. The price tolerance preview evaluates stored facts without spending a model call or writing a decision.
 
+On the homepage, choose up to 10 synthetic PDFs and check the file count, size and any warnings in **Intake readiness** before processing. The upload uses the server’s active unit-price policy, which defaults to 2% in this release. Open the invoice workspace to see the policy recorded for that run.
+
 ## Local development
 
 Use Python 3.12 and Node 24. From the repository root in PowerShell:
