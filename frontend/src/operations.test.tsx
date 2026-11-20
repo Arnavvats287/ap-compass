@@ -38,7 +38,7 @@ describe('connected operations views', () => {
     defaults()
     renderPage(<Overview />)
     const metrics = await screen.findByRole('region', { name: 'Invoice operations counts' })
-    expect(within(metrics).getByRole('link', { name: /Total invoices/ })).toHaveTextContent('17')
+    expect(within(metrics).getByRole('link', { name: /Total submissions/ })).toHaveTextContent('17')
     expect(within(metrics).getByRole('link', { name: /Ready to process/ })).toHaveTextContent('6')
     expect(screen.getByRole('region', { name: 'Flagged invoice net value' })).toHaveTextContent(
       '₹1,23,456',

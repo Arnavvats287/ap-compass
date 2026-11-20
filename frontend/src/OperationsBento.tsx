@@ -248,7 +248,7 @@ export default function OperationsBento({
   const counts =
     metrics &&
     ([
-      ['all', 'Total invoices', metrics.total_runs, Files],
+      ['all', 'Total submissions', metrics.total_runs, Files],
       ['ready', 'Ready to process', metrics.ready, Check],
       ['review', 'Needs review', metrics.review_required, CircleAlert],
       ['blocked', 'Blocked', metrics.blocked, ShieldAlert],
