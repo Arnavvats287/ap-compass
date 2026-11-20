@@ -42,32 +42,30 @@ export default function Overview() {
         runs={runs.data ?? []}
         listState={runs.status}
         retry={retry}
+        recentActivity={
+          <section data-overview-section="activity" className="panel queue-panel">
+            <div className="section-heading">
+              <div>
+                <h2>Recent invoice activity</h2>
+                <p>Persisted decisions and work in progress.</p>
+              </div>
+              <Link className="text-link" to="/runs">
+                View invoice queue
+                <ArrowUpRight size={16} aria-hidden="true" />
+              </Link>
+            </div>
+            {runs.isPending ? (
+              <Loading />
+            ) : runs.isError ? (
+              <ErrorState retry={() => void runs.refetch()} />
+            ) : runs.data?.length ? (
+              <RunTable runs={runs.data.slice(0, 8)} />
+            ) : (
+              <Empty />
+            )}
+          </section>
+        }
       />
-      <p className="queue-basis">
-        Counts reflect recorded automated decisions. Human-reviewed assessments are labelled
-        separately in the queue.
-      </p>
-      <section className="panel queue-panel">
-        <div className="section-heading">
-          <div>
-            <h2>Recent invoice activity</h2>
-            <p>Persisted decisions and work in progress.</p>
-          </div>
-          <Link className="text-link" to="/runs">
-            View invoice queue
-            <ArrowUpRight size={16} aria-hidden="true" />
-          </Link>
-        </div>
-        {runs.isPending ? (
-          <Loading />
-        ) : runs.isError ? (
-          <ErrorState retry={() => void runs.refetch()} />
-        ) : runs.data?.length ? (
-          <RunTable runs={runs.data.slice(0, 8)} />
-        ) : (
-          <Empty />
-        )}
-      </section>
     </div>
   )
 }

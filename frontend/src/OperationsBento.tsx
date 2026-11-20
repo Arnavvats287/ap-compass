@@ -1,3 +1,5 @@
+import { useId } from 'react'
+import type { ReactNode } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { ArrowDownToLine, ArrowUpRight, Check, CircleAlert, Files, ShieldAlert } from 'lucide-react'
 import { Link } from 'react-router-dom'
@@ -9,6 +11,9 @@ import { attentionRuns, invoiceUrl } from './worklist'
 import FinancialOverview from './FinancialOverview'
 import { ExceptionInsights, ProcurementCapacity, VendorAttentionTable } from './DashboardTables'
 
+import OverviewFocus from './OverviewFocus'
+import DecisionRing from './DecisionRing'
+
 const scope = 'Among the latest 100 invoices'
 
 function Spotlight({
@@ -16,12 +21,15 @@ function Spotlight({
   runs,
   listState,
   retry,
+  focused = false,
 }: {
   metrics: Dashboard
   runs: RunSummary[]
   listState: 'pending' | 'error' | 'success'
   retry: () => void
+  focused?: boolean
 }) {
+  const title = useId()
   const count = metrics.blocked + metrics.review_required
   const [priority, ...other] = attentionRuns(runs)
   const id = priority?.id ?? ''
@@ -31,13 +39,15 @@ function Spotlight({
     enabled: !!id,
     retry: false,
     refetchOnWindowFocus: false,
+    refetchOnMount: !focused,
   })
   const decision = detail.data?.decision
   const finding = decision?.findings.find((entry) => entry.code === priority?.primary_reason_code)
   return (
     <section
       className="ops-spotlight ops-card"
-      aria-labelledby="attention-title"
+      data-overview-section="attention"
+      aria-labelledby={title}
       data-empty={!priority && listState === 'success'}
     >
       <div className="ops-spotlight-intro">
@@ -45,7 +55,7 @@ function Spotlight({
           <span className="ops-kicker">
             <CircleAlert size={15} aria-hidden="true" /> Exceptions
           </span>
-          <h2 id="attention-title">Needs attention</h2>
+          <h2 id={title}>Needs attention</h2>
           <p>Recorded Review and Blocked invoices</p>
         </div>
         <span className="ops-signal" aria-label={count + ' invoices need attention'}>
@@ -152,7 +162,8 @@ function Spotlight({
   )
 }
 
-function Distribution({ metrics }: { metrics: Dashboard }) {
+function Distribution({ metrics, focused = false }: { metrics: Dashboard; focused?: boolean }) {
+  const title = useId()
   const outcomes = [
     ['ready', 'Ready', metrics.ready],
     ['review', 'Needs review', metrics.review_required],
@@ -161,23 +172,36 @@ function Distribution({ metrics }: { metrics: Dashboard }) {
   return (
     <section
       className="ops-card ops-distribution"
-      aria-labelledby="distribution-title"
+      data-overview-section="distribution"
+      aria-labelledby={title}
       data-empty={metrics.completed === 0}
     >
-      <h2 id="distribution-title">Decision distribution</h2>
+      <h2 id={title}>Decision distribution</h2>
       <p>Recorded automated outcomes</p>
-      <strong className="ops-figure">{metrics.completed}</strong>
-      <span className="ops-figure-label">Completed decisions</span>
-      {metrics.completed > 0 ? (
-        <div className="ops-outcome-bar" aria-hidden="true">
-          {outcomes
-            .filter(([, , count]) => count > 0)
-            .map(([key, , count]) => (
-              <span key={key} className={key} style={{ flexGrow: count }} />
-            ))}
+      {focused && metrics.completed > 0 ? (
+        <div className="ops-ring-chart">
+          <DecisionRing segments={outcomes} />
+          <div className="ops-ring-total">
+            <strong className="ops-figure">{metrics.completed}</strong>
+            <span className="ops-figure-label">Completed decisions</span>
+          </div>
         </div>
       ) : (
-        <p className="ops-chart-empty">No completed decisions yet.</p>
+        <>
+          <strong className="ops-figure">{metrics.completed}</strong>
+          <span className="ops-figure-label">Completed decisions</span>
+          {metrics.completed > 0 ? (
+            <div className="ops-outcome-bar" aria-hidden="true">
+              {outcomes
+                .filter(([, , count]) => count > 0)
+                .map(([key, , count]) => (
+                  <span key={key} className={key} style={{ flexGrow: count }} />
+                ))}
+            </div>
+          ) : (
+            <p className="ops-chart-empty">No completed decisions yet.</p>
+          )}
+        </>
       )}
       <ul className="ops-outcome-list">
         {outcomes.map(([key, label, count]) => (
@@ -213,11 +237,13 @@ export default function OperationsBento({
   runs,
   listState,
   retry,
+  recentActivity,
 }: {
   metrics?: Dashboard
   runs: RunSummary[]
   listState: 'pending' | 'error' | 'success'
   retry: () => void
+  recentActivity: ReactNode
 }) {
   const counts =
     metrics &&
@@ -228,26 +254,82 @@ export default function OperationsBento({
       ['blocked', 'Blocked', metrics.blocked, ShieldAlert],
     ] as const)
   const values = Object.entries(metrics?.flagged_invoice_net_by_currency ?? {})
+  const panels = {
+    counts: counts && (
+      <section
+        data-overview-section="counts"
+        className="ops-metrics"
+        aria-label="Invoice operations counts"
+      >
+        {counts.map(([key, label, count, Icon]) => (
+          <Link
+            key={key}
+            className={'ops-card ops-metric ' + key}
+            to={key === 'all' ? '/runs' : '/runs?status=' + key}
+          >
+            <span className="ops-metric-icon">
+              <Icon size={18} aria-hidden="true" />
+            </span>
+            <ArrowUpRight className="ops-metric-arrow" size={17} aria-hidden="true" />
+            <strong>{count}</strong>
+            <span>{label}</span>
+          </Link>
+        ))}
+      </section>
+    ),
+    attention: metrics && (
+      <Spotlight metrics={metrics} runs={runs} listState={listState} retry={retry} />
+    ),
+    distribution: metrics && <Distribution metrics={metrics} focused />,
+    financial: metrics?.invoice_gross && <FinancialOverview gross={metrics.invoice_gross} />,
+    vendors: metrics && <VendorAttentionTable rows={metrics.vendor_attention} />,
+    capacity: metrics && <ProcurementCapacity rows={metrics.procurement_capacity} />,
+    exceptions: metrics && <ExceptionInsights rows={metrics.exception_insights} />,
+    flagged: metrics?.flagged_invoice_net_by_currency && (
+      <section
+        data-overview-section="flagged"
+        className="ops-card ops-flagged"
+        aria-label="Flagged invoice net value"
+      >
+        <h2>
+          <ArrowDownToLine size={18} aria-hidden="true" /> Flagged invoice net
+        </h2>
+        <p>
+          Known net from recorded Review and Blocked runs, grouped by currency. Each analysis is
+          counted separately.
+        </p>
+        {values.length ? (
+          <dl>
+            {values.map(([currency, value]) => (
+              <div key={currency}>
+                <dt>{currency} net</dt>
+                <dd className="amount">{money(value, currency)}</dd>
+              </div>
+            ))}
+          </dl>
+        ) : (
+          <p>No flagged invoice value</p>
+        )}
+        {!!metrics.flagged_invoice_net_missing_count && (
+          <small>
+            {metrics.flagged_invoice_net_missing_count} run(s) excluded because net or currency is
+            unknown.
+          </small>
+        )}
+      </section>
+    ),
+    activity: recentActivity,
+  }
   return (
-    <>
-      {counts && (
-        <section className="ops-metrics" aria-label="Invoice operations counts">
-          {counts.map(([key, label, count, Icon]) => (
-            <Link
-              key={key}
-              className={'ops-card ops-metric ' + key}
-              to={key === 'all' ? '/runs' : '/runs?status=' + key}
-            >
-              <span className="ops-metric-icon">
-                <Icon size={18} aria-hidden="true" />
-              </span>
-              <ArrowUpRight className="ops-metric-arrow" size={17} aria-hidden="true" />
-              <strong>{count}</strong>
-              <span>{label}</span>
-            </Link>
-          ))}
-        </section>
-      )}
+    <OverviewFocus
+      panels={{
+        ...panels,
+        attention: metrics && (
+          <Spotlight metrics={metrics} runs={runs} listState={listState} retry={retry} focused />
+        ),
+      }}
+    >
+      {panels.counts}
       <div
         className={
           metrics?.invoice_gross
@@ -257,49 +339,22 @@ export default function OperationsBento({
               : 'ops-grid ops-grid-fallback'
         }
       >
-        {metrics && (
-          <>
-            <Spotlight metrics={metrics} runs={runs} listState={listState} retry={retry} />
-            <Distribution metrics={metrics} />
-            {metrics.invoice_gross && <FinancialOverview gross={metrics.invoice_gross} />}
-            <VendorAttentionTable rows={metrics.vendor_attention} />
-            <ProcurementCapacity rows={metrics.procurement_capacity} />
-            <ExceptionInsights rows={metrics.exception_insights} />
-          </>
-        )}
+        {panels.attention}
+        {metrics && <Distribution metrics={metrics} />}
+        {panels.financial}
+        {panels.vendors}
+        {panels.capacity}
+        {panels.exceptions}
         <div className="ops-support">
           <UploadPanel compact={!metrics} />
-          {metrics?.flagged_invoice_net_by_currency && (
-            <section className="ops-card ops-flagged" aria-label="Flagged invoice net value">
-              <h2>
-                <ArrowDownToLine size={18} aria-hidden="true" /> Flagged invoice net
-              </h2>
-              <p>
-                Known net from recorded Review and Blocked runs, grouped by currency. Each analysis
-                is counted separately.
-              </p>
-              {values.length ? (
-                <dl>
-                  {values.map(([currency, value]) => (
-                    <div key={currency}>
-                      <dt>{currency} net</dt>
-                      <dd className="amount">{money(value, currency)}</dd>
-                    </div>
-                  ))}
-                </dl>
-              ) : (
-                <p>No flagged invoice value</p>
-              )}
-              {!!metrics.flagged_invoice_net_missing_count && (
-                <small>
-                  {metrics.flagged_invoice_net_missing_count} run(s) excluded because net or
-                  currency is unknown.
-                </small>
-              )}
-            </section>
-          )}
+          {panels.flagged}
         </div>
       </div>
-    </>
+      <p className="queue-basis">
+        Counts reflect recorded automated decisions. Human-reviewed assessments are labelled
+        separately in the queue.
+      </p>
+      {panels.activity}
+    </OverviewFocus>
   )
 }

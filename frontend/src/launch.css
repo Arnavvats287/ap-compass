@@ -30,6 +30,30 @@
   letter-spacing: -0.075em;
 }
 
+@media (prefers-reduced-motion: no-preference) and (forced-colors: none) {
+  @supports (background-clip: text) {
+    .launch-intro h1 {
+      width: fit-content;
+      margin-inline: auto;
+      background: linear-gradient(105deg, var(--color-nav) 42%, #719879 50%, var(--color-nav) 58%)
+        100% center / 250% 100% no-repeat;
+      background-clip: text;
+      color: transparent;
+      animation: launch-title-shine 3s ease-in-out 430ms infinite;
+    }
+  }
+}
+
+@keyframes launch-title-shine {
+  0% {
+    background-position: 100% center;
+  }
+  38.33%,
+  100% {
+    background-position: 0% center;
+  }
+}
+
 .launch-statement {
   margin: 15px 0 8px;
   color: var(--color-ink);

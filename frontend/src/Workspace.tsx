@@ -10,7 +10,7 @@ import {
   ShieldCheck,
   TriangleAlert,
 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ApiError, api } from './api'
 import { active, useRun } from './queries'
 import { ErrorState, Loading, Status, statusInfo } from './components'
@@ -21,6 +21,8 @@ import HumanPOReview from './HumanPOReview'
 export { StageTimeline } from './DecisionTrace'
 import EvidenceList from './EvidenceRail'
 import WorkspaceNavigation from './WorkspaceNavigation'
+import WorkspaceFocusSection from './WorkspaceFocusSection'
+import FocusDialog from './FocusDialog'
 import type { Finding, Run } from './types'
 export { default as EvidenceList } from './EvidenceRail'
 
@@ -279,6 +281,24 @@ function SupportingRecords({ run }: { run: Run }) {
 export default function Workspace() {
   const { runId = '' } = useParams()
   const query = useRun(runId)
+  const [focused, setFocused] = useState<{
+    id: string
+    label: string
+    runId: string
+    trigger: HTMLElement
+  } | null>(null)
+  const focusTarget = useRef<HTMLDivElement>(null)
+  const focus = focused?.runId === runId ? focused : null
+  const showSourcePage = (number: number) => {
+    setSourcePage({ runId, number })
+    setFocused(null)
+    window.location.hash = 'source-document'
+    requestAnimationFrame(() => {
+      const source = document.getElementById('source-document')
+      source?.scrollIntoView?.({ block: 'nearest' })
+      source?.focus({ preventScroll: true })
+    })
+  }
   const [copied, setCopied] = useState(false)
   const [copyError, setCopyError] = useState(false)
   const [sourcePage, setSourcePage] = useState<{ runId: string; number: number } | null>(null)
@@ -349,49 +369,59 @@ export default function Workspace() {
         </span>
       </div>
       <div className="invoice-layout">
-        <WorkspaceNavigation key={run.id} hasDecision={!!run.decision} hasEvidence={!!invoice} />
+        <WorkspaceNavigation
+          key={run.id}
+          hasDecision={!!run.decision}
+          hasEvidence={!!invoice}
+          onFocusSection={({ id, label }, trigger) => {
+            document.getElementById(id)?.scrollIntoView?.({ block: 'nearest' })
+            setFocused({ id, label, runId, trigger })
+          }}
+        />
         <div className="invoice-content">
-          <header className="invoice-hero" id="case-decision" tabIndex={-1}>
-            <div>
-              <div className="invoice-hero-outcome">
-                {run.decision && <span>Recorded decision</span>}
-                <Status state={run.execution_state} outcome={run.decision?.outcome} />
-                {run.decision && (
-                  <span className="invoice-policy-applied">
-                    {appliedTolerance
-                      ? `Policy applied: ${toleranceLabel(appliedTolerance)} unit-price tolerance`
-                      : 'Applied unit-price tolerance unavailable'}
+          <WorkspaceFocusSection focused={focus?.id === 'case-decision'} target={focusTarget}>
+            <header className="invoice-hero" id="case-decision" tabIndex={-1}>
+              <div>
+                <div className="invoice-hero-outcome">
+                  {run.decision && <span>Recorded decision</span>}
+                  <Status state={run.execution_state} outcome={run.decision?.outcome} />
+                  {run.decision && (
+                    <span className="invoice-policy-applied">
+                      {appliedTolerance
+                        ? `Policy applied: ${toleranceLabel(appliedTolerance)} unit-price tolerance`
+                        : 'Applied unit-price tolerance unavailable'}
+                    </span>
+                  )}
+                </div>
+                <h1>
+                  {invoice?.vendor_name_raw ||
+                    (pending
+                      ? 'Invoice analysis in progress'
+                      : failed
+                        ? 'Invoice processing incomplete'
+                        : 'Supplier not available')}
+                </h1>
+                <p className="invoice-identity">
+                  {invoice?.invoice_number || `Run ${run.id.slice(0, 8)}`}
+                </p>
+                <div className="invoice-meta">
+                  <span>
+                    Invoice date <strong>{date(invoice?.invoice_date)}</strong>
                   </span>
-                )}
+                  <span>
+                    Purchase order <strong>{invoice?.po_reference ?? unknown}</strong>
+                  </span>
+                </div>
               </div>
-              <h1>
-                {invoice?.vendor_name_raw ||
-                  (pending
-                    ? 'Invoice analysis in progress'
-                    : failed
-                      ? 'Invoice processing incomplete'
-                      : 'Supplier not available')}
-              </h1>
-              <p className="invoice-identity">
-                {invoice?.invoice_number || `Run ${run.id.slice(0, 8)}`}
-              </p>
-              <div className="invoice-meta">
+              <div className="invoice-hero-amount">
                 <span>
-                  Invoice date <strong>{date(invoice?.invoice_date)}</strong>
+                  Invoice total{invoice?.currency ? ` · ${invoice.currency}` : ''}
+                  {invoice?.total ? ' incl. tax' : ''}
                 </span>
-                <span>
-                  Purchase order <strong>{invoice?.po_reference ?? unknown}</strong>
-                </span>
+                <strong className="amount">{money(invoice?.total, invoice?.currency)}</strong>
               </div>
-            </div>
-            <div className="invoice-hero-amount">
-              <span>
-                Invoice total{invoice?.currency ? ` · ${invoice.currency}` : ''}
-                {invoice?.total ? ' incl. tax' : ''}
-              </span>
-              <strong className="amount">{money(invoice?.total, invoice?.currency)}</strong>
-            </div>
-          </header>
+            </header>
+          </WorkspaceFocusSection>
           <p className="run-announcement" role="status" aria-live="polite" aria-atomic="true">
             {announcement}
           </p>
@@ -427,24 +457,48 @@ export default function Workspace() {
               </Link>
             </section>
           )}
-          {(pending || failed) && <DecisionTrace key={run.id} run={run} />}
+          {(pending || failed) && (
+            <WorkspaceFocusSection focused={focus?.id === 'case-trace'} target={focusTarget}>
+              <DecisionTrace key={run.id} run={run} />
+            </WorkspaceFocusSection>
+          )}
           <div className="invoice-decision-grid">
             <div className="decision-column">
-              {run.decision && (
-                <>
-                  {!invoice?.po_reference?.trim() && (
-                    <p className="recorded-assessment-label">Original automated decision</p>
-                  )}
-                  <BusinessDecision run={run} />
-                </>
-              )}
-              <HumanPOReview
-                key={run.id}
-                run={run}
-                renderFinding={(finding) => (
-                  <FindingDetails finding={finding} currency={invoice?.currency} />
+              <WorkspaceFocusSection focused={focus?.id === 'case-decision'} target={focusTarget}>
+                {run.decision && (
+                  <>
+                    {!invoice?.po_reference?.trim() && (
+                      <p className="recorded-assessment-label">Original automated decision</p>
+                    )}
+                    <BusinessDecision run={run} />
+                  </>
                 )}
-              />
+                <HumanPOReview
+                  key={run.id}
+                  run={run}
+                  renderFinding={(finding) => (
+                    <FindingDetails finding={finding} currency={invoice?.currency} />
+                  )}
+                />
+              </WorkspaceFocusSection>
+              {invoice && (
+                <WorkspaceFocusSection focused={focus?.id === 'evidence'} target={focusTarget}>
+                  <section
+                    className="invoice-evidence"
+                    id="evidence"
+                    tabIndex={-1}
+                    aria-labelledby="evidence-title"
+                  >
+                    <h2 id="evidence-title">Source evidence</h2>
+                    <p>Compare extracted fields with their supporting text and page references.</p>
+                    <EvidenceList
+                      key={run.id}
+                      evidence={invoice.evidence}
+                      onShowPage={showSourcePage}
+                    />
+                  </section>
+                </WorkspaceFocusSection>
+              )}
             </div>
             <section
               className="document-panel"
@@ -479,62 +533,56 @@ export default function Workspace() {
               )}
             </section>
           </div>
-          {invoice && (
-            <section
-              className="invoice-evidence"
-              id="evidence"
-              tabIndex={-1}
-              aria-labelledby="evidence-title"
-            >
-              <h2 id="evidence-title">Source evidence</h2>
-              <p>Compare extracted fields with their supporting text and page references.</p>
-              <EvidenceList
-                key={run.id}
-                evidence={invoice.evidence}
-                onShowPage={(number) => {
-                  setSourcePage({ runId: run.id, number })
-                  window.location.hash = 'source-document'
-                  document.getElementById('source-document')?.focus({ preventScroll: true })
-                }}
-              />
-            </section>
-          )}
           {run.decision && (
-            <div className="completed-trace">
-              <DecisionTrace key={run.id} run={run} />
-            </div>
+            <WorkspaceFocusSection focused={focus?.id === 'case-trace'} target={focusTarget}>
+              <div className="completed-trace">
+                <DecisionTrace key={run.id} run={run} />
+              </div>
+            </WorkspaceFocusSection>
           )}
-          <section
-            className="invoice-run-details"
-            id="case-details"
-            tabIndex={-1}
-            aria-labelledby="details-title"
-          >
-            <div className="section-heading">
-              <h2 id="details-title">Run details</h2>
-              {run.model_id?.startsWith('TEST_ONLY') && (
-                <span
-                  className="invoice-demo-label"
-                  title="Controlled extraction from a saved reply. No live Gemini request."
-                >
-                  <FlaskConical size={15} aria-hidden /> Demo run
-                  <span className="sr-only">
-                    . Controlled extraction with no live Gemini request.
+          <WorkspaceFocusSection focused={focus?.id === 'case-details'} target={focusTarget}>
+            <section
+              className="invoice-run-details"
+              id="case-details"
+              tabIndex={-1}
+              aria-labelledby="details-title"
+            >
+              <div className="section-heading">
+                <h2 id="details-title">Run details</h2>
+                {run.model_id?.startsWith('TEST_ONLY') && (
+                  <span
+                    className="invoice-demo-label"
+                    title="Controlled extraction from a saved reply. No live Gemini request."
+                  >
+                    <FlaskConical size={15} aria-hidden /> Demo run
+                    <span className="sr-only">
+                      . Controlled extraction with no live Gemini request.
+                    </span>
                   </span>
-                </span>
+                )}
+              </div>
+              <Diagnostics run={run} />
+              {run.decision && (
+                <details className="workspace-audit" open={run.candidates.length > 1}>
+                  <summary>All controls & procurement records</summary>
+                  <div>
+                    <SupportingRecords run={run} />
+                  </div>
+                </details>
               )}
-            </div>
-            <Diagnostics run={run} />
-            {run.decision && (
-              <details className="workspace-audit" open={run.candidates.length > 1}>
-                <summary>All controls & procurement records</summary>
-                <div>
-                  <SupportingRecords run={run} />
-                </div>
-              </details>
-            )}
-          </section>
+            </section>
+          </WorkspaceFocusSection>
         </div>
+        <FocusDialog
+          open={focus !== null}
+          label={focus?.label}
+          section={focus?.id}
+          contentRef={focusTarget}
+          onClose={() => {
+            setFocused(null)
+            focus?.trigger.focus({ preventScroll: true })
+          }}
+        />
       </div>
     </div>
   )

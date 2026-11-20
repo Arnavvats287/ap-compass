@@ -279,6 +279,17 @@
   border-top: 1px solid var(--color-rule);
 }
 
+.decision-column .invoice-evidence {
+  margin-top: var(--workspace-gap);
+  padding-top: var(--space-md);
+}
+
+@container (max-width: 420px) {
+  .decision-column .evidence-inspection {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 .invoice-evidence > h2,
 .invoice-run-details h2 {
   font: 400 clamp(1.65rem, 2.4vw, 2.2rem)/1.12 var(--font-editorial);
@@ -316,13 +327,13 @@
 
 .evidence-rail {
   display: grid;
-  grid-auto-columns: clamp(165px, 18vw, 210px);
+  grid-auto-columns: clamp(145px, 28cqi, 184px);
   grid-auto-flow: column;
-  gap: 10px;
+  gap: 8px;
   overflow-x: auto;
   overscroll-behavior-inline: contain;
   scroll-snap-type: x proximity;
-  padding: 6px 4px 12px;
+  padding: 4px 4px 8px;
   scrollbar-color: var(--color-strong-rule) transparent;
   scrollbar-width: thin;
 }
@@ -330,11 +341,12 @@
 .evidence-tile {
   display: grid;
   align-content: start;
-  gap: 6px;
+  gap: 4px;
   scroll-snap-align: start;
   min-width: 0;
-  min-height: 110px;
-  padding: 13px;
+  min-height: 84px;
+  padding: 9px 10px;
+  font-size: var(--text-sm);
   border: 1px solid var(--color-rule);
   border-radius: var(--radius-nested);
   text-align: left;
@@ -391,8 +403,8 @@
 .evidence-inspection {
   display: grid;
   grid-template-columns: minmax(140px, 0.65fr) minmax(0, 1.35fr);
-  gap: var(--workspace-gap);
-  padding: clamp(16px, 2vw, 26px);
+  gap: var(--space-md);
+  padding: clamp(12px, 1.5vw, 18px);
   border-radius: var(--radius-nested);
   background: var(--surface-canvas);
   overflow-wrap: anywhere;
@@ -404,7 +416,7 @@
 
 .evidence-inspection-meta > p,
 .evidence-inspection-quote blockquote {
-  margin: 4px 0 12px;
+  margin: 4px 0 8px;
 }
 
 .evidence-inspection-quote blockquote {

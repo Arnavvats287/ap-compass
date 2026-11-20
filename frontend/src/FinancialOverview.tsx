@@ -1,3 +1,4 @@
+import { useId } from 'react'
 import { CircleAlert, CircleCheck, Files, ShieldAlert } from 'lucide-react'
 import { money } from './format'
 import type { Dashboard } from './types'
@@ -14,9 +15,14 @@ export default function FinancialOverview({
 }: {
   gross: NonNullable<Dashboard['invoice_gross']>
 }) {
+  const title = useId()
   return (
-    <section className="financial-overview ops-card" aria-labelledby="financial-overview-title">
-      <h2 id="financial-overview-title">Financial overview</h2>
+    <section
+      className="financial-overview ops-card"
+      data-overview-section="financial"
+      aria-labelledby={title}
+    >
+      <h2 id={title}>Financial overview</h2>
       <p>
         Gross including tax, across all stored submissions. Repeat submissions and duplicates are
         included. Decision totals use recorded automated outcomes.

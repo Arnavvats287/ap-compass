@@ -1,3 +1,4 @@
+import { useId } from 'react'
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { money, reasonLabel } from './format'
@@ -35,16 +36,18 @@ function vendorFilter(vendor: VendorAttention, status: 'attention' | 'review' | 
 }
 
 export function VendorAttentionTable({ rows }: { rows: VendorAttention[] }) {
+  const title = useId()
   return (
-    <section className="ops-card ops-vendors" aria-labelledby="vendors-title">
-      <h2 id="vendors-title">Top 10 vendors needing attention</h2>
+    <section
+      className="ops-card ops-vendors"
+      data-overview-section="vendors"
+      aria-labelledby={title}
+    >
+      <h2 id={title}>Top 10 vendors needing attention</h2>
       <p>Latest 100 submissions · Recorded automated decisions · Gross by currency</p>
       {rows.length ? (
         <>
-          <DashboardTable
-            title="vendors-title"
-            columns={['Vendor', 'Review', 'Blocked', 'Flagged gross']}
-          >
+          <DashboardTable title={title} columns={['Vendor', 'Review', 'Blocked', 'Flagged gross']}>
             {rows.map((vendor) => (
               <tr key={vendor.source_names[0]}>
                 <th scope="row">
@@ -60,7 +63,7 @@ export function VendorAttentionTable({ rows }: { rows: VendorAttention[] }) {
                       {vendor.review_count}
                     </Link>
                   ) : (
-                    0
+                    <span className="dashboard-count">0</span>
                   )}
                 </td>
                 <td>
@@ -73,7 +76,7 @@ export function VendorAttentionTable({ rows }: { rows: VendorAttention[] }) {
                       {vendor.blocked_count}
                     </Link>
                   ) : (
-                    0
+                    <span className="dashboard-count">0</span>
                   )}
                 </td>
                 <td>
@@ -105,15 +108,17 @@ export function VendorAttentionTable({ rows }: { rows: VendorAttention[] }) {
 }
 
 export function ProcurementCapacity({ rows }: { rows: Dashboard['procurement_capacity'] }) {
+  const title = useId()
   return (
-    <section className="ops-card ops-capacity" aria-labelledby="capacity-title">
-      <h2 id="capacity-title">Purchase order capacity</h2>
+    <section
+      className="ops-card ops-capacity"
+      data-overview-section="capacity"
+      aria-labelledby={title}
+    >
+      <h2 id={title}>Purchase order capacity</h2>
       <p>Procurement ledger · Net by PO currency</p>
       {rows.length ? (
-        <DashboardTable
-          title="capacity-title"
-          columns={['Vendor / PO', 'Approved', 'Billed', 'Remaining']}
-        >
+        <DashboardTable title={title} columns={['Vendor / PO', 'Approved', 'Billed', 'Remaining']}>
           {rows.map((row) => (
             <tr key={row.po_id}>
               <th scope="row">
@@ -143,9 +148,14 @@ export function ProcurementCapacity({ rows }: { rows: Dashboard['procurement_cap
 }
 
 export function ExceptionInsights({ rows }: { rows: Dashboard['exception_insights'] }) {
+  const title = useId()
   return (
-    <section className="ops-card ops-insights" aria-labelledby="insights-title">
-      <h2 id="insights-title">Common exceptions</h2>
+    <section
+      className="ops-card ops-insights"
+      data-overview-section="exceptions"
+      aria-labelledby={title}
+    >
+      <h2 id={title}>Common exceptions</h2>
       <p>Review and Block findings · Latest 100 submissions</p>
       {rows.length ? (
         <ul className="dashboard-findings">

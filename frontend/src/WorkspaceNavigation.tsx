@@ -19,9 +19,11 @@ const sections = [
 export default function WorkspaceNavigation({
   hasDecision,
   hasEvidence,
+  onFocusSection,
 }: {
   hasDecision: boolean
   hasEvidence: boolean
+  onFocusSection: (section: { id: string; label: string }, trigger: HTMLElement) => void
 }) {
   const { hash } = useLocation()
   const [collapsed, setCollapsed] = useState(false)
@@ -100,7 +102,13 @@ export default function WorkspaceNavigation({
               aria-current={highlighted === id ? 'location' : undefined}
               aria-label={label}
               title={collapsed ? label : undefined}
-              onClick={() => setActive(id)}
+              aria-haspopup="dialog"
+              onClick={(event) => {
+                if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return
+                event.preventDefault()
+                setActive(id)
+                onFocusSection({ id, label }, event.currentTarget)
+              }}
             >
               <Icon size={18} aria-hidden />
               <span className="invoice-nav-label">{label}</span>
@@ -111,14 +119,17 @@ export default function WorkspaceNavigation({
       <label className="invoice-mobile-jump">
         <span>Jump to</span>
         <select
-          value={highlighted}
+          value=""
           onChange={(event) => {
-            const target = event.currentTarget.value
-            setActive(target)
-            window.location.hash = target
-            document.getElementById(target)?.focus({ preventScroll: true })
+            const target = available.find(({ id }) => id === event.currentTarget.value)
+            if (!target) return
+            setActive(target.id)
+            onFocusSection(target, event.currentTarget)
           }}
         >
+          <option value="" disabled>
+            Choose section
+          </option>
           {available.map(({ id, label }) => (
             <option key={id} value={id}>
               {label}
