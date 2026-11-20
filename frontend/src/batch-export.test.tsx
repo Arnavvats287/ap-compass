@@ -4,6 +4,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { afterEach, expect, it, vi } from 'vitest'
 import BatchUpload, { BatchUploadProvider } from './BatchUpload'
+import LaunchPage from './LaunchPage'
 import ExportInvoices from './ExportInvoices'
 import { api, ApiError } from './api'
 import { run } from './test/fixtures'
@@ -11,15 +12,16 @@ import type { Run } from './types'
 
 const pdf = (name: string) => new File(['%PDF-test'], name, { type: 'application/pdf' })
 
-function setup() {
+function setup(launch = false) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } })
   const invalidate = vi.spyOn(client, 'invalidateQueries')
   render(
     <QueryClientProvider client={client}>
-      <MemoryRouter initialEntries={['/runs/upload']}>
+      <MemoryRouter initialEntries={[launch ? '/' : '/runs/upload']}>
         <BatchUploadProvider>
           <Routes>
             <Route path="/runs/upload" element={<BatchUpload />} />
+            <Route path="/" element={<LaunchPage />} />
           </Routes>
         </BatchUploadProvider>
       </MemoryRouter>
@@ -35,6 +37,34 @@ const result = (name: string) => within(screen.getByText(name).closest('li')!)
 afterEach(() => {
   vi.restoreAllMocks()
   vi.unstubAllGlobals()
+})
+
+it('captures the homepage tolerance for every file in a serial batch', async () => {
+  const upload = vi
+    .spyOn(api, 'upload')
+    .mockResolvedValueOnce({ run_id: 'one', execution_state: 'QUEUED' })
+    .mockResolvedValueOnce({ run_id: 'two', execution_state: 'QUEUED' })
+  let finish!: (snapshot: Run) => void
+  vi.spyOn(api, 'run').mockImplementation((id) =>
+    id === 'one'
+      ? new Promise((resolve) => {
+          finish = resolve
+        })
+      : Promise.resolve(run),
+  )
+  setup(true)
+  expect(screen.getByRole('heading', { name: 'AP Compass' })).toBeInTheDocument()
+  expect(screen.getByRole('radio', { name: '2%' })).toBeChecked()
+  await userEvent.click(screen.getByRole('radio', { name: '5%' }))
+  await choose([pdf('one.pdf'), pdf('two.pdf')])
+  await userEvent.click(start())
+  await waitFor(() => expect(result('one.pdf').getByText('Queued')).toBeInTheDocument())
+  expect(screen.queryByRole('radio', { name: '5%' })).not.toBeInTheDocument()
+  expect(screen.getByText('Unit-price tolerance 5%')).toBeInTheDocument()
+  expect(upload).toHaveBeenCalledTimes(1)
+  await act(async () => finish(run))
+  await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('2 of 2 finished'))
+  expect(upload.mock.calls.map(([, tolerance]) => tolerance)).toEqual(['0.05', '0.05'])
 })
 
 it('accepts multiple files, ignores duplicate selections, supports drag and allows keyboard removal', async () => {

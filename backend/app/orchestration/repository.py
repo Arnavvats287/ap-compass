@@ -27,10 +27,10 @@ class RunRepository:
     def __init__(self, engine):
         self.engine = engine
 
-    def create(self, document_id):
+    def create(self, document_id, *, policy_snapshot=None):
         timestamp = now()
         snapshot = RunSnapshotV1(id=uuid4().hex, execution_state="QUEUED", document_id=document_id,
-                                 created_at=timestamp, updated_at=timestamp)
+                                 policy_snapshot=policy_snapshot, created_at=timestamp, updated_at=timestamp)
         with Session(self.engine) as session, session.begin():
             session.add(InvoiceRun(id=snapshot.id, payload=snapshot.model_dump(mode="json")))
             session.flush()

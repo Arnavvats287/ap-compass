@@ -40,6 +40,7 @@ REGISTER = (
     ("Currency", 12), ("Net amount", 19), ("Tax amount", 19), ("Gross amount", 19),
     ("Original automated decision", 30), ("Current reviewed decision", 28),
     ("Primary issue", 35), ("Owner", 20), ("Next action", 48), ("Execution state", 24),
+    ("Recorded unit-price tolerance", 34),
 )
 EXCEPTIONS = (
     ("Invoice number", 25), ("Supplier", 30), ("Severity", 13), ("Finding title", 33),
@@ -127,6 +128,8 @@ def build_invoice_workbook(records, generated):
             primary or (decision.primary_reason_code if decision else snapshot.execution_error_code),
             decision.owner if decision else None, decision.next_action if decision else None,
             snapshot.execution_state,
+            f"{(snapshot.policy_snapshot.price_tolerance_pct * 100).normalize():f}%"
+            if snapshot.policy_snapshot is not None else None,
         ))
         for finding in findings:
             comparison = "\n".join(

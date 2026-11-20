@@ -5,9 +5,9 @@ import { ArrowLeft, ArrowUpRight, Files, FileText, Upload, X } from 'lucide-reac
 import { Link } from 'react-router-dom'
 import { api } from './api'
 import { Status } from './components'
-import { fileSize, words } from './format'
+import { fileSize, toleranceLabel, words } from './format'
 import { active } from './queries'
-import type { ExecutionState, Outcome } from './types'
+import type { ExecutionState, Outcome, PriceTolerance } from './types'
 import { uploadError, validatePdf } from './uploadValidation'
 
 const LIMIT = 10
@@ -44,6 +44,8 @@ function useBatchState() {
   const [started, setStarted] = useState(false)
   const [busy, setBusy] = useState(false)
   const [paused, setPaused] = useState(false)
+  const [tolerance, setTolerance] = useState<PriceTolerance>('0.02')
+  const [batchTolerance, setBatchTolerance] = useState<PriceTolerance>()
   const locked = useRef(false)
   const nextKey = useRef(0)
 
@@ -80,9 +82,11 @@ function useBatchState() {
     setErrors([])
   }
 
-  async function process() {
+  async function process(tolerance?: PriceTolerance) {
     if (locked.current || !entries.some((entry) => !settled(entry))) return
     locked.current = true
+    const capturedTolerance = started ? batchTolerance : tolerance
+    setBatchTolerance(capturedTolerance)
     setStarted(true)
     setBusy(true)
     setPaused(false)
@@ -103,7 +107,7 @@ function useBatchState() {
         } else {
           update({ ...base, phase: 'uploading' })
           try {
-            const accepted = await api.upload(entry.file)
+            const accepted = await api.upload(entry.file, capturedTolerance)
             run = { id: accepted.run_id, state: accepted.execution_state }
           } catch (error) {
             update({ ...base, phase: 'upload-failed', message: uploadError(error) })
@@ -147,10 +151,24 @@ function useBatchState() {
     setEntries([])
     setStarted(false)
     setPaused(false)
+    setBatchTolerance(undefined)
     setErrors([])
   }
 
-  return { entries, errors, started, busy, paused, add, remove, process, reset }
+  return {
+    entries,
+    errors,
+    started,
+    busy,
+    paused,
+    tolerance,
+    setTolerance,
+    batchTolerance,
+    add,
+    remove,
+    process,
+    reset,
+  }
 }
 
 const BatchContext = createContext<ReturnType<typeof useBatchState> | null>(null)
@@ -160,7 +178,7 @@ export function BatchUploadProvider({ children }: { children: ReactNode }) {
   return <BatchContext.Provider value={batch}>{children}</BatchContext.Provider>
 }
 
-export default function BatchUpload() {
+export default function BatchUpload({ launch = false }: { launch?: boolean }) {
   const batch = useContext(BatchContext)
   const input = useRef<HTMLInputElement>(null)
   const choose = useRef<HTMLButtonElement>(null)
@@ -176,7 +194,19 @@ export default function BatchUpload() {
     else choose.current?.focus()
   }, [started])
   if (!batch) throw new Error('Batch upload requires its application provider')
-  const { entries, errors, busy, paused, add, remove, process, reset } = batch
+  const {
+    entries,
+    errors,
+    busy,
+    paused,
+    tolerance,
+    setTolerance,
+    batchTolerance,
+    add,
+    remove,
+    process,
+    reset,
+  } = batch
   const finished = entries.filter(settled)
   const outcomes = batchOutcomes.map(({ outcome, label }) => ({
     outcome,
@@ -187,19 +217,33 @@ export default function BatchUpload() {
   const withoutDecision = finished.length - outcomes.reduce((sum, result) => sum + result.count, 0)
 
   return (
-    <div className="ops-page batch-page">
-      <Link className="text-link batch-back" to="/runs">
-        <ArrowLeft size={16} aria-hidden="true" /> Invoice Operations
-      </Link>
-      <header className="page-heading ops-heading intake-heading">
-        <div>
-          <h1>Process invoices</h1>
-          <p>
-            Submit up to 10 PDFs in one batch. Open each invoice to see its own decision and source.
-          </p>
-        </div>
-      </header>
-      <div className="intake-desk">
+    <div className={launch ? 'launch-batch' : 'ops-page batch-page'}>
+      {!launch && (
+        <>
+          <Link className="text-link batch-back" to="/runs">
+            <ArrowLeft size={16} aria-hidden="true" /> Invoice Operations
+          </Link>
+          <header className="page-heading ops-heading intake-heading">
+            <div>
+              <h1>Process invoices</h1>
+              <p>
+                Submit up to 10 PDFs in one batch. Open each invoice to see its own decision and
+                source.
+              </p>
+            </div>
+          </header>
+        </>
+      )}
+      <div className={launch ? 'intake-desk launch-intake' : 'intake-desk'}>
+        {launch && (
+          <header className="launch-intro">
+            <h1>AP Compass</h1>
+            <p className="launch-statement">Know what’s ready for AP.</p>
+            <p className="launch-description">
+              Check invoices against purchase orders and see what needs review before payment.
+            </p>
+          </header>
+        )}
         <section className="intake-console" aria-label="Batch controls">
           <div className="intake-console-heading">
             {started ? (
@@ -215,6 +259,12 @@ export default function BatchUpload() {
               <p className="intake-count" role="status">
                 {finished.length} of {entries.length} finished
               </p>
+              {launch && (
+                <p className="launch-policy-record">
+                  Unit-price tolerance{' '}
+                  {batchTolerance ? toleranceLabel(batchTolerance) : 'from the default policy'}
+                </p>
+              )}
               <dl className="intake-outcomes" aria-label="Recorded batch outcomes">
                 {outcomes.map(({ outcome, label, count }) => (
                   <div key={outcome} data-outcome={outcome}>
@@ -275,6 +325,28 @@ export default function BatchUpload() {
               </button>
             </div>
           )}
+          {launch && !started && (
+            <fieldset className="launch-tolerance" aria-describedby={label + '-tolerance-help'}>
+              <legend>Unit-price tolerance</legend>
+              <div className="launch-tolerance-options">
+                {(['0.02', '0.05'] as const).map((choice) => (
+                  <label key={choice}>
+                    <input
+                      type="radio"
+                      name={label + '-tolerance'}
+                      value={choice}
+                      checked={choice === tolerance}
+                      onChange={() => setTolerance(choice)}
+                    />
+                    <span>{toleranceLabel(choice)}</span>
+                  </label>
+                ))}
+              </div>
+              <p id={label + '-tolerance-help'}>
+                Allowed unit-price variance for this batch. PO limits still apply.
+              </p>
+            </fieldset>
+          )}
           {paused && (
             <p className="inline-error intake-error" role="alert">
               The last accepted invoice’s status is unavailable. Resume status checks to continue
@@ -289,7 +361,7 @@ export default function BatchUpload() {
                 disabled={!entries.length}
                 onClick={() => {
                   focusAfterAction.current = true
-                  void process()
+                  void process(launch ? tolerance : undefined)
                 }}
               >
                 Process selected invoices

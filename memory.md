@@ -1,12 +1,16 @@
 # AP Compass — Project Memory (living handoff)
 
 **Last reviewed:** 2026-11-20 (IST)
-**Repository status:** The final-quality release and G.1 checkpoints are preserved. Phase G.2 is isolated in a separate local worktree.
-**Current authorized segment:** Phase G.2 Invoice Operations and batch uploader only.
+**Repository status:** G.2 queue polish and earlier checkpoints are preserved. G.3 is isolated in a separate local worktree.
+**Current authorized segment:** Phase G.3 launch and intake policy only.
 **Deadline:** Saturday 2026-11-21 (IST); target Friday evening feature freeze.
 **Maintainers:** Builder owns product decisions; Codex implements one authorized phase; architectural review gates further work.
 
 > Repo-local continuity. Status is evidence, not completion by assertion. Latest user acceptance/routing adjustment is recorded in ADR-016 and the handoff below.
+
+## Phase G.3 launch handoff
+
+The landing and intake page is at `/`, with Overview at `/overview`. The existing batch provider captures the homepage tolerance at submission, and the backend stores it in the existing per-run policy snapshot. The controlled price PDF was Review at 2% and Ready at 5%. Independent hard controls held. The eight-file TEST_ONLY Chrome rehearsal remained 3 Ready, 3 Review and 2 Blocked, with INR 221,545 submitted gross. The register carries recorded tolerance per run. 129 focused backend and 71 frontend tests passed, plus typecheck and build. Zero Gemini requests. See `docs/PHASE_G3_LAUNCH_EXPERIENCE_REPORT.md`. Stop after G.3.
 
 ## Phase G.2 operations handoff
 

@@ -83,7 +83,7 @@ No cost/confidence/savings are fabricated. Logs contain only run ID, internal st
 | Endpoint | Behavior |
 |---|---|
 | GET /api/health | Existing real SQLite health response; no credential dependency |
-| POST /api/runs | Multipart file; 202 {run_id, execution_state: QUEUED} |
+| POST /api/runs | Multipart file. Optional `price_tolerance_pct` query value `0.02` or `0.05`. Returns 202 {run_id, execution_state: QUEUED}. |
 | GET /api/runs?limit=50 | Summary array, 1..100 limit; newest first; one query, no stage N+1 |
 | GET /api/runs/{id} | Reconstructed RunSnapshotV1, authoritative stage rows; 404 unknown |
 | GET /api/runs/{id}/document | That run's PDF, fixed inline invoice.pdf; 404 unknown/missing/unsafe |

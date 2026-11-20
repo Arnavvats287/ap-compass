@@ -2,6 +2,7 @@
 import asyncio
 from datetime import datetime
 from decimal import Decimal, localcontext
+from typing import Literal
 
 from fastapi import APIRouter, HTTPException, Query, Request
 from pydantic import BaseModel
@@ -78,8 +79,10 @@ async def read_pdf(request: Request):
 
 
 @router.post("/runs", status_code=202, response_model=CreatedRun)
-async def create_run(request: Request):
+async def create_run(request: Request, price_tolerance_pct: Literal["0.02", "0.05"] | None = None):
     service = request.app.state.runs
+    if len(request.query_params.getlist("price_tolerance_pct")) > 1:
+        raise HTTPException(422, "Select exactly one unit-price tolerance")
     if not service.uploads_enabled:
         raise HTTPException(403, "New invoice uploads are disabled")
     if not service.reserve_upload():
@@ -90,7 +93,7 @@ async def create_run(request: Request):
                 raw = await read_pdf(request)
         except TimeoutError:
             raise HTTPException(408, "Invoice upload timed out") from None
-        ready = service.submit_upload(raw)
+        ready = service.submit_upload(raw, Decimal(price_tolerance_pct) if price_tolerance_pct else None)
     except BaseException:
         service.release_upload()
         raise

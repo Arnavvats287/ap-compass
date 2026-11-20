@@ -17,7 +17,7 @@ def client(tmp_path, monkeypatch):
         yield value
 
 
-@pytest.mark.parametrize("path", ["/", "/runs", "/runs/example-id"])
+@pytest.mark.parametrize("path", ["/", "/overview", "/runs", "/runs/example-id"])
 def test_frontend_routes_load_entry_on_direct_navigation(client, path):
     response = client.get(path)
     assert response.status_code == 200 and "AP Compass test entry" in response.text

@@ -5,6 +5,7 @@ import Overview from './Overview'
 import Queue from './Queue'
 import Workspace from './Workspace'
 import BatchUpload, { BatchUploadProvider } from './BatchUpload'
+import LaunchPage from './LaunchPage'
 
 export default function App() {
   const location = useLocation()
@@ -12,7 +13,8 @@ export default function App() {
   const previous = useRef(location.pathname)
   useEffect(() => {
     const titles: Record<string, string> = {
-      '/': 'Operations overview',
+      '/': 'Invoice intake',
+      '/overview': 'Operations overview',
       '/runs': 'Invoice Operations',
       '/runs/upload': 'Process invoices',
     }
@@ -37,14 +39,14 @@ export default function App() {
       </a>
       <header className="app-header">
         <div className="header-inner">
-          <Link className="brand" to="/" aria-label="AP Compass overview">
+          <Link className="brand" to="/" aria-label="AP Compass home">
             <Compass size={30} aria-hidden="true" />
             <span>
               AP Compass<small>Invoice Operations & Exception Resolution</small>
             </span>
           </Link>
           <nav aria-label="Main navigation">
-            <NavLink end to="/">
+            <NavLink end to="/overview">
               <LayoutDashboard size={17} aria-hidden="true" />
               Overview
             </NavLink>
@@ -58,7 +60,8 @@ export default function App() {
       <main id="main" className="main-content" tabIndex={-1} ref={heading}>
         <BatchUploadProvider>
           <Routes>
-            <Route path="/" element={<Overview />} />
+            <Route path="/" element={<LaunchPage />} />
+            <Route path="/overview" element={<Overview />} />
             <Route path="/runs" element={<Queue />} />
             <Route path="/runs/upload" element={<BatchUpload />} />
             <Route path="/runs/:runId" element={<Workspace />} />
@@ -82,7 +85,17 @@ export default function App() {
           <ShieldCheck size={16} aria-hidden="true" />
           Analyst assistance. No payment or posting authority.
         </span>
-        <span>AP Compass</span>
+        {location.pathname === '/' ? (
+          <span className="launch-credit">
+            <strong>Made by Arnav Vats</strong>
+            <span>
+              Built for the <a href="https://www.zamp.ai/">Zamp AI</a> Solutions Associate case
+              study
+            </span>
+          </span>
+        ) : (
+          <span>AP Compass</span>
+        )}
       </footer>
     </div>
   )

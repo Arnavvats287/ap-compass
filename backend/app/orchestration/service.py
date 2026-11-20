@@ -6,6 +6,7 @@ from time import perf_counter
 from app.contracts import EXECUTION_ERROR_CODES, PolicyV1, TimingV1, UsageV1
 from app.documents.types import ExtractionError
 from app.domain import build_context, evaluate
+from .policies import with_price_tolerance
 
 logger = logging.getLogger(__name__)
 
@@ -37,10 +38,13 @@ class RunService:
     def release_upload(self):
         self.admitted -= 1
 
-    def submit_upload(self, raw):
+    def submit_upload(self, raw, tolerance=None):
         """Transfer one existing admission slot to the background workflow."""
+        policy = self.current_policy
+        if tolerance is not None and tolerance != policy.price_tolerance_pct:
+            policy = with_price_tolerance(policy, tolerance, "intake")
         ready = asyncio.get_running_loop().create_future()
-        task = asyncio.create_task(self.accept_and_process(raw, ready))
+        task = asyncio.create_task(self.accept_and_process(raw, ready, policy))
         self.tasks.add(task)
 
         def finished(done):
@@ -54,10 +58,10 @@ class RunService:
         task.add_done_callback(finished)
         return ready
 
-    def store_run(self, raw):
+    def store_run(self, raw, policy):
         document_id = self.documents.write(raw)
         try:
-            return self.repository.create(document_id)
+            return self.repository.create(document_id, policy_snapshot=policy)
         except Exception:
             try:
                 self.documents.discard_uncommitted(document_id)
@@ -65,8 +69,8 @@ class RunService:
                 logger.error("stage=upload_cleanup error=DOCUMENT_CLEANUP_FAILED")
             raise
 
-    async def accept_and_process(self, raw, ready):
-        persistence = asyncio.create_task(asyncio.to_thread(self.store_run, raw))
+    async def accept_and_process(self, raw, ready, policy):
+        persistence = asyncio.create_task(asyncio.to_thread(self.store_run, raw, policy))
         try:
             snapshot = await asyncio.shield(persistence)
         except asyncio.CancelledError:
@@ -122,7 +126,7 @@ class RunService:
                     stages={active: "PASSED", "evaluating_controls": "RUNNING"})
                 active = "evaluating_controls"
                 began = perf_counter()
-                policy = self.repository.policy(self.current_policy)
+                policy = self.repository.policy(snapshot.policy_snapshot or self.current_policy)
                 decision = evaluate(context, policy)
                 timings.append(TimingV1(name="evaluation", milliseconds=int((perf_counter()-began)*1000)))
                 self.repository.update(run_id, policy_snapshot=policy, timings=tuple(timings),
