@@ -11,9 +11,9 @@
   letter-spacing: -0.052em;
   text-wrap: balance;
 }
-.ops-heading h1 em {
+.ops-overview .ops-heading h1 em {
   font-weight: inherit;
-  color: inherit;
+  color: var(--color-page-accent);
   display: inline-block;
 }
 .ops-page .queue-basis {
@@ -272,6 +272,15 @@ a.ops-metric:active {
 }
 .ops-spotlight-action:hover {
   background: var(--color-accent-hover);
+}
+.button.primary.ops-primary-action,
+.ops-spotlight-action.ops-primary-action {
+  background: var(--color-action-charcoal);
+  color: var(--color-accent-ink);
+}
+.button.primary.ops-primary-action:hover,
+.ops-spotlight-action.ops-primary-action:hover {
+  background: var(--color-ink);
 }
 .ops-spotlight-action:active {
   transform: scale(0.98);

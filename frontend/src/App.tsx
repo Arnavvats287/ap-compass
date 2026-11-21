@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { Link, NavLink, Route, Routes, useLocation } from 'react-router-dom'
-import { Compass, Files, LayoutDashboard, ShieldCheck } from 'lucide-react'
+import { Compass, Files, House, LayoutDashboard, ShieldCheck } from 'lucide-react'
 import Overview from './Overview'
 import Queue from './Queue'
 import Workspace from './Workspace'
@@ -53,6 +53,10 @@ export default function App() {
             {isLaunch && <DemoDataLibrary />}
           </div>
           <nav aria-label="Main navigation">
+            <NavLink end to="/">
+              <House size={17} aria-hidden="true" />
+              Home
+            </NavLink>
             <NavLink end to="/overview">
               <LayoutDashboard size={17} aria-hidden="true" />
               Overview

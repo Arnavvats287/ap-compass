@@ -2,6 +2,7 @@ import {
   ChevronLeft,
   ChevronRight,
   CircleHelp,
+  FileText,
   Pause,
   Play,
   ShieldCheck,
@@ -29,12 +30,17 @@ function fieldName(field: string) {
   )
 }
 
+function sameText(first: string, second: string | null) {
+  const collapse = (text: string) => text.trim().replace(/\s+/g, ' ')
+  return !!second && collapse(first) === collapse(second)
+}
+
 const states = {
   NATIVE_VERIFIED: { label: 'Source verified', tone: 'ready', Icon: ShieldCheck },
   SOURCE_LOCATED_UNVERIFIED: { label: 'Source needs review', tone: 'review', Icon: TriangleAlert },
   MISSING: { label: 'Source not confirmed', tone: 'missing', Icon: CircleHelp },
 } as const
-const rotationDelay = 4000
+const rotationDelay = 2000
 const motionPreference = '(prefers-reduced-motion: reduce)'
 
 export default function EvidenceList({
@@ -43,7 +49,7 @@ export default function EvidenceList({
   sourceSelection,
 }: {
   evidence: Evidence[]
-  onShowPage?: (page: number) => void
+  onShowPage?: (reference: Evidence, trigger: HTMLButtonElement) => void
   sourceSelection?: { evidenceIndex?: number } | null
 }) {
   const id = useId()
@@ -70,7 +76,7 @@ export default function EvidenceList({
       const target = container?.children[next] as HTMLButtonElement | undefined
       if (!container || !target) return
       if (automatic && next === 0) {
-        if (container.scrollLeft) container.scrollTo({ left: 0, behavior: 'instant' })
+        if (container.scrollLeft) container.scrollTo({ left: 0, behavior: 'smooth' })
         return
       }
       const left = target.offsetLeft
@@ -83,12 +89,12 @@ export default function EvidenceList({
       ) {
         container.scrollTo({
           left,
-          behavior: automatic ? 'smooth' : 'instant',
+          behavior: reducedMotion || focus ? 'instant' : 'smooth',
         })
       }
       if (focus) target.focus({ preventScroll: true })
     },
-    [evidence.length],
+    [evidence.length, reducedMotion],
   )
 
   useEffect(() => {
@@ -122,6 +128,8 @@ export default function EvidenceList({
   }, [evidence.length, index, rotating, select])
 
   if (!ref) return <p>No source references are available. Verify the original invoice.</p>
+
+  const verified = ref.evidence_state === 'NATIVE_VERIFIED'
 
   function pauseOnHover(event: React.PointerEvent) {
     if (event.pointerType === 'mouse' || event.pointerType === 'pen') setHovered(true)
@@ -217,50 +225,42 @@ export default function EvidenceList({
         })}
       </div>
       <div className="evidence-inspection" id={id} aria-label={fieldName(ref.field)} role="region">
-        <div className="evidence-inspection-meta">
-          <h3>{fieldName(ref.field)}</h3>
-          <p>{ref.normalized_value ?? unknown}</p>
+        <div className="evidence-inspection-heading">
+          <h3>
+            {ref.quote
+              ? verified
+                ? 'Verified source text'
+                : 'Unverified reference'
+              : 'Source text'}
+          </h3>
           {ref.page && onShowPage ? (
             <button
-              className="button secondary"
+              className="button secondary evidence-page-action"
               type="button"
-              onClick={() => onShowPage(ref.page!)}
+              aria-haspopup="dialog"
+              onClick={(event) => onShowPage(ref, event.currentTarget)}
             >
+              <FileText size={16} aria-hidden="true" />
               Show page {ref.page} in PDF
             </button>
           ) : (
             <small>{ref.page ? `Page ${ref.page}` : 'Page not located'}</small>
           )}
         </div>
-        <div className="evidence-inspection-quote">
-          {ref.evidence_state === 'NATIVE_VERIFIED' ? (
-            <>
-              <strong>Verified source text</strong>
-              <blockquote>{ref.quote ?? unknown}</blockquote>
-            </>
-          ) : (
-            <>
-              <p>
-                {ref.route === 'image_only' || ref.route === 'mixed'
-                  ? 'The value was extracted from an image-based invoice and has not been independently text-verified.'
-                  : 'This value has not been independently verified against the source text.'}
-              </p>
-              {ref.quote && (
-                <>
-                  <strong>Extraction reference, not verified source text</strong>
-                  <blockquote>{ref.quote}</blockquote>
-                </>
-              )}
-              {ref.normalized_value === null && ref.raw_value && (
-                <p>
-                  Unverified model claim: {ref.raw_value}. The document-stated value remains
-                  unknown.
-                </p>
-              )}
-            </>
-          )}
-          <small className="reason-code">{ref.field}</small>
-        </div>
+        {!ref.quote ? (
+          <p className="evidence-inspection-note">No supporting text was recorded.</p>
+        ) : (
+          !sameText(ref.quote, ref.normalized_value) && (
+            <blockquote className="evidence-inspection-quote">{ref.quote}</blockquote>
+          )
+        )}
+        {!verified && ref.normalized_value === null && ref.raw_value && (
+          <p className="evidence-inspection-note">
+            {(!ref.quote || !sameText(ref.quote, ref.raw_value)) &&
+              `Unverified model claim: ${ref.raw_value}. `}
+            The document-stated value remains unknown.
+          </p>
+        )}
       </div>
     </div>
   )

@@ -29,7 +29,7 @@ export { default as EvidenceList } from './EvidenceRail'
 
 export { FindingValues } from './FindingValues'
 
-type ShowFindingSource = (reference: Evidence) => void
+type ShowFindingSource = (reference: Evidence, trigger: HTMLButtonElement) => void
 
 function FindingSource({
   finding,
@@ -38,22 +38,19 @@ function FindingSource({
   finding: Finding
   onShowSource?: ShowFindingSource
 }) {
-  const located =
-    finding.evidence_refs.find(
-      (ref) => ref.page && ref.page > 0 && ref.evidence_state === 'NATIVE_VERIFIED',
-    ) ??
-    finding.evidence_refs.find(
-      (ref) => ref.page && ref.page > 0 && ref.evidence_state === 'SOURCE_LOCATED_UNVERIFIED',
-    )
+  const located = finding.evidence_refs.find(
+    (ref) => ref.page && ref.page > 0 && ref.evidence_state === 'NATIVE_VERIFIED',
+  )
   if (!located || !onShowSource) return null
   return (
     <button
       className="button secondary finding-source-action"
       type="button"
-      onClick={() => onShowSource(located)}
+      aria-haspopup="dialog"
+      onClick={(event) => onShowSource(located, event.currentTarget)}
     >
       <FileText size={16} aria-hidden="true" />
-      {located.evidence_state === 'NATIVE_VERIFIED' ? 'Show source' : 'Inspect unverified source'}
+      Show source
     </button>
   )
 }
@@ -324,31 +321,13 @@ export default function Workspace() {
   } | null>(null)
   const focusTarget = useRef<HTMLDivElement>(null)
   const focus = focused?.runId === runId ? focused : null
-  const sourceAnimation = useRef<Animation | undefined>(undefined)
-  const showSourcePage = (number: number, evidenceIndex?: number) => {
-    setSourcePage({ runId, number, evidenceIndex })
-    setFocused(null)
-    window.location.hash = 'source-document'
-    requestAnimationFrame(() => {
-      const source = document.getElementById('source-document')
-      source?.scrollIntoView?.({ block: 'nearest' })
-      source?.focus({ preventScroll: true })
-      const frame = source?.querySelector('iframe')
-      sourceAnimation.current?.cancel()
-      if (!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
-        sourceAnimation.current = frame?.animate?.(
-          [{ outlineColor: 'var(--color-accent)' }, { outlineColor: 'transparent' }],
-          { duration: 400, easing: 'ease-out' },
-        )
-      }
-    })
-  }
   const [copied, setCopied] = useState(false)
   const [copyError, setCopyError] = useState(false)
   const [sourcePage, setSourcePage] = useState<{
     runId: string
     number: number
     evidenceIndex?: number
+    reference: Evidence
   } | null>(null)
   useEffect(() => {
     setCopied(false)
@@ -370,8 +349,8 @@ export default function Workspace() {
   const run = query.data
   if (!run) return null
   const invoice = run.extracted_invoice
-  const page = sourcePage?.runId === run.id ? sourcePage.number : undefined
-  const showFindingSource: ShowFindingSource = (reference) => {
+  const page = sourcePage?.runId === run.id ? sourcePage : undefined
+  const showFindingSource: ShowFindingSource = (reference, trigger) => {
     if (!reference.page) return
     const index =
       invoice?.evidence.findIndex(
@@ -381,7 +360,18 @@ export default function Workspace() {
           item.evidence_state === reference.evidence_state &&
           item.quote === reference.quote,
       ) ?? -1
-    showSourcePage(reference.page, index >= 0 ? index : undefined)
+    setSourcePage({
+      runId,
+      number: reference.page,
+      reference,
+      evidenceIndex: index >= 0 ? index : undefined,
+    })
+    setFocused({
+      id: 'source-inspection',
+      label: 'Inspect invoice source',
+      runId,
+      trigger: focus?.trigger ?? trigger,
+    })
   }
   const appliedTolerance = run.policy_snapshot?.price_tolerance_pct
   const sourceUrl = api.documentUrl(run.id)
@@ -512,7 +502,7 @@ export default function Workspace() {
                     'The invoice could not be analyzed because of a technical processing problem.')}
               </p>
               <p>No financial decision was produced.</p>
-              <Link className="button secondary" to="/runs#upload">
+              <Link className="button secondary" to="/runs/upload">
                 Retry by uploading again
               </Link>
             </section>
@@ -559,8 +549,8 @@ export default function Workspace() {
                     <EvidenceList
                       key={run.id}
                       evidence={invoice.evidence}
-                      onShowPage={showSourcePage}
-                      sourceSelection={sourcePage?.runId === run.id ? sourcePage : null}
+                      onShowPage={showFindingSource}
+                      sourceSelection={page}
                     />
                   </section>
                 </WorkspaceFocusSection>
@@ -576,12 +566,7 @@ export default function Workspace() {
                 <h2 id="source-title">
                   <FileText size={18} aria-hidden /> Source invoice
                 </h2>
-                <a
-                  className="text-link"
-                  href={page ? `${sourceUrl}#page=${page}` : sourceUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+                <a className="text-link" href={sourceUrl} target="_blank" rel="noopener noreferrer">
                   Open PDF
                   <ArrowUpRight size={16} aria-hidden="true" />
                   <span className="sr-only"> (new tab)</span>
@@ -589,13 +574,25 @@ export default function Workspace() {
               </div>
               <iframe
                 title="Original invoice PDF"
-                src={`${sourceUrl}#${page ? `page=${page}&` : ''}toolbar=0&view=FitH`}
+                src={`${sourceUrl}#toolbar=0&view=FitH`}
                 loading="lazy"
               />
               {invoice && (
-                <a className="document-evidence-link text-link" href="#evidence">
+                <button
+                  className="document-evidence-link text-link"
+                  type="button"
+                  aria-haspopup="dialog"
+                  onClick={(event) =>
+                    setFocused({
+                      id: 'evidence',
+                      label: 'Source evidence',
+                      runId,
+                      trigger: event.currentTarget,
+                    })
+                  }
+                >
                   Inspect source evidence
-                </a>
+                </button>
               )}
             </section>
           </div>
@@ -648,7 +645,32 @@ export default function Workspace() {
             setFocused(null)
             focus?.trigger.focus({ preventScroll: true })
           }}
-        />
+        >
+          {focus?.id === 'source-inspection' && page && (
+            <div className="source-focus-content">
+              <h2>Inspect invoice source</h2>
+              <p className="source-focus-provenance">
+                Page {page.number} ·{' '}
+                {page.reference.evidence_state === 'NATIVE_VERIFIED'
+                  ? 'Independently verified'
+                  : 'Extracted reference · needs verification'}
+              </p>
+              {page.reference.quote && <blockquote>{page.reference.quote}</blockquote>}
+              <iframe
+                title="Referenced invoice page"
+                src={`${sourceUrl}#page=${page.number}&toolbar=0&view=Fit`}
+              />
+              <a
+                className="text-link"
+                href={`${sourceUrl}#page=${page.number}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Open page {page.number} in a new tab <ArrowUpRight size={16} aria-hidden="true" />
+              </a>
+            </div>
+          )}
+        </FocusDialog>
       </div>
     </div>
   )

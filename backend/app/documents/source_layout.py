@@ -40,6 +40,10 @@ HEADER = {
 }
 HEADER_PATTERNS = {field: re.compile(rf"{QUALIFIER}{label}\s*:?", re.I) for field, label in HEADER.items()}
 INLINE_HEADERS = {field: re.compile(rf"{QUALIFIER}{label}\s*:\s*\S.*", re.I) for field, label in HEADER.items()}
+INLINE_IDENTITY = {
+    field: re.compile(rf"{HEADER[field]}\s*:\s*(.+)", re.I)
+    for field in ("invoice_number", "invoice_date", "po_reference", "currency")
+}
 NOT_VALUE = re.compile(r"(?:bill(?:ed)?\s+to|ship\s+to|sold\s+to|buyer|customer|remit\s+to|"
                        r"remittance\s+address|description|item\s+code|qty\.?|purchase\s+order)\s*:?.*", re.I)
 OTHER_ROLE = re.compile(r"(?:(?:previous|prior|opening|closing|combined|customer)\s+(?:account\s+)?balance|"
@@ -244,6 +248,27 @@ def split_headers(rows, *, summary_payables=None, supplemental=None):
         if field in inline_fields or any(used_cells[pair.cell] > 1 for pair in pairs):
             pairs.append(Pair(""))
     return dict(observations)
+
+
+def inline_identity(rows):
+    """Find self-contained identity labels above the items or account section."""
+    candidates = defaultdict(list)
+    before_items = True
+    for row in rows:
+        if any(SUMMARY.fullmatch(cell.text) for cell in row):
+            break
+        before_items &= not table_header_band(row)
+        if not clean(row):
+            continue
+        for cell in row:
+            for field, pattern in INLINE_IDENTITY.items():
+                if match := pattern.fullmatch(cell.text):
+                    printed = match[1].strip()
+                    candidates[field].append(
+                        Pair(printed, quote_forms((cell.text,)), cell, cell.text)
+                        if before_items and header_shape(field, printed) else Pair("")
+                    )
+    return candidates
 
 
 def table_columns(row):

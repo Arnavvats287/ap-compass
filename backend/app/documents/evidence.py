@@ -7,7 +7,7 @@ import re
 from app.contracts import EvidenceRefV1, ExtractedInvoiceV1
 from .consistency import HEADER_LABELS, PAYABLE_ALIASES, QUALIFIER, disputed_headers, inline_amount, parse_printed_amount
 from .schema import SourceClaim
-from .source_layout import GENERIC_PAYABLE_LABEL, SUMMARY, flat, layout_quote, rows_for, split_headers, table_rows, unique_quotes
+from .source_layout import GENERIC_PAYABLE_LABEL, SUMMARY, flat, inline_identity, layout_quote, rows_for, split_headers, table_rows, unique_quotes
 from .stacked_layout import CHARGE_FIELDS, currency_summary, invoice_metadata, stacked_charges
 from .types import DocumentInspection, ExtractionError
 
@@ -273,6 +273,11 @@ def ground_evidence(invoice: ExtractedInvoiceV1, claims: tuple[SourceClaim, ...]
                               supplemental=supplemental if number == stacked_page else None)
         for number, rows in layouts.items()
     }
+    inline_headers = {number: inline_identity(rows) for number, rows in layouts.items()}
+    identity_counts = Counter()
+    for candidates in (*headers.values(), *inline_headers.values()):
+        for field in ("invoice_number", "invoice_date", "po_reference", "currency"):
+            identity_counts[field] += len(candidates.get(field, ()))
     eligible_table = ()
     if len(recognized_tables) == 1 and stacked_page is None:
         table = recognized_tables[0]
@@ -288,6 +293,14 @@ def ground_evidence(invoice: ExtractedInvoiceV1, claims: tuple[SourceClaim, ...]
         for number, pairs in headers.items()
     }
     distinct_rows = unique_quotes(eligible_table)
+    bare_table = None
+    if inspection.route == "native_text" and len(eligible_table) == 1:
+        values_by_role = eligible_table[0].values
+        if all(role in values_by_role and (fact := getattr(invoice.lines[0], role)) is not None
+               and (supported_amount(values_by_role[role], fact, values_by_role[role], invoice.currency,
+                                     quantity=role == "qty") if isinstance(fact, Decimal)
+                    else printed_value(values_by_role[role], fact)) for role in CHARGE_FIELDS):
+            bare_table = eligible_table[0]
     if invoice.bank_instructions is None:
         bank_claimed = any(c.field.startswith("bank_instructions.") and c.raw_value for c in claims)
         bank_printed = any(re.fullmatch(rf"\s*(?:{LABELS['account']}|{LABELS['ifsc']})\s*:\s*\S.*", text, re.I)
@@ -346,6 +359,21 @@ def ground_evidence(invoice: ExtractedInvoiceV1, claims: tuple[SourceClaim, ...]
                             state = "NATIVE_VERIFIED"
                 if state != "NATIVE_VERIFIED" and eligible and page.number == stacked_page and charge_proofs:
                     native_proof = source_cell_proof(field, value, claim, invoice, pairs, charge_proofs)
+                    if native_proof:
+                        state = "NATIVE_VERIFIED"
+                if state != "NATIVE_VERIFIED" and eligible and inspection.route == "native_text":
+                    # A bare claim must match the specific, independently associated native cell.
+                    candidates = pairs or inline_headers[page.number].get(field, ())
+                    if (field in HYBRID_HEADERS and len(candidates) == 1
+                            and normalized_quote == layout_quote(candidates[0].value)
+                            and (field in {"net", "tax", "total"} or identity_counts[field] == 1)):
+                        native_proof = source_cell_proof(field, value, claim, invoice, candidates, ())
+                    elif bare_table and tables[page.number] is eligible_table and (line := LINE_FIELD.fullmatch(field)):
+                        leaf = line[2]
+                        printed = bare_table.values.get(leaf)
+                        if (printed and layout_quote(printed) == normalized_quote and
+                                supported_cell(printed, value, claim, invoice.currency, quantity=leaf == "qty")):
+                            native_proof = (printed, " ".join(bare_table.values.values()))
                     if native_proof:
                         state = "NATIVE_VERIFIED"
         grounded.append(EvidenceRefV1(

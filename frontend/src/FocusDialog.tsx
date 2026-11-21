@@ -22,13 +22,13 @@ export default function FocusDialog({
 
   useLayoutEffect(() => {
     const modal = dialog.current
-    if (open && modal && !modal.open) {
-      modal.showModal()
+    if (open && modal) {
+      if (!modal.open) modal.showModal()
       closeButton.current?.focus({ preventScroll: true })
     } else if (!open && modal?.open) {
       modal.close()
     }
-  }, [open])
+  }, [open, section])
 
   return (
     <dialog

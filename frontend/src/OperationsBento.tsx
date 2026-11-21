@@ -105,7 +105,7 @@ function Spotlight({
             </div>
           </dl>
           {priority.reviewed_outcome && <p>A human reassessment is available in the workspace.</p>}
-          <Link className="ops-spotlight-action" to={invoiceUrl(priority.id)}>
+          <Link className="ops-spotlight-action ops-primary-action" to={invoiceUrl(priority.id)}>
             Review invoice <ArrowUpRight size={17} aria-hidden="true" />
           </Link>
         </div>

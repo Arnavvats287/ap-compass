@@ -23,23 +23,15 @@
   background: transparent;
 }
 
-.launch-header nav a {
-  color: var(--launch-highlight);
-}
-
-.launch-header nav a:hover {
-  background: var(--color-nav-selected);
-  color: var(--launch-action-hover);
-}
-
 .launch-header .demo-library-trigger {
   border-color: var(--color-rule);
   background: var(--color-surface);
-  color: var(--launch-action);
+  color: var(--color-nav-text);
 }
 
 .launch-header .demo-library-trigger:hover {
   background: var(--color-nav-selected);
+  color: var(--launch-action-hover);
 }
 
 .launch-header :focus-visible,
@@ -52,9 +44,35 @@
   border-color: var(--launch-rule);
 }
 
+.main-content:has(> :is(.launch-page, .ops-overview)) {
+  position: relative;
+  isolation: isolate;
+}
+
 .main-content:has(> .launch-page) {
   zoom: 1;
   padding-block: clamp(34px, 8vh, 96px) clamp(40px, 7vh, 88px);
+}
+
+.main-content:has(> .ops-overview) {
+  padding-bottom: clamp(96px, 10vw, 152px);
+}
+
+.launch-dither-field {
+  position: absolute;
+  z-index: -1;
+  inset: auto 0 0;
+  width: 100%;
+  height: clamp(260px, 34vw, 490px);
+  color: var(--color-page-accent);
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+
+@media (forced-colors: active) {
+  .launch-dither-field {
+    display: none;
+  }
 }
 
 .launch-page {
@@ -74,34 +92,46 @@
 }
 
 .launch-eyebrow {
-  margin: 0 0 18px;
+  margin: 0 0 12px;
   color: var(--launch-highlight);
-  font-size: 0.75rem;
-  font-weight: 650;
-  letter-spacing: 0.11em;
+  font-size: var(--text-xs);
+  font-weight: 600;
 }
 
 .launch-intro h1 {
   margin: 0;
   color: var(--launch-text);
-  font: 400 clamp(2.25rem, 4.45vw, 4.75rem) / 1.03 var(--font-editorial);
+  font: 400 clamp(3.35rem, 7.8vw, 7.5rem) / 1.03 var(--font-editorial);
   letter-spacing: -0.055em;
   text-wrap: initial;
 }
 
-.launch-intro h1 span {
-  display: block;
+@media (prefers-reduced-motion: no-preference) and (forced-colors: none) {
+  @supports (background-clip: text) {
+    .launch-intro h1 {
+      width: fit-content;
+      background: linear-gradient(
+          105deg,
+          var(--launch-text) 42%,
+          var(--launch-highlight) 50%,
+          var(--launch-text) 58%
+        )
+        100% center / 250% 100% no-repeat;
+      background-clip: text;
+      color: transparent;
+      animation: launch-title-shine 3s ease-in-out 430ms infinite;
+    }
+  }
 }
 
-.launch-intro h1 span + span {
-  color: inherit;
-}
-
-.launch-description {
-  max-width: 46ch;
-  margin: 20px 0 0;
-  color: var(--launch-muted);
-  text-wrap: pretty;
+@keyframes launch-title-shine {
+  0% {
+    background-position: 100% center;
+  }
+  38.33%,
+  100% {
+    background-position: 0% center;
+  }
 }
 
 .launch-tools {
@@ -242,8 +272,7 @@
   border-top: 1px solid var(--color-rule);
 }
 
-.intake-readiness h3,
-.launch-checks h2 {
+.intake-readiness h3 {
   font-size: var(--text-sm);
   font-weight: 650;
 }
@@ -264,31 +293,6 @@
 .intake-readiness dd {
   font-weight: 650;
   overflow-wrap: anywhere;
-}
-
-.launch-checks {
-  padding: var(--space-md) var(--space-xs) 0;
-  color: var(--launch-text);
-}
-
-.launch-checks > p {
-  margin-top: var(--space-2xs);
-  color: var(--launch-muted);
-  font-size: var(--text-xs);
-}
-
-.launch-checks ul {
-  display: grid;
-  gap: 4px var(--space-lg);
-  margin: var(--space-xs) 0 0;
-  padding-left: 1.2em;
-  list-style-type: disc;
-  color: var(--launch-muted);
-  font-size: var(--text-xs);
-}
-
-.launch-checks li::marker {
-  color: var(--launch-highlight);
 }
 
 .launch-intake .batch-errors {
@@ -369,18 +373,17 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  position: relative;
 }
 
-.launch-steps::before {
-  content: '';
+.launch-step-link {
   position: absolute;
-  inset: 12px auto 28px 15px;
+  inset: 28px auto calc(-1 * var(--space-md)) 15px;
   width: 1px;
   background: var(--launch-rule);
 }
 
 .launch-steps li {
+  position: relative;
   display: grid;
   grid-template-columns: 32px minmax(0, 1fr);
   gap: var(--space-md);
@@ -396,10 +399,122 @@
   display: grid;
   place-items: center;
   min-height: 28px;
-  background: var(--launch-canvas);
   color: var(--launch-highlight);
+  background: var(--launch-canvas);
   font-size: 0.8rem;
   font-weight: 650;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .launch-steps li {
+    --step-delay: 0s;
+  }
+
+  .launch-steps li:nth-child(2) {
+    --step-delay: 1.5s;
+  }
+
+  .launch-steps li:nth-child(3) {
+    --step-delay: 3s;
+  }
+
+  .launch-steps :is(.launch-step-number, h3, p) {
+    animation: launch-step-magnify 4.5s ease-in-out var(--step-delay) infinite;
+  }
+
+  .launch-steps .launch-step-number {
+    --step-rest-size: 0.8rem;
+    --step-peak-size: 1.02rem;
+  }
+
+  .launch-steps h3 {
+    --step-rest-size: 1rem;
+    --step-peak-size: 1.12rem;
+  }
+
+  .launch-steps p {
+    --step-rest-size: 0.9rem;
+    --step-peak-size: 0.97rem;
+  }
+
+  .launch-step-link::before,
+  .launch-step-link::after {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 2px;
+    background: var(--launch-highlight);
+    opacity: 0;
+    transform: scaleY(0);
+  }
+
+  .launch-step-link::before {
+    transform-origin: top center;
+    animation: launch-step-connector 4.5s linear var(--step-delay) infinite;
+  }
+
+  .launch-step-link::after {
+    transform-origin: bottom center;
+    animation: launch-step-return 4.5s linear 3.3s infinite;
+  }
+
+  .launch-steps li:nth-child(2) .launch-step-link::after {
+    animation-delay: 3s;
+  }
+}
+
+/* Each 1.5s turn gives the text 900ms, then hands off along the connector for 600ms. */
+@keyframes launch-step-magnify {
+  0%,
+  20%,
+  100% {
+    font-size: var(--step-rest-size);
+  }
+  8%,
+  15% {
+    font-size: var(--step-peak-size);
+  }
+}
+
+@keyframes launch-step-connector {
+  0%,
+  20% {
+    opacity: 0;
+    transform: scaleY(0);
+  }
+  20.1% {
+    opacity: 1;
+  }
+  33.3333% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+  39%,
+  100% {
+    opacity: 0;
+    transform: scaleY(1);
+  }
+}
+
+/* The return divides the 600ms handoff between the two existing segments. */
+@keyframes launch-step-return {
+  0%,
+  20% {
+    opacity: 0;
+    transform: scaleY(0);
+  }
+  20.1% {
+    opacity: 1;
+  }
+  26.6667% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+  32%,
+  100% {
+    opacity: 0;
+    transform: scaleY(1);
+  }
 }
 
 .launch-intro,
@@ -488,6 +603,10 @@
 }
 
 @media (max-width: 520px) {
+  .launch-intro h1 {
+    font-size: clamp(3.35rem, 16vw, 4.8rem);
+  }
+
   .launch-header .header-inner {
     flex-wrap: wrap;
     padding-block: 8px;

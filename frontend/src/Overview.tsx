@@ -3,6 +3,7 @@ import { ArrowUpRight, Upload } from 'lucide-react'
 import { useDashboard, useRuns } from './queries'
 import { Empty, ErrorState, Loading, RunTable } from './components'
 import OperationsBento from './OperationsBento'
+import LaunchDitherField from './LaunchDitherField'
 
 export default function Overview() {
   const dashboard = useDashboard()
@@ -10,6 +11,7 @@ export default function Overview() {
   const retry = () => void runs.refetch()
   return (
     <div className="ops-page ops-overview">
+      <LaunchDitherField />
       <div className="page-heading ops-heading">
         <div>
           <h1>
@@ -17,7 +19,7 @@ export default function Overview() {
           </h1>
           <p>See what’s ready, what needs attention, and what happens next.</p>
         </div>
-        <Link className="button primary" to="/runs/upload">
+        <Link className="button primary ops-primary-action" to="/runs/upload">
           <Upload size={17} aria-hidden="true" /> Process invoices
         </Link>
       </div>

@@ -137,6 +137,14 @@ describe('audited PO resolution', () => {
     expect(screen.getByRole('button', { name: 'Saving reassessment…' })).toBeDisabled()
     expect(screen.queryByText('Supported AP controls now pass.')).not.toBeInTheDocument()
     await act(async () => finish(action))
+    const summary = await screen.findByRole('region', { name: 'PO confirmed manually' })
+    expect(within(summary).getByText('PO-1042', { selector: 'p' })).toBeVisible()
+    expect(within(summary).getByText('Supported AP controls now pass.')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'PO confirmed manually' })).toHaveFocus()
+    const reviewDetails = within(summary).getByText('Review details')
+    expect(reviewDetails.closest('details')).not.toHaveAttribute('open')
+    await userEvent.click(reviewDetails)
+    expect(reviewDetails.closest('details')).toHaveAttribute('open')
     expect(
       await within(screen.getByRole('region', { name: 'Current reassessment' })).findByText(
         'Ready to process',
@@ -147,7 +155,6 @@ describe('audited PO resolution', () => {
         'Needs review',
       ),
     ).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Human-reviewed assessment' })).toHaveFocus()
     expect(screen.getByText(/does not authorize payment or posting/)).toBeInTheDocument()
   })
   it('keeps missing facts and still-not-ready outcome visible after saving', async () => {
@@ -173,7 +180,14 @@ describe('audited PO resolution', () => {
       confirmation_available: false,
     })
     mount()
-    expect(await screen.findByText(/still not ready to process/)).toBeInTheDocument()
+    const summary = await screen.findByRole('region', { name: 'PO confirmed manually' })
+    expect(within(summary).getByRole('status')).toHaveTextContent(
+      'Required invoice facts are missing',
+    )
+    expect(within(summary).getByText('Review details').closest('details')).not.toHaveAttribute(
+      'open',
+    )
+    await userEvent.click(within(summary).getByText('Review details'))
     expect(screen.getByText(/Required invoice facts are missing:/)).toHaveTextContent(
       'Line quantity and unit price remain unknown',
     )

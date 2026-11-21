@@ -87,9 +87,9 @@ export function Empty({ filtered = false, clear }: { filtered?: boolean; clear?:
           Clear filters
         </button>
       ) : (
-        <a className="text-link" href="#upload">
+        <Link className="text-link" to="/runs/upload">
           Choose an invoice PDF
-        </a>
+        </Link>
       )}
     </div>
   )

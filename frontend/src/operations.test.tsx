@@ -234,6 +234,11 @@ describe('connected operations views', () => {
     ])
     renderPage(<Queue />, '/runs')
     const table = await screen.findByRole('table')
+    expect(screen.queryByRole('region', { name: 'Process an invoice' })).not.toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Process invoices' })).toHaveAttribute(
+      'href',
+      '/runs/upload',
+    )
     expect(within(table).getByText('Ready to process')).toBeInTheDocument()
     expect(within(table).getByText('Needs review')).toBeInTheDocument()
     expect(within(table).getByText('Blocked')).toBeInTheDocument()
@@ -412,6 +417,7 @@ describe('connected operations views', () => {
             field: 'tax',
             route: 'image_only',
             evidence_state: 'SOURCE_LOCATED_UNVERIFIED',
+            quote: reference.normalized_value,
           },
           { ...reference, field: 'total', evidence_state: 'MISSING', quote: null, page: null },
         ]}
@@ -420,16 +426,27 @@ describe('connected operations views', () => {
     expect(screen.getByText('Source verified')).toBeInTheDocument()
     expect(screen.getByText('Source needs review')).toBeInTheDocument()
     expect(screen.getByText('Source not confirmed')).toBeInTheDocument()
+    const inspected = screen.getByRole('region', { name: 'Invoice net' })
+    expect(
+      within(inspected).getByRole('heading', { name: 'Verified source text' }),
+    ).toBeInTheDocument()
+    expect(within(inspected).queryByText('Invoice net')).not.toBeInTheDocument()
+    expect(within(inspected).queryByText(reference.normalized_value!)).not.toBeInTheDocument()
+    expect(within(inspected).getByText(reference.quote!)).toBeInTheDocument()
     screen.getByRole('button', { name: /Source verified/ }).focus()
     await userEvent.keyboard('{ArrowRight}')
     expect(
-      screen.getByText(/image-based invoice and has not been independently text-verified/),
-    ).toBeInTheDocument()
-    expect(screen.getByText('Extraction reference, not verified source text')).toBeInTheDocument()
+      screen.queryByText('This image-based invoice needs independent verification.'),
+    ).not.toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Unverified reference' })).toBeInTheDocument()
+    expect(
+      within(screen.getByRole('region', { name: 'Tax' })).queryByText(reference.normalized_value!),
+    ).not.toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Source needs review/ })).toHaveFocus()
     await userEvent.keyboard('{End}')
     expect(screen.getByRole('button', { name: /Source not confirmed/ })).toHaveFocus()
     expect(screen.getByText('Page not located')).toBeInTheDocument()
+    expect(screen.getByText('No supporting text was recorded.')).toBeInTheDocument()
   })
   it('loops through evidence, pauses on request, and lets the analyst restart it', () => {
     vi.useFakeTimers()
@@ -438,24 +455,26 @@ describe('connected operations views', () => {
     try {
       render(<EvidenceList evidence={[reference, { ...reference, field: 'tax' }]} />)
       expect(screen.getByText('Field 1 of 2')).toBeInTheDocument()
-      act(() => vi.advanceTimersByTime(4000))
+      act(() => vi.advanceTimersByTime(1999))
+      expect(screen.getByText('Field 1 of 2')).toBeInTheDocument()
+      act(() => vi.advanceTimersByTime(1))
       expect(screen.getByText('Field 2 of 2')).toBeInTheDocument()
       const rail = screen.getByRole('group', { name: 'Evidence fields' })
       const scrollTo = vi.fn()
       Object.assign(rail, { scrollLeft: 500, scrollTo })
-      act(() => vi.advanceTimersByTime(4000))
+      act(() => vi.advanceTimersByTime(2000))
       expect(screen.getByText('Field 1 of 2')).toBeInTheDocument()
-      expect(scrollTo).toHaveBeenCalledWith({ left: 0, behavior: 'instant' })
+      expect(scrollTo).toHaveBeenCalledWith({ left: 0, behavior: 'smooth' })
 
       fireEvent.click(screen.getByRole('button', { name: 'Pause evidence rotation' }))
       act(() => vi.advanceTimersByTime(8000))
       expect(screen.getByText('Field 1 of 2')).toBeInTheDocument()
       fireEvent.click(screen.getByRole('button', { name: 'Play evidence rotation' }))
-      act(() => vi.advanceTimersByTime(4000))
+      act(() => vi.advanceTimersByTime(2000))
       expect(screen.getByText('Field 2 of 2')).toBeInTheDocument()
 
       act(() => screen.getByRole('button', { name: /Source verified.*Tax/ }).focus())
-      act(() => vi.advanceTimersByTime(4000))
+      act(() => vi.advanceTimersByTime(2000))
       expect(screen.getByText('Field 2 of 2')).toBeInTheDocument()
       expect(screen.getByRole('button', { name: 'Play evidence rotation' })).toBeInTheDocument()
     } finally {
@@ -521,7 +540,7 @@ describe('connected operations views', () => {
     expect(screen.getByText(/No financial decision was produced/)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Retry by uploading again' })).toHaveAttribute(
       'href',
-      '/runs#upload',
+      '/runs/upload',
     )
   })
   it('renders interruption without a produced decision', async () => {
@@ -596,7 +615,12 @@ describe('connected operations views', () => {
     defaults()
     renderPage(<App />, '/runs/test-run')
     await screen.findByRole('heading', { name: 'Aster Systems' })
-    expect(screen.getByRole('navigation', { name: 'Main navigation' })).toBeInTheDocument()
+    const navigation = screen.getByRole('navigation', { name: 'Main navigation' })
+    expect(
+      within(navigation)
+        .getAllByRole('link')
+        .map((link) => link.textContent),
+    ).toEqual(['Home', 'Overview', 'Invoice Operations'])
     expect(screen.getByRole('link', { name: 'Skip to main content' })).toHaveAttribute(
       'href',
       '#main',
@@ -728,21 +752,32 @@ it('opens a finding’s stored PDF page and selects its evidence field', async (
     extracted_invoice: { ...run.extracted_invoice!, evidence: [prior, evidence] },
     decision: { ...run.decision!, findings: [findingWithSource] },
   })
-  renderPage(
+  const { container } = renderPage(
     <Routes>
       <Route path="/runs/:runId" element={<Workspace />} />
     </Routes>,
     '/runs/test-run',
   )
   const decision = await screen.findByRole('region', { name: finding.title })
+  const modal = container.querySelector<HTMLDialogElement>('dialog.overview-focus')!
+  modal.showModal = () => modal.setAttribute('open', '')
+  modal.close = () => {
+    modal.removeAttribute('open')
+    fireEvent(modal, new Event('close'))
+  }
   const action = within(decision).getByRole('button', { name: 'Show source' })
   action.focus()
   await userEvent.keyboard('{Enter}')
-  expect(screen.getByTitle('Original invoice PDF').getAttribute('src')).toContain('#page=2&')
+  const dialog = screen.getByRole('dialog', { name: 'Inspect invoice source' })
+  expect(within(dialog).getByTitle('Referenced invoice page').getAttribute('src')).toContain(
+    '#page=2&',
+  )
+  expect(within(dialog).getByText(/Independently verified/)).toBeInTheDocument()
+  await userEvent.click(within(dialog).getByRole('button', { name: 'Close focused view' }))
   expect(
     screen.getByRole('button', { name: /Line 1: item code/i, pressed: true }),
   ).toBeInTheDocument()
-  await waitFor(() => expect(screen.getByRole('region', { name: 'Source invoice' })).toHaveFocus())
+  await waitFor(() => expect(action).toHaveFocus())
 })
 
 it('shows scan arithmetic and source uncertainty as independent findings', async () => {
@@ -754,6 +789,12 @@ it('shows scan arithmetic and source uncertainty as independent findings', async
     title: 'Critical source evidence needs verification',
     explanation: 'Verify source fields',
     values: [],
+    evidence_refs: [
+      {
+        ...run.extracted_invoice!.evidence[0],
+        evidence_state: 'SOURCE_LOCATED_UNVERIFIED' as const,
+      },
+    ],
   }
   const arithmetic = {
     ...finding,

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { ArrowUpRight, CircleCheck, Search, ShieldAlert, TriangleAlert, Upload } from 'lucide-react'
 import { useRuns, active } from './queries'
-import { Empty, ErrorState, Loading, RunTable, UploadPanel } from './components'
+import { Empty, ErrorState, Loading, RunTable } from './components'
 import type { ExecutionState, Outcome, RunSummary } from './types'
 import { isAttention, sortChoices, sortRuns } from './worklist'
 import ExportInvoices from './ExportInvoices'
@@ -84,7 +84,7 @@ export default function Queue() {
           <p>Review decisions and find the next action.</p>
         </div>
         <div className="ops-heading-actions">
-          <Link className="button primary" to="/runs/upload">
+          <Link className="button primary ops-primary-action" to="/runs/upload">
             <Upload size={17} aria-hidden="true" /> Process invoices
           </Link>
           <ExportInvoices />
@@ -195,7 +195,6 @@ export default function Queue() {
           Reviewed assessments are labeled separately.
         </p>
       </section>
-      <UploadPanel compact />
     </div>
   )
 }

@@ -61,20 +61,22 @@
   align-items: center;
   gap: var(--space-xs);
   padding: 0 var(--space-md);
-  border-bottom: 3px solid transparent;
   text-decoration: none;
-  color: var(--color-nav-muted);
+  color: var(--color-nav-text);
   font-size: var(--text-sm);
   white-space: nowrap;
   min-height: var(--control-height);
 }
-.app-header nav a:hover,
-.app-header nav a.active {
+.app-header nav a:hover {
   background: var(--color-nav-selected);
-  color: var(--color-nav-text);
+  color: var(--color-accent-hover);
 }
 .app-header nav a.active {
-  border-bottom-color: var(--color-nav-focus);
+  background: var(--color-surface);
+  color: var(--color-nav-text);
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 4px;
 }
 .app-header :focus-visible {
   outline-color: var(--color-nav-focus);
@@ -1199,11 +1201,12 @@ blockquote {
   .app-header nav {
     width: 100%;
     margin-left: 0;
-    gap: var(--space-xs);
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
   }
   .app-header nav a {
-    padding: var(--space-sm);
-    font-size: var(--text-sm);
+    padding: var(--space-sm) var(--space-xs);
+    font-size: var(--text-xs);
   }
   .main-content {
     padding-top: var(--space-lg);

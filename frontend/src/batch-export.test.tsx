@@ -73,16 +73,14 @@ it('reports intake readiness and submits every file with the server default poli
       : Promise.resolve(run),
   )
   setup(true)
-  expect(
-    screen.getByRole('heading', { name: 'Understand the invoice. Verify the decision.' }),
-  ).toBeInTheDocument()
+  expect(screen.getByRole('heading', { level: 1, name: 'AP Compass' })).toBeInTheDocument()
   const composer = within(screen.getByRole('region', { name: 'Invoice intake' }))
   expect(composer.getByRole('heading', { name: 'Start a review' })).toBeInTheDocument()
   expect(composer.getByRole('button', { name: 'Process invoices' })).toBeDisabled()
   expect(composer.queryByRole('radio')).not.toBeInTheDocument()
-  expect(screen.getByRole('region', { name: 'Checks performed' })).toHaveTextContent(
-    'AP Compass runs these checks after you submit.',
-  )
+  expect(screen.queryByRole('region', { name: 'Checks performed' })).not.toBeInTheDocument()
+  const workflow = screen.getByRole('region', { name: 'Review workflow' })
+  expect(within(workflow).getAllByRole('listitem')).toHaveLength(3)
   const one = pdf('one.pdf')
   const two = pdf('two.pdf')
   await choose([one])

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Check, GitCompareArrows, X } from 'lucide-react'
+import { Check, ChevronDown, GitCompareArrows, X } from 'lucide-react'
 import { api, ApiError } from './api'
 import { Status } from './components'
 import { date, money } from './format'
@@ -88,6 +88,9 @@ export default function HumanPOReview({
   const assessment = data.current_reviewed_assessment
   const outstanding =
     assessment?.findings.filter((f) => f.severity === 'BLOCK' || f.severity === 'REVIEW') ?? []
+  const primary =
+    outstanding.find((finding) => finding.code === assessment?.primary_reason_code) ??
+    outstanding[0]
   if (!action && !data.confirmation_available) return null
   const valid =
     !!po &&
@@ -95,113 +98,26 @@ export default function HumanPOReview({
     rationale.trim().length >= 10 &&
     rationale.trim().length <= 2000
   return (
-    <section className="human-review" aria-labelledby="human-review-title">
-      <div className="section-heading">
-        <h2 id="human-review-title" ref={resultHeading} tabIndex={-1}>
-          {action ? 'Human-reviewed assessment' : 'Resolve purchase order identity'}
-        </h2>
-        <GitCompareArrows size={22} aria-hidden="true" />
-      </div>
-      <p className="demo-identity">Demo reviewer — identity not authenticated</p>
-      {run.model_id?.startsWith('TEST_ONLY') && (
-        <p className="review-test-note">
-          Synthetic regression case · test-provider extraction. Review actions below are actually
-          persisted.
-        </p>
-      )}
-      {action && assessment ? (
-        <>
-          <div className="review-outcomes">
-            <section aria-label="Original automated decision">
-              <h3>Original automated decision</h3>
-              <Status state="COMPLETED" outcome={action.original_decision.outcome} />
-            </section>
-            <section aria-label="Current reassessment">
-              <h3>Current reassessment</h3>
-              <Status state="COMPLETED" outcome={assessment.outcome} />
-            </section>
-          </div>
-          <div className="review-saved" role="status" aria-live="polite">
-            <Check size={18} aria-hidden="true" />
-            <p>
-              PO identity recorded.{' '}
-              {assessment.outcome === 'READY_FOR_AP'
-                ? 'Supported AP controls now pass.'
-                : 'The invoice is still not ready to process.'}
-            </p>
-          </div>
-          <dl className="review-action-facts">
-            <div>
-              <dt>Confirmed PO</dt>
-              <dd>{action.selected_po_id}</dd>
-            </div>
-            <div>
-              <dt>Saved</dt>
-              <dd>
-                <time dateTime={action.created_at}>{date(action.created_at, true)}</time>
-              </dd>
-            </div>
-            <div>
-              <dt>Demo reviewer label</dt>
-              <dd>{action.reviewer_label}</dd>
-            </div>
-          </dl>
+    <section className="human-review human-review-compact" aria-labelledby="human-review-title">
+      <div className="review-summary">
+        <span className="review-summary-icon" aria-hidden="true">
+          {action ? <Check size={17} /> : <GitCompareArrows size={17} />}
+        </span>
+        <div className="review-summary-label">
+          <h2 id="human-review-title" ref={resultHeading} tabIndex={-1}>
+            {action ? 'PO confirmed manually' : 'Confirm purchase order'}
+          </h2>
           <p>
-            <strong>Rationale</strong>
-            <br />
-            {action.rationale}
+            {action ? action.selected_po_id : 'Choose the intended PO to rerun the invoice checks.'}
           </p>
-          <p>
-            What changed: the missing-reference identity requirement was resolved by the recorded
-            human selection. Financial and source controls were re-evaluated.
-          </p>
-          <h3>Outstanding findings</h3>
-          {outstanding.length > 0 && (
-            <p>
-              {
-                assessment.findings.find((f) => f.code === assessment.primary_reason_code)
-                  ?.explanation
-              }
-            </p>
-          )}
-          {outstanding.length ? (
-            outstanding.map((f) => <div key={f.code}>{renderFinding(f)}</div>)
-          ) : (
-            <p>No outstanding blocker or review finding in this reassessment.</p>
-          )}
-          {assessment.owner && (
-            <p>
-              <strong>Resolution owner:</strong> {assessment.owner}
-            </p>
-          )}
-          {assessment.next_action && (
-            <p>
-              <strong>Next action:</strong> {assessment.next_action}
-            </p>
-          )}
-          <details className="review-provenance">
-            <summary>Review action & provenance</summary>
-            <dl>
-              <dt>Action ID</dt>
-              <dd>{action.id}</dd>
-              <dt>Recorded policy</dt>
-              <dd>{action.policy_snapshot.version}</dd>
-              <dt>Authority fingerprint</dt>
-              <dd>{action.authority_fingerprint}</dd>
-              <dt>Selection provenance</dt>
-              <dd>{action.selection_provenance}</dd>
-            </dl>
-          </details>
-        </>
-      ) : (
-        <>
-          <p>
-            Compare authoritative candidates and record the intended PO with a rationale.
-            Confirmation identifies the order; it does not establish financial eligibility.
-          </p>
+        </div>
+        {assessment ? (
+          <Status state="COMPLETED" outcome={assessment.outcome} />
+        ) : (
           <button
             ref={opener}
-            className="button"
+            className="button secondary"
+            aria-haspopup="dialog"
             onClick={() => {
               mutation.reset()
               setKey(crypto.randomUUID())
@@ -210,13 +126,90 @@ export default function HumanPOReview({
           >
             Review PO candidates
           </button>
+        )}
+      </div>
+      {action && assessment && (
+        <>
+          <p className="review-summary-reason" role="status">
+            {assessment.outcome === 'READY_FOR_AP'
+              ? 'Supported AP controls now pass.'
+              : (primary?.title ?? 'The invoice still needs attention.')}
+          </p>
+          <details className="review-details">
+            <summary>
+              Review details <ChevronDown size={16} aria-hidden="true" />
+            </summary>
+            <div className="review-detail-body">
+              <div className="review-outcomes">
+                <section aria-label="Original automated decision">
+                  <h3>Original automated decision</h3>
+                  <Status state="COMPLETED" outcome={action.original_decision.outcome} />
+                </section>
+                <section aria-label="Current reassessment">
+                  <h3>Current reassessment</h3>
+                  <Status state="COMPLETED" outcome={assessment.outcome} />
+                </section>
+              </div>
+              <dl className="review-action-facts">
+                <div>
+                  <dt>Saved</dt>
+                  <dd>
+                    <time dateTime={action.created_at}>{date(action.created_at, true)}</time>
+                  </dd>
+                </div>
+                <div>
+                  <dt>Demo reviewer label</dt>
+                  <dd>{action.reviewer_label}</dd>
+                </div>
+              </dl>
+              <p>
+                <strong>Rationale</strong>
+                <br />
+                {action.rationale}
+              </p>
+              <p className="demo-identity">{action.reviewer_identity}</p>
+              {run.model_id?.startsWith('TEST_ONLY') && (
+                <p className="demo-identity">
+                  Controlled test extraction. This PO confirmation is saved.
+                </p>
+              )}
+              <h3>Outstanding findings</h3>
+              {outstanding.length ? (
+                outstanding.map((f, index) => (
+                  <div key={`${f.code}-${index}`}>{renderFinding(f)}</div>
+                ))
+              ) : (
+                <p>No outstanding blocker or review finding in this reassessment.</p>
+              )}
+              {assessment.owner && (
+                <p>
+                  <strong>Resolution owner:</strong> {assessment.owner}
+                </p>
+              )}
+              {assessment.next_action && (
+                <p>
+                  <strong>Next action:</strong> {assessment.next_action}
+                </p>
+              )}
+              <dl className="review-provenance">
+                <dt>Action ID</dt>
+                <dd>{action.id}</dd>
+                <dt>Recorded policy</dt>
+                <dd>{action.policy_snapshot.version}</dd>
+                <dt>Authority fingerprint</dt>
+                <dd>{action.authority_fingerprint}</dd>
+                <dt>Selection provenance</dt>
+                <dd>{action.selection_provenance}</dd>
+              </dl>
+              <p className="control-disclaimer">
+                The reassessment uses current procurement and billed records with the original
+                policy. The original decision is retained. This does not authorize payment or
+                posting.
+              </p>
+            </div>
+          </details>
         </>
       )}
-      <p className="control-disclaimer">
-        Uses current authoritative procurement and billed records with the source run’s recorded
-        policy. Original automated decision, extraction and stages remain unchanged. This does not
-        authorize payment or posting.
-      </p>
       <dialog
         ref={dialog}
         className="po-review-dialog"
