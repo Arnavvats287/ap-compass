@@ -5,6 +5,7 @@ from decimal import Decimal
 import re
 
 from app.contracts import EvidenceRefV1, ExtractedInvoiceV1
+from .band_charges import service_period_headers, service_period_table
 from .consistency import HEADER_LABELS, PAYABLE_ALIASES, QUALIFIER, disputed_headers, inline_amount, parse_printed_amount
 from .schema import SourceClaim
 from .source_layout import GENERIC_PAYABLE_LABEL, SUMMARY, flat, inline_identity, layout_quote, rows_for, split_headers, table_rows, unique_quotes
@@ -216,9 +217,9 @@ def stacked_row_proofs(invoice, charges):
     return charges
 
 
-def source_cell_proof(field, value, claim, invoice, pairs, charges):
+def source_cell_proof(field, value, claim, invoice, pairs, charges, *, service_supplier=False):
     """A short exact cell quote is sufficient only inside this independently mapped layout."""
-    if field in HYBRID_HEADERS and len(pairs) == 1 and pairs[0].source_quote:
+    if (field in HYBRID_HEADERS or service_supplier) and len(pairs) == 1 and pairs[0].source_quote:
         candidate = pairs[0]
         quotes = {layout_quote(candidate.value), *candidate.quotes, *candidate.context_quotes}
         printed, source_quote = candidate.value, candidate.source_quote
@@ -256,6 +257,8 @@ def ground_evidence(invoice: ExtractedInvoiceV1, claims: tuple[SourceClaim, ...]
     stacked_page = None
     charge_proofs = ()
     summary_currency = None
+    service_headers = {}
+    service_disputes = set()
     supplemental = defaultdict(list)
     recognized_tables = [table for table in tables.values() if table is not None]
     if inspection.route == "native_text" and len(layouts) == 1:
@@ -268,6 +271,12 @@ def ground_evidence(invoice: ExtractedInvoiceV1, claims: tuple[SourceClaim, ...]
                 supplemental[field].extend(pairs)
             if not recognized_tables:
                 charge_proofs = stacked_row_proofs(invoice, charges)
+        elif not recognized_tables and (service_table := service_period_table(rows)) is not None:
+            stacked_page = number
+            if service_table:
+                charge_proofs = stacked_row_proofs(invoice, service_table.charges)
+                service_headers, service_disputes = service_period_headers(rows, service_table)
+                supplemental.update(service_headers)
     headers = {
         number: split_headers(rows, summary_payables=summary_payables,
                               supplemental=supplemental if number == stacked_page else None)
@@ -311,7 +320,7 @@ def ground_evidence(invoice: ExtractedInvoiceV1, claims: tuple[SourceClaim, ...]
             # A detected native instruction or explicit claim makes this omission
             # an invalid extraction response. Never backfill credentials.
             raise ExtractionError("MODEL_OUTPUT_UNUSABLE")
-    disputed = disputed_headers(inspection.pages, headers.values(), summary_payables=summary_payables)
+    disputed = disputed_headers(inspection.pages, headers.values(), summary_payables=summary_payables) | service_disputes
     sources = {number: flat(page.native_text) for number, page in native_pages.items()}
     line_counts = {number: Counter(flat(text) for text, _ in page.lines) for number, page in native_pages.items()}
     by_field = defaultdict(list)
@@ -357,8 +366,10 @@ def ground_evidence(invoice: ExtractedInvoiceV1, claims: tuple[SourceClaim, ...]
                             supported = unique and local_support(invoice, field, value, page, claim)
                         if supported:
                             state = "NATIVE_VERIFIED"
-                if state != "NATIVE_VERIFIED" and eligible and page.number == stacked_page and charge_proofs:
-                    native_proof = source_cell_proof(field, value, claim, invoice, pairs, charge_proofs)
+                if (state != "NATIVE_VERIFIED" and eligible and page.number == stacked_page
+                        and (charge_proofs or field in service_headers)):
+                    native_proof = source_cell_proof(field, value, claim, invoice, pairs, charge_proofs,
+                                                    service_supplier=field == "vendor_name_raw" and field in service_headers)
                     if native_proof:
                         state = "NATIVE_VERIFIED"
                 if state != "NATIVE_VERIFIED" and eligible and inspection.route == "native_text":

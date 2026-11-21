@@ -313,13 +313,14 @@ def test_historical_snapshot_default_and_allowlist():
         RunSnapshotV1(**values, execution_error_code="secret-provider-message")
 
 
-def test_runtime_generation_skips_metadata_and_closes_client(monkeypatch):
+@pytest.mark.parametrize('model', ['gemini-3.5-flash-lite', 'gemini-3.6-flash'])
+def test_runtime_generation_skips_metadata_and_closes_client(monkeypatch, model):
     from types import SimpleNamespace
     from app.ai import gemini
     calls = []
     async def generate(**kwargs):
         calls.append(kwargs['model'])
-        return SimpleNamespace(text=json.dumps(wire()), model_version='gemini-3.5-flash-lite', usage_metadata=None, candidates=[])
+        return SimpleNamespace(text=json.dumps(wire()), model_version=model, usage_metadata=None, candidates=[])
     async def get(**kwargs):
         raise AssertionError('Production must not request model metadata')
     async def close(): calls.append('async_closed')
@@ -327,20 +328,48 @@ def test_runtime_generation_skips_metadata_and_closes_client(monkeypatch):
     monkeypatch.setattr(gemini, 'make_client', lambda settings: client)
     monkeypatch.setenv('GEMINI_API_KEY', 'TEST_ONLY_KEY')
     monkeypatch.setenv('GEMINI_ESCALATION_ENABLED', 'false')
-    monkeypatch.setenv('GEMINI_PRIMARY_MODEL', 'gemini-3.5-flash-lite')
+    monkeypatch.setenv('GEMINI_PRIMARY_MODEL', model)
     result = asyncio.run(gemini.extract_runtime_pdf((ROOT/'tests/fixtures/HAPPY_CLEAN.pdf').read_bytes()))
     assert result.metadata.model_calls == 1
-    assert calls == ['gemini-3.5-flash-lite', 'async_closed', 'closed']
+    assert calls == [model, 'async_closed', 'closed']
     assert all(ref.evidence_state == 'NATIVE_VERIFIED' for ref in result.invoice.evidence)
 
 
-def test_runtime_never_constructs_optional_model(monkeypatch):
+def test_runtime_rejects_unapproved_fallback_model(monkeypatch):
     from app.ai import gemini
     monkeypatch.setenv('GEMINI_API_KEY', 'TEST_ONLY_KEY')
     monkeypatch.setenv('GEMINI_ESCALATION_ENABLED', 'true')
+    monkeypatch.setenv('GEMINI_PRIMARY_MODEL', 'gemini-3.5-flash-lite')
+    monkeypatch.setenv('GEMINI_ESCALATION_MODEL', 'gemini-3.8-flash')
     monkeypatch.setattr(gemini, 'make_client', lambda settings: pytest.fail('No model client expected'))
     with pytest.raises(ExtractionError, match='CONFIGURATION'):
         asyncio.run(gemini.extract_runtime_pdf(b'%PDF-'))
+
+
+def test_runtime_opt_in_uses_stronger_model_for_missing_evidence(monkeypatch):
+    from types import SimpleNamespace
+    from app.ai import gemini
+    calls = []
+    async def generate(**kwargs):
+        model = kwargs['model']
+        calls.append(model)
+        payload = wire()
+        if model == 'gemini-3.5-flash-lite':
+            payload['evidence'] = []
+        return SimpleNamespace(text=json.dumps(payload), model_version=model, usage_metadata=None, candidates=[])
+    async def close():
+        pass
+    client = SimpleNamespace(aio=SimpleNamespace(models=SimpleNamespace(generate_content=generate), aclose=close), close=lambda: None)
+    monkeypatch.setattr(gemini, 'make_client', lambda settings: client)
+    monkeypatch.setenv('GEMINI_API_KEY', 'TEST_ONLY_KEY')
+    monkeypatch.setenv('GEMINI_PRIMARY_MODEL', 'gemini-3.5-flash-lite')
+    monkeypatch.setenv('GEMINI_ESCALATION_MODEL', 'gemini-3.6-flash')
+    monkeypatch.setenv('GEMINI_ESCALATION_ENABLED', 'true')
+    monkeypatch.delenv('GEMINI_SCAN_MODEL', raising=False)
+    result = asyncio.run(gemini.extract_runtime_pdf((ROOT/'tests/fixtures/HAPPY_CLEAN.pdf').read_bytes()))
+    assert calls == ['gemini-3.5-flash-lite', 'gemini-3.6-flash']
+    assert result.metadata.selected_model_id == 'gemini-3.6-flash'
+    assert result.metadata.escalation_reason == 'NATIVE_EVIDENCE_UNSUPPORTED'
 
 
 def test_document_lookup_resolves_via_run_and_refuses_corrupt_path(tmp_path):

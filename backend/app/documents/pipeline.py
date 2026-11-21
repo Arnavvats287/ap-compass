@@ -3,7 +3,7 @@ import asyncio
 from time import perf_counter
 
 from app.ai.provider import ExtractionProvider, InferenceTracker, inference_tracker
-from .evidence import ground_evidence
+from .evidence import ground_evidence, values
 from .inspection import inspect_pdf
 from .schema import parse_response
 from .types import ExtractionError, ExtractionMetadata, ExtractionResult, ModelAttempt, TokenUsage
@@ -40,6 +40,20 @@ def usable_extraction(invoice):
              (line.description, line.item_code, line.qty, line.unit_price_net, line.net))
     return any(value is not None and (not isinstance(value, str) or value.strip())
                for value in (*header, *lines))
+
+
+def preserves_source_evidence(primary, candidate):
+    """Adopt a second extraction only when it adds proof without revising known facts."""
+    if primary.lines and len(primary.lines) != len(candidate.lines):
+        return False
+    original = values(primary)
+    alternate = values(candidate)
+    proven = {ref.field for ref in candidate.evidence if ref.evidence_state == "NATIVE_VERIFIED"}
+    already_proven = {ref.field for ref in primary.evidence if ref.evidence_state == "NATIVE_VERIFIED"}
+    return (already_proven < proven
+            and all(alternate.get(field) == value for field, value in original.items() if value is not None)
+            and all(original.get(field) is not None or field in proven
+                    for field, value in alternate.items() if value is not None))
 
 
 async def extract_pdf(raw: bytes, provider: ExtractionProvider, *,
@@ -80,6 +94,8 @@ async def extract_pdf(raw: bytes, provider: ExtractionProvider, *,
             if not usable_extraction(invoice):
                 raise ExtractionError("MODEL_OUTPUT_UNUSABLE")
             attempts.append(ModelAttempt(number, chosen.model_id, int((perf_counter() - began) * 1000), None, reply.model_id, reply.usage))
+            if primary_candidate is not None and not preserves_source_evidence(primary_candidate, invoice):
+                return finish(primary_candidate, provider.model_id, retained=True)
             quality = quality_failure(invoice, document.route)
             if (quality and number < max_attempts and escalation_provider
                     and chosen.model_id != escalation_provider.model_id):
@@ -104,8 +120,7 @@ async def extract_pdf(raw: bytes, provider: ExtractionProvider, *,
                                      error.provider_status, reply is not None or (error.inference_attempted and tracker.called)))
         retry = error.retryable or error.code in MODEL_OUTPUT_ERRORS
         stronger_already_attempted = escalation_provider and chosen.model_id == escalation_provider.model_id
-        if (stronger_already_attempted and primary_candidate is not None
-                and error.code in ("PROVIDER_UNAVAILABLE", "PROVIDER_TIMEOUT", "RATE_LIMIT")):
+        if stronger_already_attempted and primary_candidate is not None:
             return finish(primary_candidate, provider.model_id, retained=True)
         if number == max_attempts or not retry or stronger_already_attempted:
             raise ExtractionError(error.code, calls=sum(attempt.inference_called for attempt in attempts), attempts=tuple(attempts),

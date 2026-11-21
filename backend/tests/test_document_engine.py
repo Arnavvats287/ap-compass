@@ -251,6 +251,27 @@ def test_invalid_stronger_response_is_not_repeated():
     assert error.value.calls == 2 and len(strong.calls) == 1
 
 
+@pytest.mark.parametrize('change', ['amount', 'row_count', 'no_new_evidence'])
+def test_stronger_reply_cannot_remove_or_change_primary_invoice_facts(change):
+    partial = wire()
+    partial['evidence'] = []
+    revised = wire()
+    if change == 'amount':
+        revised['total'] = '1.00'
+    elif change == 'row_count':
+        revised['lines'] = []
+    else:
+        revised['evidence'] = []
+    primary = FakeProvider([json.dumps(partial)])
+    stronger = FakeProvider([json.dumps(revised)], model='TEST_ONLY-strong')
+    result = run((ROOT/'tests/fixtures/HAPPY_CLEAN.pdf').read_bytes(), primary,
+                 escalation_provider=stronger)
+    assert result.metadata.retained_primary
+    assert result.metadata.selected_model_id == primary.model_id
+    assert result.metadata.model_calls == 2
+    assert evaluate(build_context(result.invoice, VENDORS, POS, HISTORY), PolicyV1()).outcome == 'REVIEW_REQUIRED'
+
+
 @pytest.mark.parametrize("case_id", ["OVERBILLED_PARTIAL", "DUPLICATE_REISSUED", "SCAN_CONFLICT"])
 def test_financial_results_never_trigger_stronger_model(case_id):
     output = wire(case_id, line_net=case_id != "SCAN_CONFLICT")

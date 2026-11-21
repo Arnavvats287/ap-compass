@@ -9,9 +9,12 @@ from google import genai
 from google.genai import errors, types
 import httpx2
 
+from app.documents.band_charges import band_charges
 from app.documents.schema import provider_schema
+from app.documents.source_layout import rows_for, table_rows
+from app.documents.stacked_layout import stacked_charges
 from app.documents.types import DocumentInspection, ExtractionError, ProviderReply, TokenUsage
-from .provider import SYSTEM_INSTRUCTION, mark_inference_called
+from .provider import SERVICE_PERIOD_INSTRUCTION, SYSTEM_INSTRUCTION, mark_inference_called
 
 
 @dataclass(frozen=True)
@@ -93,6 +96,14 @@ async def verify_model(client, model_id):
             "supported_actions": info.supported_actions}
 
 
+def extraction_instruction(document: DocumentInspection) -> str:
+    if document.route == "native_text" and len(document.pages) == 1:
+        rows = rows_for(document.pages[0])
+        if table_rows(rows) is None and stacked_charges(rows) is None and band_charges(rows):
+            return SERVICE_PERIOD_INSTRUCTION
+    return SYSTEM_INSTRUCTION
+
+
 class GeminiProvider:
     def __init__(self, client, model_id, *, thinking_level=None, verify_access=False):
         self._client = client
@@ -127,7 +138,7 @@ class GeminiProvider:
             response = await self._client.aio.models.generate_content(
                 model=self.model_id, contents=[types.Content(role="user", parts=parts)],
                 config=types.GenerateContentConfig(
-                    system_instruction=SYSTEM_INSTRUCTION, response_mime_type="application/json",
+                    system_instruction=extraction_instruction(document), response_mime_type="application/json",
                     response_json_schema=provider_schema(), temperature=0,
                     thinking_config=types.ThinkingConfig(thinking_level=self.thinking_level) if self.thinking_level else None,
                     max_output_tokens=12_000, tools=[],
@@ -186,18 +197,23 @@ async def extract_configured_pdf(raw: bytes, *, max_attempts: int = 2):
 
 
 async def extract_runtime_pdf(raw: bytes):
-    """Production path: no mandatory metadata lookup; typed generation errors remain.
-
-    Phase 4 uses only the verified primary, even if stale optional environment
-    configuration is enabled. No stronger-model requests in this application.
-    """
+    """Use an approved extraction model with at most one explicitly configured fallback."""
     from app.documents.pipeline import extract_pdf
     settings = GeminiSettings.from_environment()
-    if settings.escalation_enabled or settings.primary_model != "gemini-3.5-flash-lite":
+    allowed = {"gemini-3.5-flash-lite", "gemini-3.6-flash"}
+    if (settings.primary_model not in allowed or
+            (settings.escalation_enabled and (
+                settings.primary_model != "gemini-3.5-flash-lite"
+                or settings.escalation_model != "gemini-3.6-flash"
+                or settings.scan_model not in (None, settings.primary_model)
+            ))):
         raise ExtractionError("CONFIGURATION", inference_attempted=False)
     client = make_client(settings)
     try:
-        return await extract_pdf(raw, GeminiProvider(client, settings.primary_model), max_attempts=1)
+        primary = GeminiProvider(client, settings.primary_model)
+        stronger = GeminiProvider(client, settings.escalation_model,
+                                  thinking_level=settings.escalation_thinking_level) if settings.escalation_enabled else None
+        return await extract_pdf(raw, primary, escalation_provider=stronger, max_attempts=2 if stronger else 1)
     finally:
         await client.aio.aclose()
         client.close()
