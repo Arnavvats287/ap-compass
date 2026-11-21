@@ -362,11 +362,12 @@ def ground_evidence(invoice: ExtractedInvoiceV1, claims: tuple[SourceClaim, ...]
                     if native_proof:
                         state = "NATIVE_VERIFIED"
                 if state != "NATIVE_VERIFIED" and eligible and inspection.route == "native_text":
-                    # A bare claim must match the specific, independently associated native cell.
-                    candidates = pairs or inline_headers[page.number].get(field, ())
+                    # Bare identifiers need an inline label. Amounts use the mapped summary cell.
+                    is_summary_amount = field in {"net", "tax", "total"}
+                    candidates = pairs if is_summary_amount else inline_headers[page.number].get(field, ())
                     if (field in HYBRID_HEADERS and len(candidates) == 1
                             and normalized_quote == layout_quote(candidates[0].value)
-                            and (field in {"net", "tax", "total"} or identity_counts[field] == 1)):
+                            and (is_summary_amount or identity_counts[field] == 1)):
                         native_proof = source_cell_proof(field, value, claim, invoice, candidates, ())
                     elif bare_table and tables[page.number] is eligible_table and (line := LINE_FIELD.fullmatch(field)):
                         leaf = line[2]
