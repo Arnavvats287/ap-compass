@@ -35,19 +35,20 @@
 .brand {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
-  font-size: var(--text-xl);
-  font-weight: 600;
+  gap: var(--space-xs);
+  font-family: var(--font-editorial);
+  font-size: var(--text-lg);
+  font-weight: 400;
   text-decoration: none;
   line-height: 1.25;
   flex-shrink: 0;
 }
-.brand small {
-  display: block;
-  font-size: var(--text-xs);
-  font-weight: 400;
-  color: var(--color-nav-muted);
-  margin-top: var(--space-2xs);
+.brand > svg {
+  box-sizing: content-box;
+  width: 36px;
+  height: 36px;
+  padding: 7px;
+  color: var(--color-page-accent);
 }
 .app-header nav {
   display: flex;
@@ -1192,12 +1193,6 @@ blockquote {
     padding-top: var(--space-md);
     gap: var(--space-md);
   }
-  .brand {
-    font-size: var(--text-xl);
-  }
-  .brand small {
-    font-size: var(--text-xs);
-  }
   .app-header nav {
     width: 100%;
     margin-left: 0;
@@ -1552,16 +1547,6 @@ blockquote {
 .overview-grid .drop-copy .button {
   width: 100%;
 }
-.brand > svg {
-  width: 36px;
-  height: 36px;
-}
-.brand {
-  font-size: var(--text-2xl);
-}
-.brand small {
-  font-size: var(--text-xs);
-}
 .queue-panel {
   box-shadow: none;
 }
@@ -1666,9 +1651,6 @@ tbody tr:focus-within .icon-button {
   }
 }
 @media (max-width: 900px) {
-  .brand {
-    font-size: var(--text-xl);
-  }
   .brand > svg {
     width: 28px;
     height: 28px;

@@ -44,11 +44,7 @@ export default function App() {
           <div className="header-start">
             <Link className="brand" to="/" aria-label="AP Compass home">
               <Compass size={30} aria-hidden="true" />
-              {!isLaunch && (
-                <span>
-                  AP Compass<small>Invoice Operations & Exception Resolution</small>
-                </span>
-              )}
+              {!isLaunch && <span>AP Compass</span>}
             </Link>
             {isLaunch && <DemoDataLibrary />}
           </div>

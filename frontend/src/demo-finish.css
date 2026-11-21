@@ -1,5 +1,5 @@
 .ops-grid-financial {
-  grid-template-areas: 'spotlight distribution' 'financial financial' 'vendors vendors' 'capacity insights' 'support support';
+  grid-template-areas: 'spotlight distribution' 'workflow workflow' 'financial financial' 'vendors vendors' 'capacity insights' 'support support';
 }
 .financial-overview {
   grid-area: financial;
@@ -210,14 +210,14 @@
   padding: var(--space-sm) var(--space-md);
   list-style: none;
   cursor: pointer;
-  border-radius: inherit;
+  border-radius: calc(var(--radius-nested) - 1px);
   transition: background-color var(--dur-short);
 }
 .journey-node summary::-webkit-details-marker {
   display: none;
 }
-.journey-node summary:hover {
-  background: var(--surface-sage);
+.journey-node summary:is(:hover, :focus-visible) {
+  background: var(--surface-journey-hover);
 }
 .journey-node summary strong {
   overflow-wrap: anywhere;
@@ -444,7 +444,7 @@
 
 @media (max-width: 780px) {
   .ops-grid.ops-grid-financial {
-    grid-template-areas: 'spotlight' 'distribution' 'financial' 'vendors' 'capacity' 'insights' 'support';
+    grid-template-areas: 'spotlight' 'distribution' 'workflow' 'financial' 'vendors' 'capacity' 'insights' 'support';
   }
   .financial-cards {
     grid-template-columns: repeat(2, minmax(0, 1fr));

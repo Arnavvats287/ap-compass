@@ -9,15 +9,6 @@
   color: var(--color-page-text);
   border-bottom: 1px solid var(--color-page-rule);
 }
-.brand {
-  font-family: var(--font-editorial);
-  font-weight: 400;
-  font-size: var(--text-2xl);
-}
-.brand small {
-  color: var(--color-page-muted);
-  font-family: var(--font-body);
-}
 .app-header :focus-visible {
   outline-color: var(--color-nav-focus);
 }

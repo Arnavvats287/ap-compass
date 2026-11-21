@@ -25,6 +25,7 @@
   --color-nav-text: var(--color-ink);
   --color-nav-muted: var(--color-muted);
   --color-nav-selected: #f7e7dc;
+  --surface-journey-hover: #f7e3d4;
   --color-nav-focus: var(--color-focus);
   --color-ready: #256043;
   --color-ready-bg: #eaf3ec;
@@ -65,7 +66,7 @@
   --signal-review: #d6a24e;
   --signal-blocked: #bf6a5c;
   --shadow-interactive: 0 6px 18px #193a2914;
-  --font-body: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --font-body: 'Source Sans 3 Variable', 'Segoe UI', Arial, sans-serif;
   --font-display: var(--font-body);
   --text-xs: 0.875rem;
   --text-sm: 1rem;

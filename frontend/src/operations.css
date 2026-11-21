@@ -11,6 +11,15 @@
   letter-spacing: -0.052em;
   text-wrap: balance;
 }
+.ops-overview {
+  --font-editorial: 'Source Serif 4 Variable', Georgia, serif;
+  --font-display: var(--font-editorial);
+}
+.ops-overview .ops-heading h1 {
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+}
 .ops-overview .ops-heading h1 em {
   font-weight: inherit;
   color: var(--color-page-accent);
@@ -24,13 +33,6 @@
 }
 .ops-heading .button {
   flex: none;
-}
-.header-inner .brand > svg {
-  border-radius: 12px;
-  box-sizing: content-box;
-  padding: 7px;
-  color: var(--color-page-accent);
-  background: var(--color-nav);
 }
 .app-header nav a {
   border-radius: var(--radius-pill);
@@ -56,7 +58,7 @@
 }
 .ops-grid {
   grid-template-columns: minmax(0, 1.64fr) minmax(0, 1fr);
-  grid-template-areas: 'spotlight distribution' 'vendors vendors' 'capacity insights' 'support support';
+  grid-template-areas: 'spotlight distribution' 'workflow workflow' 'vendors vendors' 'capacity insights' 'support support';
   margin-bottom: var(--space-lg);
 }
 .ops-card,
@@ -289,6 +291,37 @@ a.ops-metric:active {
   align-content: center;
   min-height: 150px;
 }
+.ops-clear-illustration {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  place-items: center;
+  inline-size: 42px;
+  block-size: 44px;
+  margin-block: 3px;
+  color: var(--color-ready);
+}
+.ops-clear-illustration::before,
+.ops-clear-illustration::after {
+  position: absolute;
+  z-index: -1;
+  inset: 3px 6px;
+  border: 1px solid var(--color-strong-rule);
+  border-radius: var(--radius-input);
+  background: var(--color-paper);
+  content: '';
+}
+.ops-clear-illustration::before {
+  transform: translate(-3px, 1px) rotate(-12deg);
+}
+.ops-clear-illustration::after {
+  border-color: var(--signal-ready);
+  background: var(--color-ready-bg);
+  transform: translate(2px, -2px) rotate(7deg);
+}
+.ops-clear-illustration svg {
+  transform: translate(2px, -2px);
+}
 .ops-spotlight[data-empty='true'] {
   display: flex;
   flex-direction: column;
@@ -371,6 +404,17 @@ a.ops-metric:active {
 .ops-outcome-bar span {
   min-width: 0;
   flex-basis: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ops-outcome-bar {
+    transform-origin: left;
+    animation: ops-fill-distribution 560ms var(--ease-out) both;
+  }
+}
+@keyframes ops-fill-distribution {
+  from {
+    transform: scaleX(0);
+  }
 }
 .ops-outcome-bar .ready,
 .ops-outcome-list .ready {
@@ -702,6 +746,172 @@ a.ops-metric:active {
 .ops-loading-grid > .ops-card {
   min-height: 26rem;
 }
+.ops-workflow-strip {
+  grid-area: workflow;
+  position: relative;
+  padding-inline: var(--ops-padding);
+  border-block: 1px solid var(--color-spotlight-rule);
+  background: linear-gradient(100deg, var(--surface-spotlight), transparent 82%);
+}
+.ops-workflow-art {
+  position: relative;
+  block-size: 88px;
+  margin-inline-end: 28px;
+}
+.ops-workflow-track {
+  position: absolute;
+  inset-inline: 4% 52px;
+  inset-block-start: 50%;
+  block-size: 5px;
+  background: radial-gradient(circle, var(--color-strong-rule) 1.5px, transparent 2px)
+    left center / 12px 5px repeat-x;
+}
+.ops-workflow-paper {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--color-strong-rule);
+  border-radius: 6px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+.ops-workflow-po {
+  inset-inline-end: 18px;
+  inset-block-start: 13px;
+  inline-size: 65px;
+  block-size: 62px;
+  transform: rotate(7deg);
+  color: var(--color-accent);
+}
+.ops-workflow-invoice {
+  inset-block-start: 20px;
+  inline-size: 56px;
+  block-size: 48px;
+  border-color: var(--color-spotlight-rule);
+  transform: rotate(-8deg);
+}
+.ops-workflow-invoice::before {
+  display: block;
+  inline-size: 29px;
+  block-size: 3px;
+  margin-block-end: 14px;
+  border-radius: 2px;
+  background: var(--color-accent);
+  box-shadow: 0 7px var(--color-rule), 0 14px var(--color-rule);
+  content: '';
+}
+.ops-workflow-lane {
+  position: absolute;
+  inset: 0 97px 0 4%;
+}
+.ops-workflow-courier {
+  position: absolute;
+  inset: 0;
+  transform: translateX(calc(100% - 56px));
+}
+.ops-workflow-courier:not(.ready) {
+  visibility: hidden;
+}
+.ops-workflow-result {
+  position: absolute;
+  inset-block-start: 12px;
+  inset-inline-start: 42px;
+  display: grid;
+  place-items: center;
+  inline-size: 25px;
+  block-size: 25px;
+  border: 1px solid currentColor;
+  border-radius: var(--radius-pill);
+  background: var(--color-ready-bg);
+  color: var(--color-ready);
+}
+.ops-workflow-courier.review .ops-workflow-result {
+  background: var(--color-review-bg);
+  color: var(--color-review);
+}
+.ops-workflow-courier.blocked .ops-workflow-result {
+  background: var(--color-blocked-bg);
+  color: var(--color-blocked);
+}
+.ops-workflow-toggle {
+  position: absolute;
+  inset: 10px 10px auto auto;
+  display: grid;
+  place-items: center;
+  inline-size: 28px;
+  block-size: 28px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--color-ink-2);
+}
+.ops-workflow-toggle:hover {
+  border-color: var(--color-spotlight-rule);
+  background: var(--color-surface);
+  color: var(--color-accent-hover);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ops-workflow-strip .ops-workflow-courier,
+  .ops-workflow-strip .ops-workflow-result {
+    visibility: visible;
+    animation: var(--workflow-animation) 9.6s var(--workflow-delay, 0s) linear infinite both;
+    animation-play-state: paused;
+  }
+  .ops-workflow-courier {
+    --workflow-animation: ops-invoice-transit;
+  }
+  .ops-workflow-courier.review {
+    --workflow-delay: 3.2s;
+  }
+  .ops-workflow-courier.blocked {
+    --workflow-delay: 6.4s;
+  }
+  .ops-workflow-result {
+    --workflow-animation: ops-invoice-result;
+  }
+  .ops-workflow-strip[data-running='true'] :is(.ops-workflow-courier, .ops-workflow-result) {
+    animation-play-state: running;
+  }
+}
+@keyframes ops-invoice-transit {
+  0% {
+    transform: translateX(0);
+    opacity: 0;
+  }
+  3%,
+  17% {
+    opacity: 1;
+  }
+  18%,
+  29% {
+    transform: translateX(calc(100% - 56px));
+    opacity: 1;
+  }
+  33.333%,
+  100% {
+    transform: translateX(calc(100% - 47px));
+    opacity: 0;
+  }
+}
+@keyframes ops-invoice-result {
+  0%,
+  17% {
+    transform: scale(0.65);
+    opacity: 0;
+  }
+  21%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ops-workflow-toggle {
+    display: none;
+  }
+}
+
 @media (max-width: 1024px) {
   .ops-grid {
     grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
@@ -716,7 +926,7 @@ a.ops-metric:active {
   }
   .ops-grid {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-areas: 'spotlight' 'distribution' 'vendors' 'capacity' 'insights' 'support';
+    grid-template-areas: 'spotlight' 'distribution' 'workflow' 'vendors' 'capacity' 'insights' 'support';
   }
   .ops-loading-grid {
     grid-template-columns: minmax(0, 1fr);

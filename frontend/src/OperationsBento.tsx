@@ -13,6 +13,7 @@ import { ExceptionInsights, ProcurementCapacity, VendorAttentionTable } from './
 
 import OverviewFocus from './OverviewFocus'
 import DecisionRing from './DecisionRing'
+import InvoiceWorkflowStrip from './InvoiceWorkflowStrip'
 
 const scope = 'Among the latest 100 invoices'
 
@@ -125,7 +126,9 @@ function Spotlight({
               {count ? (
                 <CircleAlert size={24} aria-hidden="true" />
               ) : (
-                <Check size={24} aria-hidden="true" />
+                <span className="ops-clear-illustration" aria-hidden="true">
+                  <Check size={14} strokeWidth={2.5} />
+                </span>
               )}
               <h3>{count ? 'No exceptions in the recent list' : 'No recorded exceptions'}</h3>
               <p>
@@ -341,7 +344,8 @@ export default function OperationsBento({
       >
         {panels.attention}
         {metrics && <Distribution metrics={metrics} />}
-        {panels.financial}
+        {metrics && <InvoiceWorkflowStrip />}
+        {metrics?.invoice_gross && <FinancialOverview gross={metrics.invoice_gross} animate />}
         {panels.vendors}
         {panels.capacity}
         {panels.exceptions}
