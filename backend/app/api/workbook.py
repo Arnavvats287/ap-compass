@@ -48,7 +48,6 @@ REGISTER = (
     ("Currency", 12), ("Net amount", 17), ("Tax amount", 17), ("Gross amount", 17),
     ("Original automated decision", 19), ("Current reviewed decision", 19),
     ("Primary issue", 31), ("Owner", 17), ("Next action", 42), ("Execution state", 23),
-    ("Recorded unit-price tolerance", 19),
 )
 EXCEPTIONS = (
     ("Invoice number", 21), ("Supplier", 25), ("Severity", 13), ("Finding title", 31),
@@ -138,9 +137,9 @@ def save_workbook(book, invoice_count):
         if not invoice_count:
             return original.getvalue()
         # openpyxl has no public writer for this sheet setting. Suppress Excel's
-        # number-as-text warning only where exact amounts and percentages are intentional.
+        # number-as-text warning only where exact amounts are intentional.
         last_row = invoice_count + 4
-        ignored = (f'<ignoredErrors><ignoredError sqref="F5:H{last_row} O5:O{last_row}" '
+        ignored = (f'<ignoredErrors><ignoredError sqref="F5:H{last_row}" '
                    'numberStoredAsText="1"/></ignoredErrors>').encode("ascii")
         with ZipFile(original) as source, BytesIO() as output:
             with ZipFile(output, "w") as target:
@@ -172,8 +171,6 @@ def build_invoice_workbook(records, generated):
             primary or (decision.primary_reason_code if decision else snapshot.execution_error_code),
             decision.owner if decision else None, decision.next_action if decision else None,
             snapshot.execution_state,
-            f"{(snapshot.policy_snapshot.price_tolerance_pct * 100).normalize():f}%"
-            if snapshot.policy_snapshot is not None else None,
         ))
         for finding in findings:
             comparison = "\n".join(

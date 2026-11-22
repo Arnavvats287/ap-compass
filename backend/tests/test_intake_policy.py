@@ -57,10 +57,11 @@ def test_intake_policy_records_real_price_decisions_without_rewriting_history(tm
         assert Decimal(totals["submitted"]["by_currency"]["INR"]) == Decimal("24308")
         assert authority(app.state.engine) == ledger
         sheet = load_workbook(BytesIO(client.get("/api/exports/invoices.xlsx").content))["Invoice Register"]
-        assert sheet["O4"].value == "Recorded unit-price tolerance"
-        assert {(row[8], row[14]) for row in sheet.iter_rows(min_row=5, values_only=True)} == {
-            ("Needs review", "2%"), ("Needs review", "5%"),
-        }
+        assert sheet.max_column == 14
+        assert sheet["N4"].value == "Execution state"
+        assert [(row[8], row[13]) for row in sheet.iter_rows(min_row=5, values_only=True)] == [
+            ("Needs review", "COMPLETED"), ("Needs review", "COMPLETED"),
+        ]
 
 
 def test_selected_policy_is_already_recorded_while_run_is_queued(tmp_path):

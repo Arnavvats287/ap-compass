@@ -87,11 +87,14 @@ def test_workbook_reads_stored_assessments_without_writes_or_inference(tmp_path)
             root = ElementTree.fromstring(archive.read("xl/worksheets/sheet1.xml"))
             warning = root.find("./{*}ignoredErrors/{*}ignoredError")
             assert warning is not None
-            assert warning.attrib == {"sqref": "F5:H7 O5:O7", "numberStoredAsText": "1"}
+            assert warning.attrib == {"sqref": "F5:H7", "numberStoredAsText": "1"}
         assert len(statements) == 1
         assert statements[0].lstrip().startswith("SELECT")
         assert authority(app.state.engine) == ledger
         register = book["Invoice Register"]
+        assert register.max_column == 14
+        assert register["N4"].value == "Execution state"
+        assert register.auto_filter.ref == "A4:N7"
         rows = list(register.iter_rows(min_row=5, values_only=True))
         assert len(rows) == 3
         failed, blocked_row, reviewed_row = rows
